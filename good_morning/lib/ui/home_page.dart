@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_fact_ui.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -29,9 +30,17 @@ class HomePageState extends State<HomePage> {
             Row(
               children: [
                 Expanded(
-                    child: _buildHalfCard(
-                        'Fact of the Day', 'Honey never spoils.', () {
-                  // Add call to the Fact of the Day screen
+                    child: _buildHalfCard('Fact of the Day',
+                        'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
+                        () {
+                  // call to the Fact of the Day screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          DailyFactPage(theme: Theme.of(context)),
+                    ),
+                  );
                   print('Navigating to Fact of the Day Screen');
                 })),
                 Expanded(
