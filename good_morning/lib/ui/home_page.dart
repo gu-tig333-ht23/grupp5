@@ -45,7 +45,8 @@ class HomePageState extends State<HomePage> {
                   print('Navigating to Fact of the Day Screen');
                 })),
                 Expanded(
-                    child: _buildHalfCard('Film of the Day', 'Oppenheimer', () {
+                    child: _buildHalfCard('Film of the Day', 'The Dark Knight',
+                        () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
