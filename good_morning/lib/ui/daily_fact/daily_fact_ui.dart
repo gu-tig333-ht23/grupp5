@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/ui/daily_fact_settings_ui.dart';
-import 'package:good_morning/utils/daily_fact.dart';
+import 'package:good_morning/ui/daily_fact/daily_fact_settings_ui.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
+import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
   final ThemeData theme;
@@ -9,6 +11,8 @@ class DailyFactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var categories = context.watch<DailyFactList>().categories;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -94,7 +98,8 @@ class DailyFactPage extends StatelessWidget {
                       children: categories
                           .where((category) => category.chosen)
                           .map((category) {
-                        return FactCategoryItem(category);
+                        return FactCategoryItem(
+                            category, false); // not clickable
                       }).toList(),
                     ),
                   ),

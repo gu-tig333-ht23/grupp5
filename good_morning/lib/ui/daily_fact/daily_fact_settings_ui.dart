@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_fact.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact.dart';
+import 'package:provider/provider.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
 
 class DailyFactSettingsPage extends StatelessWidget {
   final ThemeData theme;
@@ -8,6 +10,8 @@ class DailyFactSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var categories = context.watch<DailyFactList>().categories;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -49,7 +53,8 @@ class DailyFactSettingsPage extends StatelessWidget {
                     child: Column(
                       // lists all categories, both chosen and unchosen
                       children: categories.map((category) {
-                        return FactCategoryItem(category);
+                        return FactCategoryItem(
+                            category, true); //clickable icon buttons
                       }).toList(),
                     ),
                   ),
@@ -68,7 +73,9 @@ class DailyFactSettingsPage extends StatelessWidget {
                   style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFFD95524),
                       foregroundColor: Colors.black),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context); // back to daily fact
+                  },
                   child: const Text('Save'),
                 ),
               ),
