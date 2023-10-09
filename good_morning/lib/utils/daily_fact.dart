@@ -14,6 +14,7 @@ List<FactCategory> categories = [
   (FactCategory(categoryName: 'Film Science', chosen: true)),
   (FactCategory(categoryName: 'Literature and Reading', chosen: false)),
   (FactCategory(categoryName: 'Space', chosen: true)),
+  (FactCategory(categoryName: 'The Human Body', chosen: false)),
   (FactCategory(categoryName: 'History of Sweden', chosen: false)),
   (FactCategory(categoryName: 'Engines and Vehicles', chosen: false)),
   (FactCategory(categoryName: 'Art', chosen: false)),
@@ -30,10 +31,13 @@ class FactCategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.circle,
-            color: category.chosen ? Color(0xFFD95524) : Colors.grey),
+        IconButton(
+          icon: Icon(Icons.circle,
+              color: category.chosen ? Color(0xFFD95524) : Colors.grey),
+          onPressed: () {},
+        ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(0.0),
           child: Text(
             category.categoryName,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

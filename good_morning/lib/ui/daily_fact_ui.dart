@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_fact_settings_ui.dart';
 import 'package:good_morning/utils/daily_fact.dart';
 
 class DailyFactPage extends StatelessWidget {
@@ -50,6 +51,9 @@ class DailyFactPage extends StatelessWidget {
             ),
             Container(
               alignment: Alignment.topRight,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(
                     right: 8.0, left: 8, top: 8, bottom: 20),
@@ -98,7 +102,16 @@ class DailyFactPage extends StatelessWidget {
                     alignment: Alignment.topRight,
                     child: IconButton(
                       icon: const Icon(Icons.settings),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                DailyFactSettingsPage(theme: Theme.of(context)),
+                          ),
+                        );
+                        print('Navigating to settings page for Daily Fact');
+                      },
                     ),
                   )
                 ],
