@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:dio/dio.dart';
-
-final dio = Dio();
 
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
@@ -16,11 +12,16 @@ class DailyFilmPage extends StatefulWidget {
 }
 
 class DailyFilmPageState extends State<DailyFilmPage> {
-  String movieTitle = '';
-  String movieDescription = '';
+  @override
+  void initState() {
+    super.initState();
+    getMovie(context);
+  }
 
   @override
   Widget build(BuildContext context) {
+    var movieProvider = Provider.of<MovieProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -31,11 +32,9 @@ class DailyFilmPageState extends State<DailyFilmPage> {
         child: ListView(
           children: [
             buildFullCard(
-              movieTitle,
-              movieDescription,
-              () async {
-                await getMovie();
-              },
+              movieProvider.movieTitle,
+              movieProvider.movieDescription,
+              () {},
             ),
           ],
         ),
@@ -43,18 +42,14 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     );
   }
 
-  getMovie() async {
-    dio.options.headers['Authorization'] =
-        'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZWQ2NjJiNzc1MTIxOThmZjBmZTIxNGQwN2ZlZDljNSIsInN1YiI6IjY1MjI2YzM5MDcyMTY2MDExYzA1YzdhNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.le_mcHwYS_PzUQADBaC_XQe0HrFbtTqChmv6J3El3UI';
-    dio.options.headers['Accept'] = 'application/json';
-    Response response;
-    response = await dio.get(
-        'https://api.themoviedb.org/3/find/tt0468569?external_source=imdb_id');
+  getMovie(BuildContext context) async {
+    FilmApi filmApi = FilmApi(dio);
+    Map<String, dynamic> movieData = await filmApi.getMovie();
 
-    setState(() {
-      movieTitle = response.data['movie_results'][0]['title'];
-      movieDescription = response.data['movie_results'][0]['overview'];
-    });
+    Provider.of<MovieProvider>(context, listen: false).setMovie(
+      movieData['title'],
+      movieData['description'],
+    );
   }
 
   Widget buildFullCard(String title, String description, Function onTapAction) {
@@ -70,5 +65,19 @@ class DailyFilmPageState extends State<DailyFilmPage> {
         },
       ),
     );
+  }
+}
+
+class MovieProvider with ChangeNotifier {
+  String _movieTitle = '';
+  String _movieDescription = '';
+
+  String get movieTitle => _movieTitle;
+  String get movieDescription => _movieDescription;
+
+  void setMovie(String title, String description) {
+    _movieTitle = title;
+    _movieDescription = description;
+    notifyListeners();
   }
 }
