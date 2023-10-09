@@ -17,7 +17,8 @@ class FilmApi {
 
     Response response = await dio.get(
         'https://api.themoviedb.org/3/find/tt0468569?external_source=imdb_id');
-    print(response.data['movie_results'][0]['title']);
+    //Debug print
+    //print(response.data['movie_results'][0]['title']);
     return {
       'title': response.data['movie_results'][0]['title'],
       'description': response.data['movie_results'][0]['overview'],
