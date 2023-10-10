@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_fact_ui.dart';
+import 'package:good_morning/ui/daily_history_ui.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,6 +26,13 @@ class HomePageState extends State<HomePage> {
             _buildFullCard(
                 'Today in History', 'Today, Steve Jobs died 12 years ago.', () {
               // Add call to the Today in History screen
+              Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          DailyHistoryPage(theme: Theme.of(context)),
+                    ),
+                  );
               print('Navigating to Today in History Screen');
             }),
             Row(
