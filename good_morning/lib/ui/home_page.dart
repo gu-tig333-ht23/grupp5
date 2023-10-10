@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_fact_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
+import 'package:good_morning/utils/weather.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,6 +21,10 @@ class HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             _buildFullCard('Weather', 'Show the weather', () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => WeatherPage()));
               print('Navigating to Weather Screen');
             }),
             _buildFullCard(
