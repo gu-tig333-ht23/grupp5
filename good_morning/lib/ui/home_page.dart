@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_fact_ui.dart';
-import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 
 class HomePage extends StatefulWidget {
   @override
