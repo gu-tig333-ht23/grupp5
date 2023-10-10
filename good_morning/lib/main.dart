@@ -11,6 +11,9 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => DailyFactList(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => MovieProvider(),
+        ),
         // other providers here..
       ],
       child: const MyApp(),
@@ -23,15 +26,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MovieProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Good Morning',
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        home: HomePage(),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Good Morning',
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      home: HomePage(),
     );
   }
 }
