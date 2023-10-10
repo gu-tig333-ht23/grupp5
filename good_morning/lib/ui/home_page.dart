@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_fact_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,12 +20,10 @@ class HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             _buildFullCard('Weather', 'Show the weather', () {
-              // Add call to the Weather screen
               print('Navigating to Weather Screen');
             }),
             _buildFullCard(
                 'Today in History', 'Today, Steve Jobs died 12 years ago.', () {
-              // Add call to the Today in History screen
               print('Navigating to Today in History Screen');
             }),
             Row(
@@ -33,7 +32,6 @@ class HomePageState extends State<HomePage> {
                     child: _buildHalfCard('Fact of the Day',
                         'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
                         () {
-                  // call to the Fact of the Day screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -44,10 +42,20 @@ class HomePageState extends State<HomePage> {
                   print('Navigating to Fact of the Day Screen');
                 })),
                 Expanded(
-                    child: _buildHalfCard('Film of the Day', 'Oppenheimer', () {
-                  // Add call to the Film of the Day screen.
-                  print('Navigating to Film of the Day Screen');
-                })),
+                  child: _buildHalfCard(
+                    'Film of the Day',
+                    'The Dark Knight',
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DailyFilmPage(theme: Theme.of(context)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ],

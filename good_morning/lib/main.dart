@@ -18,16 +18,19 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Good Morning',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      home: HomePage(),
+    return ChangeNotifierProvider(
+      create: (context) => MovieProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Good Morning',
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        home: HomePage(),
+      ),
     );
   }
 }
