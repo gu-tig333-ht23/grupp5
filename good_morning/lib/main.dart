@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
 import '/ui/home_page.dart';
 import 'package:provider/provider.dart';
+import 'package:good_morning/ui/daily_film_page.dart';
 
 void main() {
   runApp(
