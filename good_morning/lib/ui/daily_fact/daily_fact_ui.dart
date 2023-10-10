@@ -53,23 +53,7 @@ class DailyFactPage extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              alignment: Alignment.topRight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    right: 8.0, left: 8, top: 8, bottom: 20),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFD95524),
-                      foregroundColor: Colors.black),
-                  onPressed: () {},
-                  child: const Text('Next'),
-                ),
-              ),
-            ),
+            SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 192, 187, 187),
