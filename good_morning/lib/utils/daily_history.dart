@@ -1,4 +1,5 @@
-import 'dart:convert';
+
+import 'package:flutter/material.dart';
 
 class HistoryItem {
   String text;
@@ -21,8 +22,37 @@ class HistoryItem {
 */
 }
 
-//Filter
-enum types { All, Selected, Births, Deaths, Holidays, Events }
+class HistoryProvider extends ChangeNotifier {
+  String filter = 'All';
+
+HistoryItem get filteredHistory {
+switch (filter) {
+      case 'Selected':
+         // Funktion som hämtar på typ 'Selected',
+        return filteredHistory;
+      case 'Births':
+        //FUnktion som hämtar med typ 'Births'
+        return filteredHistory;
+      case 'Deaths':
+        //Funktion som hämtar 'Deaths'
+        return filteredHistory;
+      case 'Events':
+        //Funktionsom hämtar 'Events'
+        return filteredHistory;
+      case 'Holidays':
+        //Funktion som hämtar 'Holidays'
+      default:
+        //Funktion som hämtar 'All'
+        return filteredHistory;
+    }
+}
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
+}
+
+
 
 List<HistoryItem> get historyitem => _historyitem;
 

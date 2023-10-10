@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/utils/daily_history.dart';
+import 'package:provider/provider.dart';
 
-class DailyHistoryPage extends StatelessWidget {
+class DailyHistoryPage extends StatefulWidget {
   final ThemeData theme;
 
   const DailyHistoryPage({required this.theme});
 
   @override
+  State<DailyHistoryPage> createState() => _DailyHistoryPageState();
+}
+
+class _DailyHistoryPageState extends State<DailyHistoryPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+        actions: [
+          DropdownButton<String>(
+              value: context.read<HistoryProvider>().filter,
+              onChanged: (newValue) {
+                setState(() {
+                  context.read<HistoryProvider>().filter = newValue!;
+                  context.read<HistoryProvider>().notifyListeners();
+                });
+              },
+              items: ['All', 'Selected', 'Births', 'Deaths', 'Events', 'Holidays'].map((filter) {
+                return DropdownMenuItem<String>(
+                  value: (filter),
+                  child: Text(filter),
+                );
+              }).toList()),],
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: const Text('Good Morning'),
         ),
@@ -59,8 +80,8 @@ class DailyHistoryPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                        child: Text('Name',
+                        padding: EdgeInsets.all(8),
+                        child: Text('Name/händelse',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18)),
                       ),
@@ -83,7 +104,7 @@ class DailyHistoryPage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(5.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
@@ -98,7 +119,7 @@ class DailyHistoryPage extends StatelessWidget {
                     ],
                   ),
                   child: Padding(
-                      padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
+                      padding: EdgeInsets.all(8),
                       child: Text(
                           //'Desctiption here: Penei Sewell is an American football offensive tackle for the Detroit Lions of the National Football League (NFL). He played college football at Oregon, where he won the Outland and Morris trophies in 2019.',
                           historyitem[0].extract,
