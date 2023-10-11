@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/ui/daily_film_settings.dart';
 
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
@@ -21,24 +22,46 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
     var movieProvider = Provider.of<MovieProvider>(context);
+    var settingsModel = context.watch<DailyFilmSettingsModel>();
+    final title = Provider.of<MovieProvider>(context).movieTitle;
+    final description = Provider.of<MovieProvider>(context).movieDescription;
+    final date = Provider.of<MovieProvider>(context).movieDate;
+    final rating = Provider.of<MovieProvider>(context).movieRating;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text("Today's Film"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DailyFilmSettings(theme: Theme.of(context)),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            buildFullCard(
-              movieProvider.movieTitle,
-              movieProvider.movieDescription,
-              movieProvider.movieDate,
-              movieProvider.movieRating,
-              () {},
-            ),
-          ],
+        child: Card(
+          color: Theme.of(context).cardColor,
+          child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+              title: Text(title,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('''
+
+Released in $date with a score of $rating
+
+$description'''),
+              onTap: () {}),
         ),
       ),
     );
@@ -57,26 +80,6 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     } catch (e) {
       print('Error fetching movie: $e');
     }
-  }
-
-  Widget buildFullCard(String title, String description, String date,
-      String rating, Function onTapAction) {
-    return Card(
-      color: Theme.of(context).cardColor,
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('''
-
-Released in $date with a score of $rating
-
-$description'''),
-        onTap: () {
-          onTapAction.call();
-        },
-      ),
-    );
   }
 }
 

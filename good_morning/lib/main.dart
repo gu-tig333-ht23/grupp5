@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_film_settings.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
 import '/ui/home_page.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
         ),
+        ChangeNotifierProvider(create: (context) => DailyFilmSettingsModel()),
         // other providers here..
       ],
       child: const MyApp(),

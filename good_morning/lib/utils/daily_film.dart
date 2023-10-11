@@ -14,15 +14,16 @@ class FilmApi {
   FilmApi(this.dio);
 
   //Testing numbers
+  String releaseYear = '2021';
+
   String pageNumber = '&page=${Random().nextInt(20)}';
-  int releaseYear = 2020;
 
   Future<Map<String, dynamic>> getMovie() async {
     dio.options.headers['Authorization'] = 'Bearer $bearerKey';
     dio.options.headers['Accept'] = 'application/json';
 
     Response response = await dio.get(
-        'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=$pageNumber&primary_release_year=$releaseYear&sort_by=popularity.desc');
+        'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US$pageNumber&primary_release_year=$releaseYear&sort_by=popularity.desc');
 
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
