@@ -5,7 +5,9 @@ import 'package:good_morning/utils/weather.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final String factText;
+
+  const HomePage({required this.factText, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +43,12 @@ class HomePage extends StatelessWidget {
               children: [
                 Expanded(
                     child: _buildHalfCard(
-                        context,
-                        'Fact of the Day',
-                        //factText here
-                        //factText,
-                        'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
-                        () {
+                        context, 'Fact of the Day', factText.trim(), () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyFactPage(theme: Theme.of(context)),
+                      builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context), factText: factText),
                     ),
                   );
                   print(

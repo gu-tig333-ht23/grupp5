@@ -6,18 +6,14 @@ import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
   final ThemeData theme;
+  final String factText;
 
-  const DailyFactPage({super.key, required this.theme});
+  const DailyFactPage({super.key, required this.theme, required this.factText});
 
   @override
   Widget build(BuildContext context) {
+    // tracks the categories
     var categories = context.watch<DailyFactProvider>().categories;
-
-    // Extracts names of current chosen categories
-    List<String> chosenCategories = categories
-        .where((category) => category.chosen)
-        .map((category) => category.categoryName)
-        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -49,31 +45,14 @@ class DailyFactPage extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 22)),
                   ),
-                  FutureBuilder<String>(
-                    future:
-                        Provider.of<DailyFactProvider>(context, listen: false)
-                            .fetchFactOfTheDay(chosenCategories),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data == null) {
-                        return const Text(
-                            'No data available'); // handles null data case
-                      } else {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            snapshot.data!,
-
-                            //'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        );
-                      }
-                    },
-                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 3, left: 8.0, right: 8, bottom: 8),
+                    child: Text(
+                      factText.trim(), // the parameter displayed here
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  )
                 ],
               ),
             ),

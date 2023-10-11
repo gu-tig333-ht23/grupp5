@@ -28,6 +28,15 @@ class DailyFactProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // function that retrieves the current chosen categories
+  List<String> getChosenCategories() {
+    List<String> chosenCategories = categories
+        .where((category) => category.chosen)
+        .map((category) => category.categoryName)
+        .toList();
+    return chosenCategories;
+  }
+
   // retrieves the fact text as correct text string to be displayed
   Future<String> fetchFactOfTheDay(List<String> chosenCategories) async {
     try {
