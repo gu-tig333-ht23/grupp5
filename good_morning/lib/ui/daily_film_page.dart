@@ -15,7 +15,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   void initState() {
     super.initState();
-    getMovie(context);
+    getMovie(context, FilmApi(dio));
   }
 
   @override
@@ -34,6 +34,8 @@ class DailyFilmPageState extends State<DailyFilmPage> {
             buildFullCard(
               movieProvider.movieTitle,
               movieProvider.movieDescription,
+              movieProvider.movieDate,
+              movieProvider.movieRating,
               () {},
             ),
           ],
@@ -42,24 +44,34 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     );
   }
 
-  getMovie(BuildContext context) async {
-    FilmApi filmApi = FilmApi(dio);
-    Map<String, dynamic> movieData = await filmApi.getMovie();
+  void getMovie(BuildContext context, FilmApi filmApi) async {
+    try {
+      Map<String, dynamic> movieData = await filmApi.getMovie();
 
-    Provider.of<MovieProvider>(context, listen: false).setMovie(
-      movieData['title'],
-      movieData['description'],
-    );
+      Provider.of<MovieProvider>(context, listen: false).setMovie(
+        movieData['title'],
+        movieData['description'],
+        movieData['release_year'],
+        movieData['vote_average'],
+      );
+    } catch (e) {
+      print('Error fetching movie: $e');
+    }
   }
 
-  Widget buildFullCard(String title, String description, Function onTapAction) {
+  Widget buildFullCard(String title, String description, String date,
+      String rating, Function onTapAction) {
     return Card(
       color: Theme.of(context).cardColor,
       child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
+        subtitle: Text('''
+
+Released in $date with a score of $rating
+
+$description'''),
         onTap: () {
           onTapAction.call();
         },
@@ -71,13 +83,19 @@ class DailyFilmPageState extends State<DailyFilmPage> {
 class MovieProvider with ChangeNotifier {
   String _movieTitle = '';
   String _movieDescription = '';
+  String _movieDate = '';
+  String _movieRating = '';
 
   String get movieTitle => _movieTitle;
   String get movieDescription => _movieDescription;
+  String get movieDate => _movieDate;
+  String get movieRating => _movieRating;
 
-  void setMovie(String title, String description) {
+  void setMovie(String title, String description, String date, String rating) {
     _movieTitle = title;
     _movieDescription = description;
+    _movieDate = date;
+    _movieRating = rating;
     notifyListeners();
   }
 }
