@@ -23,7 +23,7 @@ class DailyFactSettingsPage extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 192, 187, 187),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(

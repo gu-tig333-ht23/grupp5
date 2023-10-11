@@ -21,7 +21,7 @@ void main() async {
         ),
         // other providers here..
       ],
-      // sends the fact for the day as parameter
+      // sends the fact for the day as parameter to myApp
       child: MyApp(factText: factText),
     ),
   );
