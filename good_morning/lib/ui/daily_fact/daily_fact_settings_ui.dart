@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_fact/daily_fact.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_category_item.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 
 class DailyFactSettingsPage extends StatelessWidget {
   final ThemeData theme;
@@ -10,7 +10,7 @@ class DailyFactSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var categories = context.watch<DailyFactList>().categories;
+    var categories = context.watch<DailyFactProvider>().categories;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +23,7 @@ class DailyFactSettingsPage extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 192, 187, 187),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
