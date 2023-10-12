@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
+<<<<<<< Updated upstream
 import 'package:good_morning/utils/weather.dart';
+=======
+import 'weather_ui.dart';
+import 'package:good_morning/ui/daily_film_page.dart';
+>>>>>>> Stashed changes
 
 class HomePage extends StatefulWidget {
   @override
