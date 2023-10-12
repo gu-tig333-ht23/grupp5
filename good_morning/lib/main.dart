@@ -30,6 +30,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => VisibilityModel(),
+        ),
       ],
       // sends the fact for the day as parameter to myApp
       child: MyApp(factText: factText),
