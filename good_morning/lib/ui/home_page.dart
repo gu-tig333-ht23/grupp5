@@ -4,12 +4,11 @@ import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import 'package:good_morning/utils/weather.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  HomePageState createState() => HomePageState();
-}
+class HomePage extends StatelessWidget {
+  final String factText;
 
-class HomePageState extends State<HomePage> {
+  const HomePage({required this.factText, super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,15 +20,15 @@ class HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            _buildFullCard('Weather', 'Show the weather', () {
+            _buildFullCard(context, 'Weather', 'Show the weather', () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) => WeatherPage()));
               print('Navigating to Weather Screen');
             }),
-            _buildFullCard(
-                'Today in History', 'Today, Steve Jobs died 12 years ago.', () {
+            _buildFullCard(context, 'Today in History',
+                'Today, Steve Jobs died 12 years ago.', () {
               // Add call to the Today in History screen
               Navigator.push(
                 context,
@@ -43,20 +42,21 @@ class HomePageState extends State<HomePage> {
             Row(
               children: [
                 Expanded(
-                    child: _buildHalfCard('Fact of the Day',
-                        'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
-                        () {
+                    child: _buildHalfCard(
+                        context, 'Fact of the Day', factText.trim(), () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyFactPage(theme: Theme.of(context)),
+                      builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context), factText: factText),
                     ),
                   );
-                  print('Navigating to Fact of the Day Screen');
+                  print(
+                      'Navigating to Fact of the Day Screen'); // control, can be removed later
                 })),
                 Expanded(
                   child: _buildHalfCard(
+                    context,
                     'Film of the Day',
                     'The Dark Knight',
                     () {
@@ -78,8 +78,8 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFullCard(
-      String title, String description, Function onTapAction) {
+  Widget _buildFullCard(BuildContext context, String title, String description,
+      Function onTapAction) {
     return Card(
       color: Theme.of(context).cardColor,
       child: ListTile(
@@ -94,8 +94,8 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildHalfCard(
-      String title, String description, Function onTapAction) {
+  Widget _buildHalfCard(BuildContext context, String title, String description,
+      Function onTapAction) {
     return Card(
       color: Theme.of(context).cardColor,
       child: ListTile(

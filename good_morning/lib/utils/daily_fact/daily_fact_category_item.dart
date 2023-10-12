@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class FactCategory {
@@ -24,7 +24,7 @@ class FactCategoryItem extends StatelessWidget {
               color: category.chosen ? Color(0xFFD95524) : Colors.grey),
           onPressed: () {
             isClickable
-                ? Provider.of<DailyFactList>(context, listen: false)
+                ? Provider.of<DailyFactProvider>(context, listen: false)
                     .toggleCircle(category)
                 : null;
           },
