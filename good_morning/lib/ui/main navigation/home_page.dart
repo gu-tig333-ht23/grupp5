@@ -1,9 +1,9 @@
 import 'package:provider/provider.dart';
-import 'common_ui.dart';
+import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
-import 'weather_ui.dart';
+import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -16,13 +16,13 @@ class HomePage extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Filter Cards'),
+          title: const Text('Filter Cards'),
           content: Column(
             mainAxisSize: MainAxisSize.min, // makes the dialog more compact
             children: [
               Consumer<VisibilityModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: Text('Show Weather'),
+                  title: const Text('Show Weather'),
                   value: visibilityModel.showWeather,
                   onChanged: (bool? value) {
                     visibilityModel.toggleWeather();
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
               ),
               Consumer<VisibilityModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: Text('Show History'),
+                  title: const Text('Show History'),
                   value: visibilityModel.showHistory,
                   onChanged: (bool? value) {
                     visibilityModel.toggleHistory();
@@ -40,7 +40,7 @@ class HomePage extends StatelessWidget {
               ),
               Consumer<VisibilityModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: Text('Show Fact of the Day'),
+                  title: const Text('Show Fact of the Day'),
                   value: visibilityModel.showFact,
                   onChanged: (bool? value) {
                     visibilityModel.toggleFact();
@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
               ),
               Consumer<VisibilityModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: Text('Show Film of the Day'),
+                  title: const Text('Show Film of the Day'),
                   value: visibilityModel.showFilm,
                   onChanged: (bool? value) {
                     visibilityModel.toggleFilm();
@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              child: Text('Close'),
+              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },

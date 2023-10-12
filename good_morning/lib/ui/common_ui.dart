@@ -16,22 +16,6 @@ Widget buildFullCard(BuildContext context, String title, String description,
   );
 }
 
-Widget buildHalfCard(BuildContext context, String title, String description,
-    void Function()? onTapAction) {
-  return Card(
-    color: Theme.of(context).cardColor,
-    child: ListTile(
-      contentPadding:
-          const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(description),
-      onTap: () {
-        onTapAction?.call();
-      },
-    ),
-  );
-}
-
 Widget buildSmallButton(
     BuildContext context, String label, void Function()? onPressed) {
   return ElevatedButton(
