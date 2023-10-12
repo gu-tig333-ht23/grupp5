@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    shared_preferences: ^2.0.6
+    sqflite: ^2.0.0
 
 
 
