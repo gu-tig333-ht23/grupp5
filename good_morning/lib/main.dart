@@ -18,6 +18,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (context) => DailyFactProvider(),
+          //create: (context) => dailyFactProvider,
         ),
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
