@@ -5,10 +5,9 @@ import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
-  final ThemeData theme;
   final String factText;
 
-  const DailyFactPage({super.key, required this.theme, required this.factText});
+  const DailyFactPage({super.key, required this.factText});
 
   @override
   Widget build(BuildContext context) {
@@ -18,33 +17,15 @@ class DailyFactPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Good Morning'),
+        title: const Text('Fact of the Day'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 255, 255, 255),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                    child: Text('Random Fact of the Day',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 22)),
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 3, left: 8.0, right: 8, bottom: 8),
@@ -58,25 +39,12 @@ class DailyFactPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 255, 255, 255),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
               child: Column(
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                    child: Text('Your categories',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 22)),
+                    child:
+                        Text('Your categories', style: TextStyle(fontSize: 22)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -99,7 +67,7 @@ class DailyFactPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                DailyFactSettingsPage(theme: Theme.of(context)),
+                                DailyFactSettingsPage(),
                           ),
                         );
                         print('Navigating to settings page for Daily Fact');

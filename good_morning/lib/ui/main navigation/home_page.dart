@@ -5,6 +5,7 @@ import 'package:good_morning/ui/daily_history_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/ui/daily_traffic.ui.dart';
 
 class HomePage extends StatelessWidget {
   final String factText;
@@ -56,6 +57,15 @@ class HomePage extends StatelessWidget {
                   },
                 ),
               ),
+              Consumer<VisibilityModel>(
+                builder: (context, visibilityModel, child) => CheckboxListTile(
+                  title: const Text('Show Traffic of the Day'),
+                  value: visibilityModel.showTraffic,
+                  onChanged: (bool? value) {
+                    visibilityModel.toggleTraffic();
+                  },
+                ),
+              ),
             ],
           ),
           actions: [
@@ -97,6 +107,17 @@ class HomePage extends StatelessWidget {
                           builder: (BuildContext context) => WeatherPage()));
                   print('Navigating to Weather Screen');
                 }),
+              if (visibilityModel.showTraffic)
+                buildFullCard(context, 'Traffic',
+                    'Little traffic, approximately 51 mins to work by bicycle.',
+                    () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DailyTrafficPage()));
+                  print('Navigating to Traffic Information Screen');
+                }),
               if (visibilityModel.showHistory)
                 buildFullCard(context, 'Today in History',
                     'Today, Steve Jobs died 12 years ago.', () {
@@ -118,8 +139,8 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => DailyFactPage(
-                                theme: Theme.of(context), factText: factText),
+                            builder: (BuildContext context) =>
+                                DailyFactPage(factText: factText),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');
@@ -174,11 +195,13 @@ class VisibilityModel extends ChangeNotifier {
   bool _showHistory = true;
   bool _showFact = true;
   bool _showFilm = true;
+  bool _showTraffic = true;
 
   bool get showWeather => _showWeather;
   bool get showHistory => _showHistory;
   bool get showFact => _showFact;
   bool get showFilm => _showFilm;
+  bool get showTraffic => _showTraffic;
 
   void toggleWeather() {
     _showWeather = !_showWeather;
@@ -197,6 +220,11 @@ class VisibilityModel extends ChangeNotifier {
 
   void toggleFilm() {
     _showFilm = !_showFilm;
+    notifyListeners();
+  }
+
+  void toggleTraffic() {
+    _showTraffic = !_showTraffic;
     notifyListeners();
   }
 }
