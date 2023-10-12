@@ -3,6 +3,7 @@ import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import '/ui/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/utils/daily_history.dart';
 
 void main() async {
   // fetching the daily fact text
@@ -19,7 +20,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
         ),
-        // other providers here..
+        ChangeNotifierProvider(
+          create: (context) => HistoryProvider(),
+        ),
       ],
       // sends the fact for the day as parameter to myApp
       child: MyApp(factText: factText),
