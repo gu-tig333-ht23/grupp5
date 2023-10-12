@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_settings_ui.dart';
-import 'package:good_morning/utils/daily_fact/daily_fact.dart';
-import 'package:good_morning/utils/daily_fact/daily_fact_list.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_category_item.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
   final ThemeData theme;
+  final String factText;
 
-  const DailyFactPage({required this.theme});
+  const DailyFactPage({super.key, required this.theme, required this.factText});
 
   @override
   Widget build(BuildContext context) {
-    var categories = context.watch<DailyFactList>().categories;
+    // tracks the categories
+    var categories = context.watch<DailyFactProvider>().categories;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +26,7 @@ class DailyFactPage extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 192, 187, 187),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -35,44 +37,29 @@ class DailyFactPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Column(
+              child: Column(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(right: 8, left: 8, top: 8),
                     child: Text('Random Fact of the Day',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 22)),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.only(
+                        top: 3, left: 8.0, right: 8, bottom: 8),
                     child: Text(
-                        //hårdkodad just nu, ska ha FactText sen
-                        'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
-                        style: TextStyle(fontSize: 18)),
-                  ),
+                      factText.trim(), // the parameter displayed here
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  )
                 ],
               ),
             ),
-            Container(
-              alignment: Alignment.topRight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    right: 8.0, left: 8, top: 8, bottom: 20),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFD95524),
-                      foregroundColor: Colors.black),
-                  onPressed: () {},
-                  child: const Text('Next'),
-                ),
-              ),
-            ),
+            const SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 192, 187, 187),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(

@@ -5,14 +5,11 @@ import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import 'package:good_morning/utils/weather.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends StatelessWidget {
+  final String factText;
 
-  @override
-  HomePageState createState() => HomePageState();
-}
+  const HomePage({required this.factText, super.key});
 
-class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,17 +43,17 @@ class HomePageState extends State<HomePage> {
             Row(
               children: [
                 Expanded(
-                    child: buildHalfCard(context, 'Fact of the Day',
-                        'Lobsters do not age. They die from being caught by humans, from parasites, or from eating themselves to death.',
-                        () {
+                    child: buildHalfCard(
+                        context, 'Fact of the Day', factText.trim(), () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyFactPage(theme: Theme.of(context)),
+                      builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context), factText: factText),
                     ),
                   );
-                  print('Navigating to Fact of the Day Screen');
+                  print(
+                      'Navigating to Fact of the Day Screen'); // control, can be removed later
                 })),
                 Expanded(
                   child: buildHalfCard(
@@ -98,4 +95,3 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
-}
