@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
 ThemeData lightTheme = ThemeData(
   primaryColor: Colors.yellow,
   colorScheme: const ColorScheme.light(
-    primary: Colors.yellow,
+    primary: Color(0xFFFFCC00),
   ),
   brightness: Brightness.light,
 );

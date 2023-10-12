@@ -1,3 +1,4 @@
+import 'common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
@@ -20,14 +21,14 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            _buildFullCard(context, 'Weather', 'Show the weather', () {
+            buildFullCard(context, 'Weather', 'Show the weather', () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) => WeatherPage()));
               print('Navigating to Weather Screen');
             }),
-            _buildFullCard(context, 'Today in History',
+            buildFullCard(context, 'Today in History',
                 'Today, Steve Jobs died 12 years ago.', () {
               // Add call to the Today in History screen
               Navigator.push(
@@ -42,7 +43,7 @@ class HomePage extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                    child: _buildHalfCard(
+                    child: buildHalfCard(
                         context, 'Fact of the Day', factText.trim(), () {
                   Navigator.push(
                     context,
@@ -55,7 +56,7 @@ class HomePage extends StatelessWidget {
                       'Navigating to Fact of the Day Screen'); // control, can be removed later
                 })),
                 Expanded(
-                  child: _buildHalfCard(
+                  child: buildHalfCard(
                     context,
                     'Film of the Day',
                     'The Dark Knight',
@@ -72,41 +73,25 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 16.0),
+            buildSmallButton(context, "Small Button Test", () {
+              print("Small Button Pressed!");
+            }),
+            const SizedBox(height: 16.0),
+            buildBigButton(context, "Big Button Test", () {
+              print("Big Button Pressed!");
+            }),
+            const SizedBox(height: 16.0),
+            buildFloatingActionButton(
+              context,
+              Icons.add,
+              () {
+                print("Floating Action Button Pressed!");
+              },
+              tooltip: 'Test',
+            ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildFullCard(BuildContext context, String title, String description,
-      Function onTapAction) {
-    return Card(
-      color: Theme.of(context).cardColor,
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-        onTap: () {
-          onTapAction.call();
-        },
-      ),
-    );
-  }
-
-  Widget _buildHalfCard(BuildContext context, String title, String description,
-      Function onTapAction) {
-    return Card(
-      color: Theme.of(context).cardColor,
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-        onTap: () {
-          onTapAction.call();
-        },
-      ),
-    );
-  }
-}
