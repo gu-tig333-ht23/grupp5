@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
-Widget buildFullCard(BuildContext context, String title, String description,
-    void Function()? onTapAction) {
+Widget buildFullCard(BuildContext context,
+    {String? title,
+    String? description,
+    Widget? optionalWidget,
+    void Function()? onTapAction}) {
   return Card(
     color: Theme.of(context).cardColor,
     child: ListTile(
       contentPadding:
           const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(description),
+      title: title != null
+          ? Text(title, style: const TextStyle(fontWeight: FontWeight.bold))
+          : null,
+      subtitle: description != null ? Text(description) : null,
+      trailing: optionalWidget,
       onTap: () {
         onTapAction?.call();
       },
@@ -25,7 +31,8 @@ Widget buildSmallButton(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
-      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
     ),
     child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
   );
@@ -40,7 +47,8 @@ Widget buildBigButton(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25.0),
       ),
-      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
     ),
     child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
   );

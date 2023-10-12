@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_settings_ui.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_category_item.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
@@ -11,53 +12,22 @@ class DailyFactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // tracks the categories
-    var categories = context.watch<DailyFactProvider>().categories;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Fact of the Day'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
         child: Column(
           children: [
-            Container(
+            buildFullCard(context, description: factText.trim()),
+            Card(
+              color: Theme.of(context).cardColor,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 3, left: 8.0, right: 8, bottom: 8),
-                    child: Text(
-                      factText.trim(), // the parameter displayed here
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                    child:
-                        Text('Your categories', style: TextStyle(fontSize: 22)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      // lists only the current chosen categories
-                      children: categories
-                          .where((category) => category.chosen)
-                          .map((category) {
-                        return FactCategoryItem(
-                            category, false); // not clickable
-                      }).toList(),
-                    ),
-                  ),
+                  const Text('Your categories', style: TextStyle(fontSize: 20)),
+                  showChosenCategories(),
                   Container(
                     alignment: Alignment.topRight,
                     child: IconButton(
@@ -73,13 +43,26 @@ class DailyFactPage extends StatelessWidget {
                         print('Navigating to settings page for Daily Fact');
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class showChosenCategories extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var categories = context.watch<DailyFactProvider>().categories;
+
+    return Column(
+      children: categories.where((category) => category.chosen).map((category) {
+        return FactCategoryItem(category, false); // not clickable
+      }).toList(),
     );
   }
 }

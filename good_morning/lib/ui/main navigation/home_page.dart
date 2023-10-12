@@ -100,7 +100,9 @@ class HomePage extends StatelessWidget {
           builder: (context, visibilityModel, child) => ListView(
             children: [
               if (visibilityModel.showWeather)
-                buildFullCard(context, 'Weather', 'Show the weather', () {
+                buildFullCard(context,
+                    title: 'Weather',
+                    description: 'Show the weather', onTapAction: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -108,9 +110,11 @@ class HomePage extends StatelessWidget {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                buildFullCard(context, 'Traffic',
-                    'Little traffic, approximately 51 mins to work by bicycle.',
-                    () {
+                buildFullCard(context,
+                    title: 'Traffic',
+                    description:
+                        'Little traffic, approximately 51 mins to work by bicycle.',
+                    onTapAction: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -119,8 +123,10 @@ class HomePage extends StatelessWidget {
                   print('Navigating to Traffic Information Screen');
                 }),
               if (visibilityModel.showHistory)
-                buildFullCard(context, 'Today in History',
-                    'Today, Steve Jobs died 12 years ago.', () {
+                buildFullCard(context,
+                    title: 'Today in History',
+                    description: 'Today, Steve Jobs died 12 years ago.',
+                    onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -134,8 +140,9 @@ class HomePage extends StatelessWidget {
                 children: [
                   if (visibilityModel.showFact)
                     Expanded(
-                      child: buildFullCard(
-                          context, 'Fact of the Day', factText.trim(), () {
+                      child: buildFullCard(context,
+                          title: 'Fact of the Day',
+                          description: factText.trim(), onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -150,9 +157,9 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(
                         context,
-                        'Film of the Day',
-                        'The Dark Knight',
-                        () {
+                        title: 'Film of the Day',
+                        description: 'The Dark Knight',
+                        onTapAction: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

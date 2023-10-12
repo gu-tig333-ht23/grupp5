@@ -20,7 +20,8 @@ class DailyFactSettingsPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Container(
+            Card(
+              color: Theme.of(context).cardColor,
               child: Column(
                 children: [
                   const Padding(
@@ -38,6 +39,9 @@ class DailyFactSettingsPage extends StatelessWidget {
                       }).toList(),
                     ),
                   ),
+                  buildSmallButton(context, 'Save', () {
+                    Navigator.pop(context);
+                  })
                 ],
               ),
             ),
