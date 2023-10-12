@@ -8,20 +8,23 @@ import 'package:good_morning/utils/daily_history.dart';
 
 void main() async {
   // fetching the daily fact text
-  var dailyFactProvider = DailyFactProvider();
-  var chosenCats = dailyFactProvider.getChosenCategories();
-  String factText = await fetchDailyFact(chosenCats);
-
+  //var dailyFactProvider = DailyFactProvider();
+  //var chosenCats = dailyFactProvider.getChosenCategories();
+  //String factText = await fetchDailyFact(chosenCats);
+  String factText =
+      'Placeholder factText, in order to not use this API if not needed';
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => dailyFactProvider,
+          create: (context) => DailyFactProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
         ),
-        ChangeNotifierProvider(create: (context) => DailyFilmSettingsModel()),
+        ChangeNotifierProvider(
+          create: (context) => DailyFilmSettingsModel(),
+        ),
         // other providers here..
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
