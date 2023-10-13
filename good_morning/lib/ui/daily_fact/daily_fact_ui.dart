@@ -21,7 +21,7 @@ class DailyFactPage extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
         child: Column(
           children: [
-            buildFullCard(context, description: factText.trim()),
+            buildFullCard(context, description: factText),
             Card(
               color: Theme.of(context).cardColor,
               child: Column(

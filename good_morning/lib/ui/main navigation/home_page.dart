@@ -142,7 +142,7 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(context,
                           title: 'Fact of the Day',
-                          description: factText.trim(), onTapAction: () {
+                          description: factText, onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_film_settings.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main navigation/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
@@ -10,7 +11,7 @@ void main() async {
   // fetching the daily fact text
   //var dailyFactProvider = DailyFactProvider();
   //var chosenCats = dailyFactProvider.getChosenCategories();
-  //String factText = await fetchDailyFact(chosenCats);
+  //String factText = (await fetchDailyFact(chosenCats)).trim();
   String factText =
       'Placeholder factText, in order to not use this API if not needed';
   runApp(
@@ -26,12 +27,14 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => DailyFilmSettingsModel(),
         ),
-        // other providers here..
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => VisibilityModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DailyTrafficProvider(),
         ),
       ],
       // sends the fact for the day as parameter to myApp
