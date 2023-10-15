@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +10,9 @@ import 'package:good_morning/ui/daily_film_page.dart';
 
 class HomePage extends StatelessWidget {
   final String factText;
+  var movieTitle;
 
-  const HomePage({required this.factText, super.key});
+  HomePage({required this.factText, super.key});
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -73,6 +76,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -130,7 +134,7 @@ class HomePage extends StatelessWidget {
                       child: buildFullCard(
                         context,
                         'Film of the Day',
-                        'The Dark Knight',
+                        movieTitle,
                         () {
                           Navigator.push(
                             context,
