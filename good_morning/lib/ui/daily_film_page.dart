@@ -27,6 +27,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     final description = Provider.of<MovieProvider>(context).movieDescription;
     final date = Provider.of<MovieProvider>(context).movieDate;
     final rating = Provider.of<MovieProvider>(context).movieRating;
+    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,22 +48,36 @@ class DailyFilmPageState extends State<DailyFilmPage> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          color: Theme.of(context).cardColor,
-          child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-              title: Text(title,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('''
-
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              color: Theme.of(context).cardColor,
+              child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 16.0),
+                  title: Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text('''
+      
 Released in $date with a score of $rating
 
 $description'''),
-              onTap: () {}),
-        ),
+                  onTap: () {}),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              color: Theme.of(context).cardColor,
+              child: FadeInImage.assetNetwork(
+                placeholder: 'assets/loading.gif',
+                image: posterPath,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -76,6 +91,7 @@ $description'''),
         movieData['description'],
         movieData['release_year'],
         movieData['vote_average'],
+        movieData['poster_path'],
       );
     } catch (e) {
       print('Error fetching movie: $e');
@@ -88,13 +104,16 @@ class MovieProvider with ChangeNotifier {
   String _movieDescription = '';
   String _movieDate = '';
   String _movieRating = '';
+  String _moviePosterPath = '';
 
   String get movieTitle => _movieTitle;
   String get movieDescription => _movieDescription;
   String get movieDate => _movieDate;
   String get movieRating => _movieRating;
+  String get moviePosterPath => _moviePosterPath;
 
-  void setMovie(String title, String description, String date, String rating) {
+  void setMovie(String title, String description, String date, String rating,
+      String posterPath) {
     _movieTitle = title;
     _movieDescription = description;
     _movieDate = date;

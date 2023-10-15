@@ -32,9 +32,10 @@ class FilmApi {
       'description': randomMovie['overview'],
       'release_year': randomMovie['release_date'].toString().substring(0, 4),
       'vote_average': randomMovie['vote_average'].toString(),
-      'poster_path': randomMovie['poster_path'],
+      'poster_path': 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' +
+          randomMovie['poster_path'],
     };
-
+    print(movieData);
     return movieData;
   }
 }
