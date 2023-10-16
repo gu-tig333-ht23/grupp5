@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+enum TransportMode { bicycling, walking, driving, transit }
 
 class DailyTrafficProvider extends ChangeNotifier {
+  TransportMode _selectedMode =
+      TransportMode.driving; // driving by car as default
+
   final List<Destination> _savedDestinations = [
     Destination(name: 'Home', address: 'Parallellvägen 13E, 433 35 Partille'),
     Destination(name: 'Work', address: 'Medicinaregatan 15A, 413 90 Göteborg'),
@@ -21,6 +28,14 @@ class DailyTrafficProvider extends ChangeNotifier {
 
   Destination get currentFrom => _currentFrom;
   Destination get currentTo => _currentTo;
+
+  TransportMode get mode => _selectedMode;
+
+  // function that sets the mode of transportation
+  void setMode(TransportMode mode) {
+    _selectedMode = mode;
+    notifyListeners();
+  }
 
   // function that sets currentFrom
   void setCurrentFrom(String name) {
@@ -421,4 +436,36 @@ Future<void> processDeleteDestination(
       );
     },
   );
+}
+
+// API code here
+
+// Google Maps Directions API
+
+// sends request through proxy server https://cors-anywhere.herokuapp.com
+const String mapUrl =
+    'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json';
+const String mapApiKey = 'dinnyckelhär';
+
+Future<Map<String, dynamic>> getRouteInfoFromAPI(
+    String toName, String fromName, String mode) async {
+  http.Response response = await http.get(Uri.parse(
+      '$mapUrl?mode=$mode&destination=$toName&origin=$fromName&key=$mapApiKey'));
+
+  if (response.statusCode == 200) {
+    // the server returned 200 OK response
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    return jsonResponse;
+  } else {
+    throw Exception('Failed to load route information');
+  }
+}
+
+class GoogleMapWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [], // ska ha kartbild
+    );
+  }
 }
