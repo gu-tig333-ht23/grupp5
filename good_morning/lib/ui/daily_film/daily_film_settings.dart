@@ -37,6 +37,10 @@ class DailyFilmSettings extends StatelessWidget {
               getMovie(context, FilmApi(dio));
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          )
         ],
       ),
       body: Padding(
