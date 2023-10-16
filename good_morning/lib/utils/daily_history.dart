@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:math';
 
 class HistoryItem {
   final String text;
@@ -23,38 +24,51 @@ var _item = HistoryItem (
         extract:'',
         thumbnail:'',
 );
-
 HistoryItem get item => _item;
 
+var randomNumber = Random().nextInt(35);
+
+  String _selectedFilter = 'births';
+  String get selectedFilter => _selectedFilter;
+
+  void setFilter(filter) {
+    _selectedFilter = filter;
+    notifyListeners();
+  }
+
   fetchHistoryItem3() async {
-    var historyitem = await fetchHistoryItem_wiki_();
+    var historyitem = await fetchHistoryItemWiki(randomNumber, selectedFilter);
     _item = historyitem;
     notifyListeners();
   }
 
 // funkar
-Future<HistoryItem> fetchHistoryItem_wiki_() async {
-  final apiHeader_wiki = {
+Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter) async {
+  final apiHeaderWiki = {
     'ContentType': 'application/json'
         'accept: application/json'
   };
   http.Response response = await http.get(
       Uri.parse(
-          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/births/11/11'),
-      headers: apiHeader_wiki);
+          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/11/11'),
+      headers: apiHeaderWiki);
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = json.decode(response.body);
-    final births = data['births'] as List;
-    if (births.isEmpty) {
+    final events = data['$selectedFilter'] as List;
+    if (events.isEmpty) {
       return HistoryItem(text: '', title: '', thumbnail: '', extract: '');
     }
 
-    final firstBirth = births[0] as Map<String, dynamic>;
-    final text = firstBirth['text'] as String;
-    final pages = firstBirth['pages'] as List;
+    final item = events[randomNumber] as Map<String, dynamic>;
+    final text = item['text'] as String;
+    final pages = item['pages'] as List;
     final title = pages[0]['title'] as String;
-    final thumbnail = pages[0]['thumbnail']['source'] as String;
+    //Bheövs felhantering här ifall det inte finns bild
+    String thumbnail = pages[0]['thumbnail']['source'] as String;
+      if (thumbnail.isEmpty) {
+        thumbnail ='';
+      }
     final extract = pages[0]['extract'] as String;
     return HistoryItem(
         text: text, title: title, thumbnail: thumbnail, extract: extract);
@@ -63,5 +77,3 @@ Future<HistoryItem> fetchHistoryItem_wiki_() async {
   }
 }
 }
-
-
