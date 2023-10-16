@@ -34,6 +34,7 @@ class FilmApi {
       'poster_path': 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' +
           randomMovie['poster_path'],
     };
+    /////////////////////////
     print(movieData);
     return movieData;
   }

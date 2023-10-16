@@ -33,6 +33,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => VisibilityModel(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => FavoriteMoviesModel(),
+        ),
       ],
       // sends the fact for the day as parameter to myApp
       child: MyApp(factText: factText),

@@ -15,9 +15,7 @@ class DailyFilmPage extends StatefulWidget {
 
 class DailyFilmPageState extends State<DailyFilmPage> {
   @override
-  @override
   Widget build(BuildContext context) {
-    var settingsModel = context.watch<DailyFilmSettingsModel>();
     final title = Provider.of<MovieProvider>(context).movieTitle;
     final description = Provider.of<MovieProvider>(context).movieDescription;
     final date = Provider.of<MovieProvider>(context).movieDate;
@@ -40,38 +38,72 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {},
+          ),
+          Text(
+            context
+                .watch<FavoriteMoviesModel>()
+                .favoriteMovies
+                .length
+                .toString(),
+            style: TextStyle(fontWeight: FontWeight.bold),
           )
         ],
       ),
-      body: ListView(
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              color: Theme.of(context).cardColor,
-              child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 16.0),
-                  title: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('''
+          ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  color: Theme.of(context).cardColor,
+                  child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 16.0),
+                      title: Text(title,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('''
+        
+      Released in $date with a score of $rating
       
-Released in $date with a score of $rating
-
-$description'''),
-                  onTap: () {}),
+      $description'''),
+                      onTap: () {}),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Container(
+                  height: 680,
+                  width: 200,
+                  child: Card(
+                    color: Theme.of(context).cardColor,
+                    child: FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: posterPath,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 20.0,
+            right: 20.0,
+            child: FloatingActionButton(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              onPressed: () async {
+                context
+                    .read<FavoriteMoviesModel>()
+                    .addFavorite(title, description, date, rating, posterPath);
+              },
+              child: const Icon(Icons.favorite),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 60),
-            child: Card(
-              color: Theme.of(context).cardColor,
-              child: FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: posterPath,
-              ),
-            ),
-          )
         ],
       ),
     );
@@ -117,3 +149,42 @@ class MovieProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+
+class FavoriteMoviesModel extends ChangeNotifier {
+  List<List<String>> _favoriteMovies = [];
+
+  List<List<String>> get favoriteMovies => _favoriteMovies;
+
+  Future<void> addFavorite(
+    String movieTitle,
+    String movieDescription,
+    String movieDate,
+    String movieRating,
+    String moviePosterPath,
+  ) async {
+    if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
+      print('Movie already in favorites');
+    } else {
+      print('Movie added to favorites');
+      List<String> favoriteMovie = [
+        movieTitle,
+        movieDescription,
+        movieDate,
+        movieRating,
+        moviePosterPath,
+      ];
+      _favoriteMovies.add(favoriteMovie);
+    }
+    notifyListeners();
+  }
+}
+
+
+
+
+// context.read<FavoriteMoviesModel>().addFavorite(
+//   movieTitle,
+//   movieDescription,
+//   movieDate,
+//   movieRating,
+//   moviePosterPath,

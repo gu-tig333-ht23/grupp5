@@ -20,7 +20,6 @@ class DailyFilmSettings extends StatelessWidget {
   final TextEditingController yearController = TextEditingController();
 
   DailyFilmSettings({required this.theme});
-  String noTitleWarning = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +36,6 @@ class DailyFilmSettings extends StatelessWidget {
               getMovie(context, FilmApi(dio));
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
-          )
         ],
       ),
       body: Padding(
@@ -49,9 +44,8 @@ class DailyFilmSettings extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
+            const Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Text(noTitleWarning, style: const TextStyle(fontSize: 15)),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
