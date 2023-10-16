@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/ui/daily_film_settings.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
@@ -14,14 +15,8 @@ class DailyFilmPage extends StatefulWidget {
 
 class DailyFilmPageState extends State<DailyFilmPage> {
   @override
-  void initState() {
-    super.initState();
-    getMovie(context, FilmApi(dio));
-  }
-
   @override
   Widget build(BuildContext context) {
-    var movieProvider = Provider.of<MovieProvider>(context);
     var settingsModel = context.watch<DailyFilmSettingsModel>();
     final title = Provider.of<MovieProvider>(context).movieTitle;
     final description = Provider.of<MovieProvider>(context).movieDescription;
@@ -68,11 +63,11 @@ $description'''),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 60),
             child: Card(
               color: Theme.of(context).cardColor,
-              child: FadeInImage.assetNetwork(
-                placeholder: 'assets/loading.gif',
+              child: FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
                 image: posterPath,
               ),
             ),
@@ -81,21 +76,21 @@ $description'''),
       ),
     );
   }
+}
 
-  void getMovie(BuildContext context, FilmApi filmApi) async {
-    try {
-      Map<String, dynamic> movieData = await filmApi.getMovie();
+void getMovie(BuildContext context, FilmApi filmApi) async {
+  try {
+    Map<String, dynamic> movieData = await filmApi.getMovie();
 
-      Provider.of<MovieProvider>(context, listen: false).setMovie(
-        movieData['title'],
-        movieData['description'],
-        movieData['release_year'],
-        movieData['vote_average'],
-        movieData['poster_path'],
-      );
-    } catch (e) {
-      print('Error fetching movie: $e');
-    }
+    Provider.of<MovieProvider>(context, listen: false).setMovie(
+      movieData['title'],
+      movieData['description'],
+      movieData['release_year'],
+      movieData['vote_average'],
+      movieData['poster_path'],
+    );
+  } catch (e) {
+    print('Error fetching movie: $e');
   }
 }
 
@@ -118,6 +113,7 @@ class MovieProvider with ChangeNotifier {
     _movieDescription = description;
     _movieDate = date;
     _movieRating = rating;
+    _moviePosterPath = posterPath;
     notifyListeners();
   }
 }

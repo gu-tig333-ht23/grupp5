@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/ui/daily_film_page.dart';
 import 'package:provider/provider.dart';
 
 class DailyFilmSettingsModel extends ChangeNotifier {
@@ -27,6 +29,14 @@ class DailyFilmSettings extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Daily Film Settings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              getMovie(context, FilmApi(dio));
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

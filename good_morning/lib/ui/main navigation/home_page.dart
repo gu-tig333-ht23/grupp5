@@ -1,5 +1,4 @@
-import 'dart:js';
-
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +7,22 @@ import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String factText;
-  var movieTitle;
 
   HomePage({required this.factText, super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var movieTitle;
+
+  void initState() {
+    super.initState();
+    getMovie(context, FilmApi(dio));
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -118,12 +128,14 @@ class HomePage extends StatelessWidget {
                   if (visibilityModel.showFact)
                     Expanded(
                       child: buildFullCard(
-                          context, 'Fact of the Day', factText.trim(), () {
+                          context, 'Fact of the Day', widget.factText.trim(),
+                          () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) => DailyFactPage(
-                                theme: Theme.of(context), factText: factText),
+                                theme: Theme.of(context),
+                                factText: widget.factText),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');
