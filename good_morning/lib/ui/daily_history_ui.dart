@@ -22,10 +22,9 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     // Fetch data when the widget is initialized
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
-
+  
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-
     return Scaffold(
         appBar: AppBar(
           actions: [

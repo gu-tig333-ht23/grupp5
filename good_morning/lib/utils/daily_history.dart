@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 
+
 class HistoryItem {
   final String text;
   final String title;
@@ -17,40 +18,48 @@ class HistoryItem {
 }
 
 class HistoryProvider extends ChangeNotifier {
-  
+
+//Empty history item
 var _item = HistoryItem (
         text: '',
         title:'',
         extract:'',
         thumbnail:'',
 );
-HistoryItem get item => _item;
 
+// Date
+final DateTime _now = DateTime.now();
+DateTime get now => _now;
+
+// Random number
 var randomNumber = Random().nextInt(35);
 
-  String _selectedFilter = 'births';
-  String get selectedFilter => _selectedFilter;
+// Filter
+String _selectedFilter = 'births';
+String get selectedFilter => _selectedFilter;
 
   void setFilter(filter) {
     _selectedFilter = filter;
     notifyListeners();
   }
 
+//Get historyitem from API-function
+HistoryItem get item => _item;
   fetchHistoryItem3() async {
-    var historyitem = await fetchHistoryItemWiki(randomNumber, selectedFilter);
+    var historyitem = await fetchHistoryItemWiki(randomNumber, selectedFilter, now.month, now.day);
     _item = historyitem;
     notifyListeners();
   }
 
-// funkar
-Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter) async {
+// API function
+Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter, month, day) async {
   final apiHeaderWiki = {
     'ContentType': 'application/json'
         'accept: application/json'
   };
   http.Response response = await http.get(
       Uri.parse(
-          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/11/11'),
+          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
       headers: apiHeaderWiki);
 
   if (response.statusCode == 200) {
@@ -64,8 +73,8 @@ Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter) async {
     final text = item['text'] as String;
     final pages = item['pages'] as List;
     final title = pages[0]['title'] as String;
-    //Bheövs felhantering här ifall det inte finns bild
     String thumbnail = pages[0]['thumbnail']['source'] as String;
+      //Felhantering ifall bild saknas(händer ibland)
       if (thumbnail.isEmpty) {
         thumbnail ='';
       }
