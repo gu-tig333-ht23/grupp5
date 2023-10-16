@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
-import 'package:good_morning/ui/daily_film_settings.dart';
+import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class DailyFilmPage extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/ui/daily_film_settings.dart';
+import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import '/ui/main navigation/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 void main() async {
