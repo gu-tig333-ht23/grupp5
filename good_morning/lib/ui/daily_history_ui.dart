@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 
 class DailyHistoryPage extends StatefulWidget {
   final ThemeData theme;
+  
 
-  const DailyHistoryPage({required this.theme});
+  const DailyHistoryPage({super.key, required this.theme,});
 
   @override
   State<DailyHistoryPage> createState() => _DailyHistoryPageState();
@@ -13,35 +14,19 @@ class DailyHistoryPage extends StatefulWidget {
 
 class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
-  Widget build(BuildContext context) {
+
+  void initState() {
+    super.initState();
+    // Fetch data when the widget is initialized
+    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
+  }
+  Widget build(BuildContext context) { 
     var historyProvider = Provider.of<HistoryProvider>(context);
-
-
+    //HistoryItem item = historyProvider.fetchHistoryItem3();
+    print('start history ui innan return scaffold');
     return Scaffold(
         appBar: AppBar(
-          actions: [
-            DropdownButton<String>(
-                value: context.read<HistoryProvider>().filter,
-                onChanged: (newValue) {
-                  setState(() {
-                    context.read<HistoryProvider>().filter = newValue!;
-                    context.read<HistoryProvider>().notifyListeners();
-                  });
-                },
-                items: [
-                  'All',
-                  'Selected',
-                  'Births',
-                  'Deaths',
-                  'Events',
-                  'Holidays'
-                ].map((filter) {
-                  return DropdownMenuItem<String>(
-                    value: (filter),
-                    child: Text(filter),
-                  );
-                }).toList()),
-          ],
+          
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: const Text('Good Morning'),
         ),
@@ -67,7 +52,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       //'Föddes Penei Sewell (American football player)',
-                      historyProvider.historyitem[0].text,
+                      historyProvider.item.text,
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -98,8 +83,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // historyProvider.fetchHistoryItem();
-                          historyProvider.fetchHistoryItem3();
+                          
                         },
                         child: Container(
                           height: 500,
@@ -108,7 +92,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                             color: const Color(0xff7c94b6),
                             image: DecorationImage(
                               image: NetworkImage(
-                                historyProvider.historyitem[0].thumbnail,
+                                historyProvider.item.thumbnail,
                                 //'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Penei_Sewell_%2852480402764%29_%28cropped%29.jpg/320px-Penei_Sewell_%2852480402764%29_%28cropped%29.jpg'
                               ),
                               fit: BoxFit.cover,
@@ -139,7 +123,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                       padding: EdgeInsets.all(8),
                       child: Text(
                           //'Desctiption here: Penei Sewell is an American football offensive tackle for the Detroit Lions of the National Football League (NFL). He played college football at Oregon, where he won the Outland and Morris trophies in 2019.',
-                          historyProvider.historyitem[0].extract,
+                          historyProvider.item.extract,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16))),
                 ),
