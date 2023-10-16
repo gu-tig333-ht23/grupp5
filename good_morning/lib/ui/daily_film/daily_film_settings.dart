@@ -4,7 +4,7 @@ import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
-class DailyFilmSettingsModel extends ChangeNotifier {
+class DailyFilmSettingsProvider extends ChangeNotifier {
   String _releaseYear = '';
 
   String get releaseYear => _releaseYear;
@@ -23,7 +23,7 @@ class DailyFilmSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var settingsModel = context.read<DailyFilmSettingsModel>();
+    var settingsModel = context.read<DailyFilmSettingsProvider>();
 
     return Scaffold(
       appBar: AppBar(

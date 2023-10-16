@@ -24,7 +24,7 @@ void main() async {
           create: (context) => MovieProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => DailyFilmSettingsModel(),
+          create: (context) => DailyFilmSettingsProvider(),
         ),
         // other providers here..
         ChangeNotifierProvider(

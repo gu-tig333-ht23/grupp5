@@ -33,6 +33,7 @@ class FilmApi {
       'vote_average': randomMovie['vote_average'].toString(),
       'poster_path': 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' +
           randomMovie['poster_path'],
+      'tmdb_id': randomMovie['id'].toString(),
     };
     /////////////////////////
     print(movieData);

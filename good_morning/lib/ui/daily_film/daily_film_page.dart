@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_film/daily_film_list.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
@@ -21,6 +22,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     final date = Provider.of<MovieProvider>(context).movieDate;
     final rating = Provider.of<MovieProvider>(context).movieRating;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+    final tmdbId = Provider.of<MovieProvider>(context).movieId;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +43,14 @@ class DailyFilmPageState extends State<DailyFilmPage> {
           ),
           IconButton(
             icon: const Icon(Icons.favorite),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DailyFilmList(theme: Theme.of(context)),
+                ),
+              );
+            },
           ),
           Text(
             context
@@ -64,13 +73,13 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                   child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 16.0),
-                      title: Text(title,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('''
-        
-      Released in $date with a score of $rating
-      
-      $description'''),
+                      title: Text(
+                        title,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                          'Released in $date with a score of $rating\n\n$description'),
                       onTap: () {}),
                 ),
               ),
@@ -97,9 +106,8 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               onPressed: () async {
-                context
-                    .read<FavoriteMoviesModel>()
-                    .addFavorite(title, description, date, rating, posterPath);
+                context.read<FavoriteMoviesModel>().addFavorite(
+                    title, description, date, rating, posterPath, tmdbId);
               },
               child: const Icon(Icons.favorite),
             ),
@@ -120,6 +128,7 @@ void getMovie(BuildContext context, FilmApi filmApi) async {
       movieData['release_year'],
       movieData['vote_average'],
       movieData['poster_path'],
+      movieData['tmdb_id'],
     );
   } catch (e) {
     print('Error fetching movie: $e');
@@ -132,20 +141,23 @@ class MovieProvider with ChangeNotifier {
   String _movieDate = '';
   String _movieRating = '';
   String _moviePosterPath = '';
+  String _movieId = '';
 
   String get movieTitle => _movieTitle;
   String get movieDescription => _movieDescription;
   String get movieDate => _movieDate;
   String get movieRating => _movieRating;
   String get moviePosterPath => _moviePosterPath;
+  String get movieId => _movieId;
 
   void setMovie(String title, String description, String date, String rating,
-      String posterPath) {
+      String posterPath, String id) {
     _movieTitle = title;
     _movieDescription = description;
     _movieDate = date;
     _movieRating = rating;
     _moviePosterPath = posterPath;
+    _movieId = id;
     notifyListeners();
   }
 }
@@ -161,6 +173,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
     String movieDate,
     String movieRating,
     String moviePosterPath,
+    String tmdbId,
   ) async {
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
       print('Movie already in favorites');
@@ -172,19 +185,15 @@ class FavoriteMoviesModel extends ChangeNotifier {
         movieDate,
         movieRating,
         moviePosterPath,
+        tmdbId,
       ];
       _favoriteMovies.add(favoriteMovie);
     }
     notifyListeners();
   }
+
+  void removeMovie(int index) {
+    _favoriteMovies.removeAt(index);
+    notifyListeners();
+  }
 }
-
-
-
-
-// context.read<FavoriteMoviesModel>().addFavorite(
-//   movieTitle,
-//   movieDescription,
-//   movieDate,
-//   movieRating,
-//   moviePosterPath,
