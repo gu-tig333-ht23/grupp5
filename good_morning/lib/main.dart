@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
+import 'package:good_morning/ui/common_ui.dart'
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main navigation/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
+import 'ui/main navigation/filter_model.dart';
+
 void main() async {
   // fetching the daily fact text
   //var dailyFactProvider = DailyFactProvider();
   //var chosenCats = dailyFactProvider.getChosenCategories();
-  //String factText = await fetchDailyFact(chosenCats);
+  //String factText = (await fetchDailyFact(chosenCats)).trim();
   String factText =
       'Placeholder factText, in order to not use this API if not needed';
   runApp(
@@ -26,12 +30,14 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => DailyFilmSettingsProvider(),
         ),
-        // other providers here..
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => VisibilityModel(),
+          create: (context) => FilterModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DailyTrafficProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => FavoriteMoviesModel(),
@@ -53,26 +59,32 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Good Morning',
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
       // parameters sending forward to HomePage
       home: HomePage(factText: factText),
     );
   }
 }
 
-ThemeData lightTheme = ThemeData(
-  primaryColor: Colors.yellow,
-  colorScheme: const ColorScheme.light(
-    primary: Color(0xFFFFCC00),
-  ),
-  brightness: Brightness.light,
-);
-
-ThemeData darkTheme = ThemeData(
-  primaryColor: Colors.deepOrange,
-  colorScheme: const ColorScheme.dark(
-    primary: Colors.deepOrange,
-  ),
-  brightness: Brightness.dark,
-);
+ThemeData _buildTheme(Brightness brightness) {
+  return ThemeData(
+    primaryColor: Colors.deepOrange,
+    colorScheme: brightness == Brightness.light
+        ? const ColorScheme.light(
+            primary: Colors.deepOrange,
+            secondary: Colors.deepOrange,
+          )
+        : const ColorScheme.dark(
+            primary: Colors.deepOrange,
+            secondary: Colors.deepOrange,
+            background: Color(0xFF242424),
+          ),
+    brightness: brightness,
+    textTheme: const TextTheme(
+      displayLarge: titleTextStyle,
+      titleMedium: subtitleTextStyle,
+      bodyLarge: bodyTextStyle,
+    ),
+  );
+}
