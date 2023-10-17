@@ -1,3 +1,4 @@
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +7,26 @@ import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
-
+import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'filter_model.dart';
 import 'onboarding.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String factText;
 
-  const HomePage({required this.factText, super.key});
+  HomePage({required this.factText, super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var movieTitle;
+
+  void initState() {
+    super.initState();
+    getMovie(context, FilmApi(dio));
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -86,6 +99,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -160,9 +174,9 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(
                         context,
-                        title: 'Film of the Day',
-                        description: 'The Dark Knight',
-                        onTapAction: () {
+                        'Film of the Day',
+                        movieTitle,
+                        () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

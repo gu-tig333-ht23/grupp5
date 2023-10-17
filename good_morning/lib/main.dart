@@ -1,11 +1,11 @@
-simport 'package:flutter/material.dart';
-import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/ui/daily_film_settings.dart';
+import 'package:flutter/material.dart';
+import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
+import 'package:good_morning/ui/common_ui.dart'
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main navigation/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 import 'ui/main navigation/filter_model.dart';
@@ -28,7 +28,7 @@ void main() async {
           create: (context) => MovieProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => DailyFilmSettingsModel(),
+          create: (context) => DailyFilmSettingsProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
@@ -38,6 +38,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => DailyTrafficProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoriteMoviesModel(),
         ),
       ],
       // sends the fact for the day as parameter to myApp
