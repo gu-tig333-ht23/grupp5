@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+//Används enbart som mall (börjat testa tidsbegränsad lagring)
+
 Future<void> storeApiData(String apiResponse) async {
   final prefs = await SharedPreferences.getInstance();
   final today = DateTime.now();
