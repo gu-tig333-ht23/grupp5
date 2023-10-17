@@ -24,8 +24,6 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
     final tmdbId = Provider.of<MovieProvider>(context).movieId;
 
-    Future<List<Map<String, String>>> data = fetchStreamInfo(tmdbId);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -85,49 +83,42 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                       onTap: () {}),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Container(
-                  height: 680,
-                  width: 200,
-                  child: Card(
-                    color: Theme.of(context).cardColor,
-                    child: FadeInImage.memoryNetwork(
-                      placeholder: kTransparentImage,
-                      image: posterPath,
-                    ),
-                  ),
+              Card(
+                color: Theme.of(context).cardColor,
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: posterPath,
                 ),
               ),
-              FutureBuilder<List<Map<String, String>>>(
-                future: fetchStreamInfo(tmdbId),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(
-                      child: Text('No streaming information available.'),
-                    );
-                  } else {
-                    return ListTile(
-                      title: Text('Streaming Information'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: snapshot.data!.map((info) {
-                          return Text(
-                              '${info['service']}: ${info['streamingType']}');
-                        }).toList(),
-                      ),
-                    );
-                  }
-                },
-              )
+              // FutureBuilder<List<Map<String, String>>>(
+              //   future: fetchStreamInfo(tmdbId),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return Center(
+              //         child: CircularProgressIndicator(),
+              //       );
+              //     } else if (snapshot.hasError) {
+              //       return Center(
+              //         child: Text('Error: ${snapshot.error}'),
+              //       );
+              //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              //       return Center(
+              //         child: Text('No streaming information available.'),
+              //       );
+              //     } else {
+              //       return ListTile(
+              //         title: Text('Streaming Information'),
+              //         subtitle: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: snapshot.data!.map((info) {
+              //             return Text(
+              //                 '${info['service']}: ${info['streamingType']}');
+              //           }).toList(),
+              //         ),
+              //       );
+              //     }
+              //   },
+              // )
             ],
           ),
           Positioned(
