@@ -54,8 +54,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              buildFullCard(context, historyProvider.item.text,
-                  historyProvider.item.extract, () {}),
+              buildFullCard(context, title :historyProvider.item.text,
+                  description: historyProvider.item.extract,),
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
