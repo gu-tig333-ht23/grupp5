@@ -5,6 +5,7 @@ import 'package:good_morning/ui/daily_history_ui.dart';
 import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
+import 'package:good_morning/ui/daily_traffic.ui.dart';
 
 import 'filter_model.dart';
 import 'onboarding.dart';
@@ -59,6 +60,15 @@ class HomePage extends StatelessWidget {
                   },
                 ),
               ),
+              Consumer<VisibilityModel>(
+                builder: (context, visibilityModel, child) => CheckboxListTile(
+                  title: const Text('Show Traffic of the Day'),
+                  value: visibilityModel.showTraffic,
+                  onChanged: (bool? value) {
+                    visibilityModel.toggleTraffic();
+                  },
+                ),
+              ),
             ],
           ),
           actions: [
@@ -93,16 +103,33 @@ class HomePage extends StatelessWidget {
           builder: (context, visibilityModel, child) => ListView(
             children: [
               if (visibilityModel.showWeather)
-                buildFullCard(context, 'Weather', 'Show the weather', () {
+                buildFullCard(context,
+                    title: 'Weather',
+                    description: 'Show the weather', onTapAction: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => WeatherPage()));
                   print('Navigating to Weather Screen');
                 }),
+              if (visibilityModel.showTraffic)
+                buildFullCard(context,
+                    title: 'Traffic',
+                    description:
+                        'Little traffic, approximately 51 mins to work by bicycle.',
+                    onTapAction: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DailyTrafficPage()));
+                  print('Navigating to Traffic Information Screen');
+                }),
               if (visibilityModel.showHistory)
-                buildFullCard(context, 'Today in History',
-                    'Today, Steve Jobs died 12 years ago.', () {
+                buildFullCard(context,
+                    title: 'Today in History',
+                    description: 'Today, Steve Jobs died 12 years ago.',
+                    onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -116,13 +143,14 @@ class HomePage extends StatelessWidget {
                 children: [
                   if (visibilityModel.showFact)
                     Expanded(
-                      child: buildFullCard(
-                          context, 'Fact of the Day', factText.trim(), () {
+                      child: buildFullCard(context,
+                          title: 'Fact of the Day',
+                          description: factText, onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => DailyFactPage(
-                                theme: Theme.of(context), factText: factText),
+                            builder: (BuildContext context) =>
+                                DailyFactPage(factText: factText),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');
@@ -132,9 +160,9 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(
                         context,
-                        'Film of the Day',
-                        'The Dark Knight',
-                        () {
+                        title: 'Film of the Day',
+                        description: 'The Dark Knight',
+                        onTapAction: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

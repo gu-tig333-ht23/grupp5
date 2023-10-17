@@ -31,7 +31,7 @@ class FactCategoryItem extends StatelessWidget {
         ),
         Text(
           category.categoryName,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );
