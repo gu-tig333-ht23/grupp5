@@ -6,11 +6,13 @@ class FilterModel extends ChangeNotifier {
   bool _showHistory = true;
   bool _showFact = true;
   bool _showFilm = true;
+  bool _showTraffic = true;
 
   bool get showWeather => _showWeather;
   bool get showHistory => _showHistory;
   bool get showFact => _showFact;
   bool get showFilm => _showFilm;
+  bool get showTraffic => _showTraffic;
 
   FilterModel() {
     loadFromPreferences();
@@ -22,6 +24,7 @@ class FilterModel extends ChangeNotifier {
     if (_showHistory) selectedCards.add('history');
     if (_showFact) selectedCards.add('fact');
     if (_showFilm) selectedCards.add('film');
+    if (_showTraffic) selectedCards.add('traffic');
 
     await saveUserSelectedCards(selectedCards);
   }
@@ -32,6 +35,7 @@ class FilterModel extends ChangeNotifier {
     _showHistory = selectedCards.contains('history');
     _showFact = selectedCards.contains('fact');
     _showFilm = selectedCards.contains('film');
+    _showTraffic = selectedCards.contains('traffic');
 
     notifyListeners();
   }
@@ -56,6 +60,12 @@ class FilterModel extends ChangeNotifier {
 
   void toggleFilm() {
     _showFilm = !_showFilm;
+    _saveToPreferences();
+    notifyListeners();
+  }
+
+  void toggleTraffic() {
+    _showTraffic = !_showTraffic;
     _saveToPreferences();
     notifyListeners();
   }
