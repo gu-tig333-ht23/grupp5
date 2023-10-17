@@ -58,13 +58,25 @@ Widget buildFloatingActionButton(
   BuildContext context,
   IconData icon,
   void Function()? onPressed, {
-  Color? backgroundColor,
   String? tooltip,
 }) {
   return FloatingActionButton(
     onPressed: onPressed,
-    backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
     tooltip: tooltip,
+    backgroundColor: Theme.of(context).colorScheme.primary,
     child: Icon(icon),
   );
 }
+
+const TextStyle titleTextStyle = TextStyle(
+  fontSize: 24.0,
+  fontWeight: FontWeight.bold,
+);
+
+const TextStyle subtitleTextStyle = TextStyle(
+  fontSize: 18.0,
+);
+
+const TextStyle bodyTextStyle = TextStyle(
+  fontSize: 16.0,
+);

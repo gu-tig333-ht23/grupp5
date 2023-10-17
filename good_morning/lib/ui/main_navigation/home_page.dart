@@ -7,6 +7,9 @@ import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
 
+import 'filter_model.dart';
+import 'onboarding.dart';
+
 class HomePage extends StatelessWidget {
   final String factText;
 
@@ -19,9 +22,9 @@ class HomePage extends StatelessWidget {
         return AlertDialog(
           title: const Text('Filter Cards'),
           content: Column(
-            mainAxisSize: MainAxisSize.min, // makes the dialog more compact
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Consumer<VisibilityModel>(
+              Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
                   title: const Text('Show Weather'),
                   value: visibilityModel.showWeather,
@@ -30,7 +33,7 @@ class HomePage extends StatelessWidget {
                   },
                 ),
               ),
-              Consumer<VisibilityModel>(
+              Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
                   title: const Text('Show History'),
                   value: visibilityModel.showHistory,
@@ -39,18 +42,18 @@ class HomePage extends StatelessWidget {
                   },
                 ),
               ),
-              Consumer<VisibilityModel>(
+              Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Fact of the Day'),
+                  title: const Text('Show Fact'),
                   value: visibilityModel.showFact,
                   onChanged: (bool? value) {
                     visibilityModel.toggleFact();
                   },
                 ),
               ),
-              Consumer<VisibilityModel>(
+              Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Film of the Day'),
+                  title: const Text('Show Film'),
                   value: visibilityModel.showFilm,
                   onChanged: (bool? value) {
                     visibilityModel.toggleFilm();
@@ -86,17 +89,17 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Good Morning'),
+        title: const Text('Good Morning', style: titleTextStyle),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterDialog(context),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<VisibilityModel>(
+        child: Consumer<FilterModel>(
           builder: (context, visibilityModel, child) => ListView(
             children: [
               if (visibilityModel.showWeather)
@@ -177,8 +180,11 @@ class HomePage extends StatelessWidget {
                 print("Small Button Pressed!");
               }),
               const SizedBox(height: 16.0),
-              buildBigButton(context, "Big Button Test", () {
-                print("Big Button Pressed!");
+              buildBigButton(context, "Open onboarding", () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+                );
               }),
               const SizedBox(height: 16.0),
               buildFloatingActionButton(
@@ -194,44 +200,5 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class VisibilityModel extends ChangeNotifier {
-  bool _showWeather = true;
-  bool _showHistory = true;
-  bool _showFact = true;
-  bool _showFilm = true;
-  bool _showTraffic = true;
-
-  bool get showWeather => _showWeather;
-  bool get showHistory => _showHistory;
-  bool get showFact => _showFact;
-  bool get showFilm => _showFilm;
-  bool get showTraffic => _showTraffic;
-
-  void toggleWeather() {
-    _showWeather = !_showWeather;
-    notifyListeners();
-  }
-
-  void toggleHistory() {
-    _showHistory = !_showHistory;
-    notifyListeners();
-  }
-
-  void toggleFact() {
-    _showFact = !_showFact;
-    notifyListeners();
-  }
-
-  void toggleFilm() {
-    _showFilm = !_showFilm;
-    notifyListeners();
-  }
-
-  void toggleTraffic() {
-    _showTraffic = !_showTraffic;
-    notifyListeners();
   }
 }

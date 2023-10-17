@@ -53,7 +53,7 @@ class DailyFactProvider extends ChangeNotifier {
 // Handles all communication with ChatGPT API //
 
 // OBS! Byt ut med din egen OpenAI apinyckel innan du kör appen. Pusha INTE till GitHub!
-const String factApiKey = 'dinAPINyckel';
+const String factApiKey = 'nyckel';
 
 const factApiUrl = 'https://api.openai.com/v1/completions';
 

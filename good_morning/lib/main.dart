@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+simport 'package:flutter/material.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/daily_film_settings.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
@@ -6,6 +7,8 @@ import '/ui/main navigation/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/ui/daily_film_page.dart';
 import 'package:good_morning/utils/daily_history.dart';
+
+import 'ui/main navigation/filter_model.dart';
 
 void main() async {
   // fetching the daily fact text
@@ -31,7 +34,7 @@ void main() async {
           create: (context) => HistoryProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => VisibilityModel(),
+          create: (context) => FilterModel(),
         ),
         ChangeNotifierProvider(
           create: (context) => DailyTrafficProvider(),
@@ -53,26 +56,32 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Good Morning',
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
       // parameters sending forward to HomePage
       home: HomePage(factText: factText),
     );
   }
 }
 
-ThemeData lightTheme = ThemeData(
-  primaryColor: Colors.deepOrange,
-  colorScheme: const ColorScheme.light(
-    primary: Colors.deepOrange,
-  ),
-  brightness: Brightness.light,
-);
-
-ThemeData darkTheme = ThemeData(
-  primaryColor: Colors.deepOrange,
-  colorScheme: const ColorScheme.dark(
-    primary: Colors.deepOrange,
-  ),
-  brightness: Brightness.dark,
-);
+ThemeData _buildTheme(Brightness brightness) {
+  return ThemeData(
+    primaryColor: Colors.deepOrange,
+    colorScheme: brightness == Brightness.light
+        ? const ColorScheme.light(
+            primary: Colors.deepOrange,
+            secondary: Colors.deepOrange,
+          )
+        : const ColorScheme.dark(
+            primary: Colors.deepOrange,
+            secondary: Colors.deepOrange,
+            background: Color(0xFF242424),
+          ),
+    brightness: brightness,
+    textTheme: const TextTheme(
+      displayLarge: titleTextStyle,
+      titleMedium: subtitleTextStyle,
+      bodyLarge: bodyTextStyle,
+    ),
+  );
+}
