@@ -23,7 +23,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     // Fetch data when the widget is initialized
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
-  
+
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     return Scaffold(
@@ -36,13 +36,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     historyProvider.setFilter(newValue);
                   });
                 },
-                items: [
-                  'selected',
-                  'births',
-                  'deaths',
-                  'events',
-                  'holidays'
-                ].map((filter) {
+                items: ['highlighted', 'births', 'deaths', 'events', 'holidays']
+                    .map((filter) {
                   return DropdownMenuItem<String>(
                     value: (filter),
                     child: Text(filter),
@@ -55,23 +50,21 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              buildFullCard(context, title :historyProvider.item.text,
-                  description: historyProvider.item.extract,),
+              buildFullCard(
+                context,
+                title: historyProvider.item.text,
+                description: historyProvider.item.extract,
+              ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Card(
-                color: Theme.of(context).cardColor,
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: historyProvider.item.thumbnail,
-                      ),
-                    
-                    ),
-                    
-                      
+                  color: Theme.of(context).cardColor,
+                  child: FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: historyProvider.item.thumbnail,
                   ),
-                
-              
+                ),
+              ),
             ],
           ),
         ));

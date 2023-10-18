@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 Widget buildFullCard(BuildContext context,
     {String? title,
@@ -18,6 +19,53 @@ Widget buildFullCard(BuildContext context,
       onTap: () {
         onTapAction?.call();
       },
+    ),
+  );
+}
+
+Widget buildFullCardWithImage(BuildContext context,
+    {String? title,
+    String? description,
+    Widget? optionalWidget,
+    String? imageUrl,
+    void Function()? onTapAction}) {
+  return Card(
+    color: Colors.transparent,
+    child: Container(
+      decoration: imageUrl != null
+          ? BoxDecoration(
+              image: DecorationImage(
+                image: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imageUrl,
+                ).image,
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            )
+          : null,
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16.0),
+        title: title != null
+            ? Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : null,
+        subtitle: description != null
+            ? Text(
+                description,
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
+        trailing: optionalWidget,
+        onTap: () {
+          onTapAction?.call();
+        },
+      ),
     ),
   );
 }

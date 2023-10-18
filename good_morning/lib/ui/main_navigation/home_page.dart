@@ -1,4 +1,5 @@
 
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +10,24 @@ import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
 import 'filter_model.dart';
 import 'onboarding.dart';
+import 'package:good_morning/utils/daily_history.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String factText;
 
   HomePage({required this.factText, super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+
+void initState() {
+    super.initState();
+    getMovie(context, FilmApi(dio));
+    context.read<HistoryProvider>().fetchHistoryItem3();
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -88,6 +100,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   
+    String text = Provider.of<HistoryProvider>(context).item.text;
+    String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
+    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
+        var month = Provider.of<HistoryProvider>(context).mmDate;
+        var day = Provider.of<HistoryProvider>(context).ddDate;
     
     return Scaffold(
       appBar: AppBar(
@@ -129,15 +147,16 @@ class HomePage extends StatelessWidget {
                   print('Navigating to Traffic Information Screen');
                 }),
               if (visibilityModel.showHistory)
-                buildFullCard(context,
+                buildFullCardWithImage(context,
                     title: 'Today in History',
-                    description: 'Today, Steve Jobs died 12 years ago.',
+                    description: text,
+                    imageUrl: thumbnail,
                     onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          DailyHistoryPage(theme: Theme.of(context)),
+                          DailyHistoryPage(theme: Theme.of(context),),
                     ),
                   );
                   print('Navigating to Today in History Screen');
@@ -148,12 +167,12 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(context,
                           title: 'Fact of the Day',
-                          description: factText, onTapAction: () {
+                          description: widget.factText, onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                DailyFactPage(factText: factText),
+                                DailyFactPage(factText: widget.factText),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');

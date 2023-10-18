@@ -11,7 +11,7 @@ Future<void> storeHistoryData(
     String extract,
     ) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('historyTitle', text);
+  prefs.setString('historyText', text);
   prefs.setString('historyThumbnail', thumbnail);
   prefs.setString('historyExtract', extract);
 }
@@ -29,19 +29,19 @@ Future<Map<String, dynamic>> getHistoryData() async {
   };
 }
 
-Future<void> storeHistorySetting({
-  required String filter,
-}) async {
+Future<void> storeHistorySetting(
+  String selectedFilter,
+) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('filter', filter);
+  prefs.setString('selectedFilter', selectedFilter);
 }
 
 Future<Map<String, String>> getSettingsData() async {
   final prefs = await SharedPreferences.getInstance();
-  final filter = prefs.getString('filter');
+  final selectedFilter = prefs.getString('selectedFilter');
   
   return {
-    'releaseYear': filter ?? '',
+    'selectedFilter': selectedFilter ?? '',
     
   };
 }
