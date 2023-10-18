@@ -1,5 +1,6 @@
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
@@ -98,6 +99,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
+    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
     return Scaffold(
       appBar: AppBar(
@@ -175,6 +177,18 @@ class _HomePageState extends State<HomePage> {
                         context,
                         title: 'Film of the Day',
                         description: movieTitle,
+                        optionalWidget: Image.network(
+                          posterPath,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            return loadingProgress == null
+                                ? child
+                                : const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                          },
+                        ),
                         onTapAction: () {
                           Navigator.push(
                             context,
