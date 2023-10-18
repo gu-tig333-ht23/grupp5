@@ -6,13 +6,11 @@ import 'dart:math';
 
 class HistoryItem {
   final String text;
-  final String title;
   final String thumbnail;
   final String extract;
 
   HistoryItem(
       {required this.text,
-      required this.title,
       required this.thumbnail,
       required this.extract});
 }
@@ -21,8 +19,7 @@ class HistoryProvider extends ChangeNotifier {
 
 //Empty history item
 var _item = HistoryItem (
-        text: '',
-        title:'',
+        text: '', 
         extract:'',
         thumbnail:'',
 );
@@ -66,13 +63,12 @@ Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter, month, da
     final Map<String, dynamic> data = json.decode(response.body);
     final events = data['$selectedFilter'] as List;
     if (events.isEmpty) {
-      return HistoryItem(text: '', title: '', thumbnail: '', extract: '');
+      return HistoryItem(text: '', thumbnail: '', extract: '');
     }
 
     final item = events[randomNumber] as Map<String, dynamic>;
     final text = item['text'] as String;
     final pages = item['pages'] as List;
-    final title = pages[0]['title'] as String;
     String thumbnail = pages[0]['thumbnail']['source'] as String;
       //Felhantering ifall bild saknas(händer ibland)
       if (thumbnail.isEmpty) {
@@ -80,7 +76,7 @@ Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter, month, da
       }
     final extract = pages[0]['extract'] as String;
     return HistoryItem(
-        text: text, title: title, thumbnail: thumbnail, extract: extract);
+        text: text, thumbnail: thumbnail, extract: extract);
   } else {
     throw Exception('Failed to load data from the API');
   }
