@@ -180,14 +180,6 @@ class _HomePageState extends State<HomePage> {
                         optionalWidget: Image.network(
                           posterPath,
                           fit: BoxFit.cover,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            return loadingProgress == null
-                                ? child
-                                : const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                          },
                         ),
                         onTapAction: () {
                           Navigator.push(
