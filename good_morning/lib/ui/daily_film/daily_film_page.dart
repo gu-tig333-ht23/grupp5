@@ -8,7 +8,7 @@ import 'package:transparent_image/transparent_image.dart';
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
 
-  const DailyFilmPage({required this.theme});
+  const DailyFilmPage({super.key, required this.theme});
 
   @override
   State<DailyFilmPage> createState() => DailyFilmPageState();
@@ -59,7 +59,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 .favoriteMovies
                 .length
                 .toString(),
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           )
         ],
       ),
@@ -94,15 +94,15 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               Consumer<MovieProvider>(
                 builder: (context, movieProvider, child) {
                   List<Map<String, String>> streamInfo =
-                      movieProvider.streamInfo ?? [];
+                      movieProvider.streamInfo;
 
                   if (streamInfo.isEmpty) {
-                    return Center(
+                    return const Center(
                       child: Text('No streaming information available.'),
                     );
                   } else {
                     return ListTile(
-                      title: Text('Streaming Information'),
+                      title: const Text('Streaming Information'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: streamInfo.map((info) {
@@ -145,6 +145,7 @@ void getMovie(BuildContext context, FilmApi filmApi) async {
   try {
     Map<String, dynamic> movieData = await filmApi.getMovie();
 
+    // ignore: use_build_context_synchronously
     Provider.of<MovieProvider>(context, listen: false).setMovie(
         movieData['title'],
         movieData['description'],
@@ -155,73 +156,5 @@ void getMovie(BuildContext context, FilmApi filmApi) async {
         movieData['streamingInfo']);
   } catch (e) {
     print('Error fetching movie: $e');
-  }
-}
-
-class MovieProvider with ChangeNotifier {
-  String _movieTitle = '';
-  String _movieDescription = '';
-  String _movieDate = '';
-  String _movieRating = '';
-  String _moviePosterPath = '';
-  String _movieId = '';
-  List<Map<String, String>> _streamInfo = [];
-
-  String get movieTitle => _movieTitle;
-  String get movieDescription => _movieDescription;
-  String get movieDate => _movieDate;
-  String get movieRating => _movieRating;
-  String get moviePosterPath => _moviePosterPath;
-  String get movieId => _movieId;
-  List<Map<String, String>> get streamInfo => _streamInfo;
-
-  void setMovie(String title, String description, String date, String rating,
-      String posterPath, String id, List<Map<String, String>> streamInfo) {
-    _movieTitle = title;
-    _movieDescription = description;
-    _movieDate = date;
-    _movieRating = rating;
-    _moviePosterPath = posterPath;
-    _movieId = id;
-    _streamInfo = streamInfo;
-    notifyListeners();
-  }
-}
-
-class FavoriteMoviesModel extends ChangeNotifier {
-  List<List<String>> _favoriteMovies = [];
-
-  List<List<String>> get favoriteMovies => _favoriteMovies;
-
-  Future<void> addFavorite(
-    String movieTitle,
-    String movieDescription,
-    String movieDate,
-    String movieRating,
-    String moviePosterPath,
-    String tmdbId,
-    List<Map<String, String>> streamInfo,
-  ) async {
-    if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      print('Movie already in favorites');
-    } else {
-      print('Movie added to favorites');
-      List<String> favoriteMovie = [
-        movieTitle,
-        movieDescription,
-        movieDate,
-        movieRating,
-        moviePosterPath,
-        tmdbId,
-        streamInfo.toString(),
-      ];
-      _favoriteMovies.add(favoriteMovie);
-    }
-    notifyListeners();
-  }
-
-  void removeMovie(int index) {
-    _favoriteMovies.removeAt(index);
-    notifyListeners();
   }
 }

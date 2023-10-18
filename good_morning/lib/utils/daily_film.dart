@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
@@ -84,15 +85,78 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
 
           print('Service: $service, Streaming Type: $streamingType');
         }
-        // List us = streamingInfo['us'];
-
-        // print('SE: $se');
-        // print('\n\nSE OVAN US UNDER\n\n');
-        // print('US: $us');
       }
     }
   } catch (error) {
     print('Error: $error');
   }
   return result;
+}
+
+class MovieProvider with ChangeNotifier {
+  String _movieTitle = '';
+  String _movieDescription = '';
+  String _movieDate = '';
+  String _movieRating = '';
+  String _moviePosterPath = '';
+  String _movieId = '';
+  List<Map<String, String>> _streamInfo = [];
+
+  String get movieTitle => _movieTitle;
+  String get movieDescription => _movieDescription;
+  String get movieDate => _movieDate;
+  String get movieRating => _movieRating;
+  String get moviePosterPath => _moviePosterPath;
+  String get movieId => _movieId;
+  List<Map<String, String>> get streamInfo => _streamInfo;
+
+  void setMovie(String title, String description, String date, String rating,
+      String posterPath, String id, List<Map<String, String>> streamInfo) {
+    _movieTitle = title;
+    _movieDescription = description;
+    _movieDate = date;
+    _movieRating = rating;
+    _moviePosterPath = posterPath;
+    _movieId = id;
+    _streamInfo = streamInfo;
+    notifyListeners();
+  }
+}
+
+class FavoriteMoviesModel extends ChangeNotifier {
+  List<List<String>> _favoriteMovies = [];
+
+  List<List<String>> get favoriteMovies => _favoriteMovies;
+
+  Future<void> addFavorite(
+    String movieTitle,
+    String movieDescription,
+    String movieDate,
+    String movieRating,
+    String moviePosterPath,
+    String tmdbId,
+    List<Map<String, String>> streamInfo,
+  ) async {
+    if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
+      print('Movie already in favorites');
+    } else {
+      print('Movie added to favorites');
+      List<String> favoriteMovie = [
+        movieTitle,
+        movieDescription,
+        movieDate,
+        movieRating,
+        moviePosterPath,
+        tmdbId,
+        streamInfo.toString(),
+      ];
+      _favoriteMovies.add(favoriteMovie);
+    }
+    notifyListeners();
+  }
+
+  void removeMovie(int index) {
+    _favoriteMovies.removeAt(index);
+    notifyListeners();
+  }
 }

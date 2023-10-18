@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/ui/daily_film/daily_film_page.dart';
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class DailyFilmList extends StatelessWidget {
   final ThemeData theme;
 
-  DailyFilmList({required this.theme});
+  const DailyFilmList({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +61,29 @@ class DailyFilmList extends StatelessWidget {
                       },
                       child: const Text('Remove from Watchlist'),
                     ),
+                  ),
+                  Consumer<MovieProvider>(
+                    builder: (context, movieProvider, child) {
+                      List<Map<String, String>> streamInfo =
+                          movieProvider.streamInfo;
+
+                      if (streamInfo.isEmpty) {
+                        return const Center(
+                          child: Text('No streaming information available.'),
+                        );
+                      } else {
+                        return ListTile(
+                          title: const Text('Streaming Information'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: streamInfo.map((info) {
+                              return Text(
+                                  '${info['service']}: ${info['streamingType']}');
+                            }).toList(),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
