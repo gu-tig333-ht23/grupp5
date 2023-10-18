@@ -86,33 +86,43 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               ),
               Card(
                 color: Theme.of(context).cardColor,
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: posterPath,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: posterPath,
+                  ),
                 ),
               ),
-              Consumer<MovieProvider>(
-                builder: (context, movieProvider, child) {
-                  List<Map<String, String>> streamInfo =
-                      movieProvider.streamInfo;
+              Card(
+                color: Theme.of(context).cardColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Consumer<MovieProvider>(
+                    builder: (context, movieProvider, child) {
+                      List<Map<String, String>> streamInfo =
+                          movieProvider.streamInfo;
 
-                  if (streamInfo.isEmpty) {
-                    return const Center(
-                      child: Text('No streaming information available.'),
-                    );
-                  } else {
-                    return ListTile(
-                      title: const Text('Streaming Information'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: streamInfo.map((info) {
-                          return Text(
-                              '${info['service']}: ${info['streamingType']}');
-                        }).toList(),
-                      ),
-                    );
-                  }
-                },
+                      if (streamInfo.isEmpty) {
+                        return const Center(
+                          child: Text('No streaming information available.'),
+                        );
+                      } else {
+                        return ListTile(
+                          title: const Text(
+                              'Streaming information for Swedish providers'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: streamInfo.map((info) {
+                              return Text(
+                                  'Available on ${info['service']}: ${info['streamingType']}');
+                            }).toList(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           ),

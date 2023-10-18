@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
@@ -42,6 +43,13 @@ class FilmApi {
 
     /////////////////////////
     print(movieData);
+    storeMovieData(
+        movieTitle: movieData['title'],
+        movieDescription: movieData['description'],
+        movieDate: movieData['release_year'],
+        movieRating: movieData['vote_average'],
+        moviePoster: movieData['poster_path'],
+        movieId: movieData['tmdb_id']);
     return movieData;
   }
 }

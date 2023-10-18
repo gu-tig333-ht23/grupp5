@@ -29,14 +29,14 @@ class DailyFilmList extends StatelessWidget {
                   movieDetails[0],
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    //color: Colors.white,
                   ),
                 ),
                 subtitle: Text(
                   'Release Date: ${movieDetails[2]} \nRating: ${movieDetails[3]}',
                   style: const TextStyle(
-                    color: Colors.white,
-                  ),
+                      //color: Colors.white,
+                      ),
                 ),
                 children: <Widget>[
                   Padding(
