@@ -59,7 +59,7 @@ Future<HistoryItem> fetchHistoryItemWiki(randomNumber, selectedFilter, month, da
   };
   http.Response response = await http.get(
       Uri.parse(
-          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
+          'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
       headers: apiHeaderWiki);
 
   if (response.statusCode == 200) {
