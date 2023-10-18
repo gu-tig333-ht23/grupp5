@@ -29,3 +29,20 @@ Future<Map<String, dynamic>> getHistoryData() async {
   };
 }
 
+Future<void> storeHistorySetting({
+  required String filter,
+}) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('filter', filter);
+}
+
+Future<Map<String, String>> getSettingsData() async {
+  final prefs = await SharedPreferences.getInstance();
+  final filter = prefs.getString('filter');
+  
+  return {
+    'releaseYear': filter ?? '',
+    
+  };
+}
+
