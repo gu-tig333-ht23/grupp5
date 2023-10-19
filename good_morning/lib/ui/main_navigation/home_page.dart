@@ -153,7 +153,7 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    //imageUrl: thumbnail,
+                    imageUrl: thumbnail,
                     onTapAction: () {
                   Navigator.push(
                     context,
@@ -183,14 +183,11 @@ void initState() {
                     ),
                   if (visibilityModel.showFilm)
                     Expanded(
-                      child: buildFullCard(
+                      child: buildFullCardWithImage(
                         context,
                         title: 'Film of the Day',
                         description: movieTitle,
-                        optionalWidget: Image.network(
-                          posterPath,
-                          fit: BoxFit.cover,
-                        ),
+                        imageUrl: posterPath,
                         onTapAction: () {
                           Navigator.push(
                             context,
