@@ -3,6 +3,8 @@ import 'daily_fact_category_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:good_morning/data_handling/secrets.dart' as config;
+
 // handles all changes to the list with categories
 class DailyFactProvider extends ChangeNotifier {
   final List<FactCategory> _categories = [
@@ -53,7 +55,7 @@ class DailyFactProvider extends ChangeNotifier {
 // Handles all communication with ChatGPT API //
 
 // OBS! Byt ut med din egen OpenAI apinyckel innan du kör appen. Pusha INTE till GitHub!
-const String factApiKey = 'nyckel';
+const String factApiKey = config.factApiKey;
 
 const factApiUrl = 'https://api.openai.com/v1/completions';
 
