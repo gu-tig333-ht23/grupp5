@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
 final Dio dio = Dio();
-//String bearerKey = config.movieBearerKey;
-//String streamKey = config.rapidAPIKey;
+String bearerKey = config.movieBearerKey;
+String streamKey = config.rapidAPIKey;
 
 class FilmApi {
   final Dio dio;
@@ -19,7 +19,7 @@ class FilmApi {
   String pageNumber = '&page=${Random().nextInt(9) + 1}';
 
   Future<Map<String, dynamic>> getMovie() async {
-    //dio.options.headers['Authorization'] = 'Bearer $bearerKey';
+    dio.options.headers['Authorization'] = 'Bearer $bearerKey';
     dio.options.headers['Accept'] = 'application/json';
 
     Response response = await dio.get(
