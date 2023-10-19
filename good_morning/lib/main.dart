@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/ui/main_navigation/onboarding.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
@@ -60,8 +62,23 @@ class MyApp extends StatelessWidget {
       title: 'Good Morning',
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      // parameters sending forward to HomePage
-      home: HomePage(factText: factText),
+      home: FutureBuilder<bool>(
+        future: isOnboardingCompleted(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == true) {
+              // Onboarding has been completed, so show the HomePage
+              return HomePage(factText: factText);
+            } else {
+              // Onboarding has not been completed, so show the OnBoardingScreen
+              return OnBoardingScreen();
+            }
+          } else {
+            // While waiting for the Future to complete, show a splash screen or a loader
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 }

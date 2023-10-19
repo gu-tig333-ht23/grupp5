@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/ui/main_navigation/home_page.dart';
 import 'filter_model.dart';
 import 'package:provider/provider.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   @override
-  _OnBoardingScreenState createState() => _OnBoardingScreenState();
+  OnBoardingScreenState createState() => OnBoardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class OnBoardingScreenState extends State<OnBoardingScreen> {
+  bool _canSwipe = true;
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final TextEditingController _nameController = TextEditingController();
+  final _nameController = TextEditingController(text: 'developer');
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +35,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 onPageChanged: (pageIndex) {
                   setState(() {
                     _currentPage = pageIndex;
+                    if (pageIndex == 1) {
+                      _canSwipe = _nameController.text.trim().isNotEmpty;
+                    } else {
+                      _canSwipe = true;
+                    }
                   });
                 },
+                physics: _canSwipe
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
                 children: [
                   _buildIntroductionPage(),
                   _buildNameInputPage(),
@@ -107,10 +118,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               border: OutlineInputBorder(),
             ),
             onSubmitted: (value) {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
+              _saveNameAndNavigate();
             },
           ),
           const SizedBox(height: 20),
@@ -118,15 +126,42 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             context,
             'Continue',
             () {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
+              _saveNameAndNavigate();
             },
           ),
         ],
       ),
     );
+  }
+
+  void _saveNameAndNavigate() async {
+    if (_nameController.text.trim().isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please enter your name.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        _canSwipe = true; // Enable swiping
+      });
+      await setUserName(
+          _nameController.text.trim()); // Save the name to SharedPreferences
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    }
   }
 
   Widget _buildCardSelectionPage() {
@@ -173,11 +208,25 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               },
             ),
           ),
+          Consumer<FilterModel>(
+            builder: (context, visibilityModel, child) => CheckboxListTile(
+              title: const Text('Show Traffic'),
+              value: visibilityModel.showTraffic,
+              onChanged: (bool? value) {
+                visibilityModel.toggleTraffic();
+              },
+            ),
+          ),
           buildBigButton(
             context,
             'Finish Setup',
             () {
+              setOnboardingCompleted(true);
               Navigator.pop(context);
+              //Navigator.pushReplacement(
+              //context,
+              //MaterialPageRoute(builder: (context) => MainScreen()),
+              //); Inväntar Stines fix
             },
           ),
         ],

@@ -1,13 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> saveUserSelectedCards(List<String> selectedCardKeys ) async {
-  // Implement code to save selected card keys to SharedPreferences
+Future<void> saveUserSelectedCards(List<String> selectedCardKeys) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setStringList('selectedCards', selectedCardKeys);
 }
 
 Future<List<String>> getUserSelectedCards() async {
-  // Implement code to retrieve selected card keys from SharedPreferences
   final prefs = await SharedPreferences.getInstance();
   return prefs.getStringList('selectedCards') ?? [];
 }
@@ -29,5 +27,9 @@ Future<void> setUserName(String name) async {
 
 Future<String> getUserName() async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('userName') ?? '';
+  String? fetchedName = prefs.getString('userName');
+  if (fetchedName == null || fetchedName.trim().isEmpty) {
+    return 'Developer'; // Default name for development
+  }
+  return fetchedName;
 }

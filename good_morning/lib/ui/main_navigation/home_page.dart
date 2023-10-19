@@ -1,6 +1,6 @@
+import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
@@ -22,9 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
     //context.read<HistoryProvider>().fetchHistoryItem3();
@@ -77,7 +76,7 @@ void initState() {
               ),
               Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Traffic of the Day'),
+                  title: const Text('Show Traffic'),
                   value: visibilityModel.showTraffic,
                   onChanged: (bool? value) {
                     visibilityModel.toggleTraffic();
@@ -101,19 +100,34 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-   
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
-        var month = Provider.of<HistoryProvider>(context).mmDate;
-        var day = Provider.of<HistoryProvider>(context).ddDate;
+    String selectedFilter =
+        Provider.of<HistoryProvider>(context).selectedFilter;
+    var month = Provider.of<HistoryProvider>(context).mmDate;
+    var day = Provider.of<HistoryProvider>(context).ddDate;
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Good Morning', style: titleTextStyle),
+        title: FutureBuilder<String>(
+          future:
+              getUserName(), // This fetches the name from shared preferences
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return const Text("Good Morning", style: titleTextStyle);
+              } else {
+                return Text("Good Morning, ${snapshot.data}",
+                    style: titleTextStyle);
+              }
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -153,13 +167,13 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
-                    onTapAction: () {
+                    imageUrl: thumbnail, onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyHistoryPage(theme: Theme.of(context),),
+                      builder: (BuildContext context) => DailyHistoryPage(
+                        theme: Theme.of(context),
+                      ),
                     ),
                   );
                   print('Navigating to Today in History Screen');
@@ -202,25 +216,12 @@ void initState() {
                 ],
               ),
               const SizedBox(height: 16.0),
-              buildSmallButton(context, "Small Button Test", () {
-                print("Small Button Pressed!");
-              }),
-              const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => OnBoardingScreen()),
                 );
               }),
-              const SizedBox(height: 16.0),
-              buildFloatingActionButton(
-                context,
-                Icons.add,
-                () {
-                  print("Floating Action Button Pressed!");
-                },
-                tooltip: 'Test',
-              ),
             ],
           ),
         ),
