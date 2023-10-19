@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
 enum TransportMode { bicycling, walking, driving, transit }
@@ -443,14 +445,19 @@ Future<void> processDeleteDestination(
 // API code here
 
 // Google Maps Directions API
-
-// sends request through proxy server https://cors-anywhere.herokuapp.com
-const String mapUrl =
-    'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json';
 const String mapApiKey = config.mapApiKey;
 
 Future<Map<String, dynamic>> getRouteInfoFromAPI(
     String toName, String fromName, String mode) async {
+  String mapUrl;
+  if (kIsWeb) {
+    // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+    mapUrl =
+        'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json';
+  } else {
+    // for running in emulators
+    mapUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+  }
   http.Response response = await http.get(Uri.parse(
       '$mapUrl?mode=$mode&destination=$toName&origin=$fromName&key=$mapApiKey'));
 

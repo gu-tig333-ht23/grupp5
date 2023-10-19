@@ -38,7 +38,8 @@ class FilmApi {
       'poster_path':
           'https://image.tmdb.org/t/p/w600_and_h900_bestv2${randomMovie['poster_path']}',
       'tmdb_id': randomMovie['id'].toString(),
-      'streamingInfo': await fetchStreamInfo(randomMovie['id'].toString()),
+      'streamingInfo': '',
+      //'streamingInfo': await fetchStreamInfo(randomMovie['id'].toString()),
     };
 
     /////////////////////////
