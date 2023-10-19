@@ -6,7 +6,7 @@ import 'package:good_morning/data_handling/secrets.dart' as config;
 
 final Dio dio = Dio();
 String bearerKey = config.movieBearerKey;
-String streamKey = config.RapidAPIKey;
+String streamKey = config.rapidAPIKey;
 
 class FilmApi {
   final Dio dio;
