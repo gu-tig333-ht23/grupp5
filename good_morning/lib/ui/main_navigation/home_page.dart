@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    context.read<HistoryProvider>().fetchHistoryItem3();
+    //context.read<HistoryProvider>().fetchHistoryItem3();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -153,7 +153,7 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
+                    //imageUrl: thumbnail,
                     onTapAction: () {
                   Navigator.push(
                     context,
