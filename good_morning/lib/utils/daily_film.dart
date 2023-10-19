@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
+import 'package:good_morning/data_handling/secrets.dart' as config;
 
 final Dio dio = Dio();
-const String bearerKey =
-    'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZWQ2NjJiNzc1MTIxOThmZjBmZTIxNGQwN2ZlZDljNSIsInN1YiI6IjY1MjI2YzM5MDcyMTY2MDExYzA1YzdhNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.le_mcHwYS_PzUQADBaC_XQe0HrFbtTqChmv6J3El3UI';
+String bearerKey = config.movieBearerKey;
+String streamKey = config.rapidAPIKey;
 
 class FilmApi {
   final Dio dio;
@@ -26,18 +29,27 @@ class FilmApi {
     );
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
+
     Map<String, dynamic> movieData = {
       'title': randomMovie['title'],
       'description': randomMovie['overview'],
       'release_year': randomMovie['release_date'].toString().substring(0, 4),
       'vote_average': randomMovie['vote_average'].toString(),
-      'poster_path': 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' +
-          randomMovie['poster_path'],
+      'poster_path':
+          'https://image.tmdb.org/t/p/w600_and_h900_bestv2${randomMovie['poster_path']}',
       'tmdb_id': randomMovie['id'].toString(),
+      'streamingInfo': await fetchStreamInfo(randomMovie['id'].toString()),
     };
 
     /////////////////////////
     print(movieData);
+    storeMovieData(
+        movieTitle: movieData['title'],
+        movieDescription: movieData['description'],
+        movieDate: movieData['release_year'],
+        movieRating: movieData['vote_average'],
+        moviePoster: movieData['poster_path'],
+        movieId: movieData['tmdb_id']);
     return movieData;
   }
 }
@@ -52,8 +64,7 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
       options: Options(
         headers: {
           'X-RapidAPI-Host': 'streaming-availability.p.rapidapi.com',
-          'X-RapidAPI-Key':
-              'a0b8b17cd6msh95aa41d463d3bf7p13c3c0jsn2b024de57b76',
+          'X-RapidAPI-Key': streamKey
         },
       ),
     );
@@ -82,15 +93,78 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
 
           print('Service: $service, Streaming Type: $streamingType');
         }
-        // List us = streamingInfo['us'];
-
-        // print('SE: $se');
-        // print('\n\nSE OVAN US UNDER\n\n');
-        // print('US: $us');
       }
     }
   } catch (error) {
     print('Error: $error');
   }
   return result;
+}
+
+class MovieProvider with ChangeNotifier {
+  String _movieTitle = '';
+  String _movieDescription = '';
+  String _movieDate = '';
+  String _movieRating = '';
+  String _moviePosterPath = '';
+  String _movieId = '';
+  List<Map<String, String>> _streamInfo = [];
+
+  String get movieTitle => _movieTitle;
+  String get movieDescription => _movieDescription;
+  String get movieDate => _movieDate;
+  String get movieRating => _movieRating;
+  String get moviePosterPath => _moviePosterPath;
+  String get movieId => _movieId;
+  List<Map<String, String>> get streamInfo => _streamInfo;
+
+  void setMovie(String title, String description, String date, String rating,
+      String posterPath, String id, List<Map<String, String>> streamInfo) {
+    _movieTitle = title;
+    _movieDescription = description;
+    _movieDate = date;
+    _movieRating = rating;
+    _moviePosterPath = posterPath;
+    _movieId = id;
+    _streamInfo = streamInfo;
+    notifyListeners();
+  }
+}
+
+class FavoriteMoviesModel extends ChangeNotifier {
+  List<List<String>> _favoriteMovies = [];
+
+  List<List<String>> get favoriteMovies => _favoriteMovies;
+
+  Future<void> addFavorite(
+    String movieTitle,
+    String movieDescription,
+    String movieDate,
+    String movieRating,
+    String moviePosterPath,
+    String tmdbId,
+    List<Map<String, String>> streamInfo,
+  ) async {
+    if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
+      print('Movie already in favorites');
+    } else {
+      print('Movie added to favorites');
+      List<String> favoriteMovie = [
+        movieTitle,
+        movieDescription,
+        movieDate,
+        movieRating,
+        moviePosterPath,
+        tmdbId,
+        streamInfo.toString(),
+      ];
+      _favoriteMovies.add(favoriteMovie);
+    }
+    notifyListeners();
+  }
+
+  void removeMovie(int index) {
+    _favoriteMovies.removeAt(index);
+    notifyListeners();
+  }
 }

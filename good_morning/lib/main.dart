@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main_navigation/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 import 'ui/main_navigation/filter_model.dart';

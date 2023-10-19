@@ -1,5 +1,6 @@
-
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
@@ -10,12 +11,21 @@ import 'package:good_morning/ui/daily_traffic.ui.dart';
 import 'filter_model.dart';
 import 'onboarding.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String factText;
 
   HomePage({required this.factText, super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    getMovie(context, FilmApi(dio));
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
@@ -88,7 +98,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+    final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
+    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -148,12 +160,12 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: buildFullCard(context,
                           title: 'Fact of the Day',
-                          description: factText, onTapAction: () {
+                          description: widget.factText, onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                DailyFactPage(factText: factText),
+                                DailyFactPage(factText: widget.factText),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');
@@ -164,9 +176,12 @@ class HomePage extends StatelessWidget {
                       child: buildFullCard(
                         context,
                         title: 'Film of the Day',
-                        
-                        onTapAction: 
-                        () {
+                        description: movieTitle,
+                        optionalWidget: Image.network(
+                          posterPath,
+                          fit: BoxFit.cover,
+                        ),
+                        onTapAction: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
