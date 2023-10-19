@@ -21,7 +21,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   void initState() {
     super.initState();
     // Fetch data when the widget is initialized
-    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
+    
   }
 
   Widget build(BuildContext context) {
