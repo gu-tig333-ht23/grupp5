@@ -8,7 +8,7 @@ String weatherAPIDayForecast =
 String weatherAPICurrent =
     'https://api.open-meteo.com/v1/forecast?latitude=57.7072&longitude=11.9668&current=temperature_2m&timezone=Europe%2FBerlin&forecast_days=1';
 
-Future<double> fetchCurretTemperature() async {
+Future<double> fetchCurrentTemperature() async {
   try {
     final response = await http.get(Uri.parse(weatherAPICurrent));
 
@@ -48,15 +48,47 @@ class WeatherPage extends StatelessWidget {
         TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Weather'),
-      ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: const Text('Weather'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Change location'),
+                          content: TextField(
+                            controller: weatherLocationController,
+                            //final coordinates = await geocodeLocation(location);
+                            //if (coordinates != null) {
+                            // Printa koordinater i konsol för att se att det funkar
+                            //print('Latitude: ${coordinates['latitude']}, Longitude: ${coordinates['longitude']}');
+                            //} else {
+                            //print('Location not found.');
+                            //}
+                            decoration:
+                                InputDecoration(hintText: 'Type your location'),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Change'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      });
+                },
+                icon: Icon(Icons.place)),
+          ]),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FutureBuilder<double>(
-              future: fetchCurretTemperature(),
+              future: fetchCurrentTemperature(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
@@ -87,7 +119,7 @@ class WeatherPage extends StatelessWidget {
                     itemCount: temperatures.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text('${index}: ${temperatures[index]} °C'),
+                        title: Text('${index}:00 ${temperatures[index]} °C'),
                       );
                     },
                   );
