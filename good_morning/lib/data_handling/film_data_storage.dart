@@ -8,6 +8,7 @@ Future<void> storeMovieData({
   required String movieDate,
   required String movieRating,
   required String moviePoster,
+  required String movieId,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('movieTitle', movieTitle);
@@ -15,6 +16,9 @@ Future<void> storeMovieData({
   prefs.setString('movieDate', movieDate);
   prefs.setString('movieRating', movieRating);
   prefs.setString('moviePoster', moviePoster);
+  prefs.setString('movieId', movieId);
+  print('Storage printer');
+  print(prefs.getString('movieTitle'));
 }
 
 Future<Map<String, String>> getMovieData() async {
@@ -24,6 +28,7 @@ Future<Map<String, String>> getMovieData() async {
   final movieDate = prefs.getString('movieDate');
   final movieRating = prefs.getString('movieRating');
   final moviePoster = prefs.getString('moviePoster');
+  final movieId = prefs.getString('movieId');
 
   return {
     'movieTitle': movieTitle ?? '',
@@ -31,6 +36,7 @@ Future<Map<String, String>> getMovieData() async {
     'movieDate': movieDate ?? '',
     'movieRating': movieRating ?? '',
     'moviePoster': moviePoster ?? '',
+    'movieId': movieId ?? '',
   };
 }
 

@@ -8,7 +8,7 @@ import 'package:transparent_image/transparent_image.dart';
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
 
-  const DailyFilmPage({required this.theme});
+  const DailyFilmPage({super.key, required this.theme});
 
   @override
   State<DailyFilmPage> createState() => DailyFilmPageState();
@@ -23,6 +23,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     final rating = Provider.of<MovieProvider>(context).movieRating;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
     final tmdbId = Provider.of<MovieProvider>(context).movieId;
+    final movieStreamInfo = Provider.of<MovieProvider>(context).streamInfo;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +59,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 .favoriteMovies
                 .length
                 .toString(),
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           )
         ],
       ),
@@ -85,40 +86,44 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               ),
               Card(
                 color: Theme.of(context).cardColor,
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: posterPath,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: posterPath,
+                  ),
                 ),
               ),
-              // FutureBuilder<List<Map<String, String>>>(
-              //   future: fetchStreamInfo(tmdbId),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return Center(
-              //         child: CircularProgressIndicator(),
-              //       );
-              //     } else if (snapshot.hasError) {
-              //       return Center(
-              //         child: Text('Error: ${snapshot.error}'),
-              //       );
-              //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //       return Center(
-              //         child: Text('No streaming information available.'),
-              //       );
-              //     } else {
-              //       return ListTile(
-              //         title: Text('Streaming Information'),
-              //         subtitle: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: snapshot.data!.map((info) {
-              //             return Text(
-              //                 '${info['service']}: ${info['streamingType']}');
-              //           }).toList(),
-              //         ),
-              //       );
-              //     }
-              //   },
-              // )
+              Card(
+                color: Theme.of(context).cardColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Consumer<MovieProvider>(
+                    builder: (context, movieProvider, child) {
+                      List<Map<String, String>> streamInfo =
+                          movieProvider.streamInfo;
+
+                      if (streamInfo.isEmpty) {
+                        return const Center(
+                          child: Text('No streaming information available.'),
+                        );
+                      } else {
+                        return ListTile(
+                          title: const Text(
+                              'Streaming information for Swedish providers'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: streamInfo.map((info) {
+                              return Text(
+                                  'Available on ${info['service']}: ${info['streamingType']}');
+                            }).toList(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
           Positioned(
@@ -129,7 +134,13 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               foregroundColor: Colors.white,
               onPressed: () async {
                 context.read<FavoriteMoviesModel>().addFavorite(
-                    title, description, date, rating, posterPath, tmdbId);
+                    title,
+                    description,
+                    date,
+                    rating,
+                    posterPath,
+                    tmdbId,
+                    movieStreamInfo);
               },
               child: const Icon(Icons.favorite),
             ),
@@ -144,78 +155,16 @@ void getMovie(BuildContext context, FilmApi filmApi) async {
   try {
     Map<String, dynamic> movieData = await filmApi.getMovie();
 
+    // ignore: use_build_context_synchronously
     Provider.of<MovieProvider>(context, listen: false).setMovie(
-      movieData['title'],
-      movieData['description'],
-      movieData['release_year'],
-      movieData['vote_average'],
-      movieData['poster_path'],
-      movieData['tmdb_id'],
-    );
+        movieData['title'],
+        movieData['description'],
+        movieData['release_year'],
+        movieData['vote_average'],
+        movieData['poster_path'],
+        movieData['tmdb_id'],
+        movieData['streamingInfo']);
   } catch (e) {
     print('Error fetching movie: $e');
-  }
-}
-
-class MovieProvider with ChangeNotifier {
-  String _movieTitle = '';
-  String _movieDescription = '';
-  String _movieDate = '';
-  String _movieRating = '';
-  String _moviePosterPath = '';
-  String _movieId = '';
-
-  String get movieTitle => _movieTitle;
-  String get movieDescription => _movieDescription;
-  String get movieDate => _movieDate;
-  String get movieRating => _movieRating;
-  String get moviePosterPath => _moviePosterPath;
-  String get movieId => _movieId;
-
-  void setMovie(String title, String description, String date, String rating,
-      String posterPath, String id) {
-    _movieTitle = title;
-    _movieDescription = description;
-    _movieDate = date;
-    _movieRating = rating;
-    _moviePosterPath = posterPath;
-    _movieId = id;
-    notifyListeners();
-  }
-}
-
-class FavoriteMoviesModel extends ChangeNotifier {
-  List<List<String>> _favoriteMovies = [];
-
-  List<List<String>> get favoriteMovies => _favoriteMovies;
-
-  Future<void> addFavorite(
-    String movieTitle,
-    String movieDescription,
-    String movieDate,
-    String movieRating,
-    String moviePosterPath,
-    String tmdbId,
-  ) async {
-    if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      print('Movie already in favorites');
-    } else {
-      print('Movie added to favorites');
-      List<String> favoriteMovie = [
-        movieTitle,
-        movieDescription,
-        movieDate,
-        movieRating,
-        moviePosterPath,
-        tmdbId,
-      ];
-      _favoriteMovies.add(favoriteMovie);
-    }
-    notifyListeners();
-  }
-
-  void removeMovie(int index) {
-    _favoriteMovies.removeAt(index);
-    notifyListeners();
   }
 }
