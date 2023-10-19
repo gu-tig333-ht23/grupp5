@@ -22,7 +22,11 @@ class DailyFactProvider extends ChangeNotifier {
     (FactCategory(categoryName: 'Fashion', chosen: false)),
   ];
 
+  String _factText = 'Placeholder';
+
   List<FactCategory> get categories => _categories;
+
+  String get factText => _factText;
 
   // function that changes the category´s status when clicked
   void toggleCircle(FactCategory category) {
@@ -45,11 +49,19 @@ class DailyFactProvider extends ChangeNotifier {
       String factData = await fetchDailyFact(chosenCategories);
       int startIndex = factData.indexOf('\n\n');
       String factText = factData.substring(startIndex + 2);
-      return factText;
+      return factText.trim();
     } catch (error) {
       throw Exception('Failed to fetch fact text: $error');
     }
   }
+}
+
+// fetching the daily fact text
+Future<String> getDailyFact() async {
+  var dailyFactProvider = DailyFactProvider();
+  var chosenCats = dailyFactProvider.getChosenCategories();
+  String factText = (await fetchDailyFact(chosenCats)).trim();
+  return factText;
 }
 
 // Handles all communication with ChatGPT API //
@@ -68,25 +80,24 @@ Future<String> fetchDailyFact(List<String> chosenCategoryNames) async {
     factPrompt =
         'Pick one of these areas of interest: ${chosenCategoryNames.join(', ')} and tell me a fun, random fact from this area. Do not tell me which area you picked.';
   }
-    final factHeaders = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $factApiKey',
-    };
+  final factHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $factApiKey',
+  };
 
-    final factBody = json.encode({
-      'prompt': factPrompt,
-      'max_tokens': 100,
-      'model': 'gpt-3.5-turbo-instruct',
-    });
+  final factBody = json.encode({
+    'prompt': factPrompt,
+    'max_tokens': 100,
+    'model': 'gpt-3.5-turbo-instruct',
+  });
 
-    final response = await http.post(Uri.parse(factApiUrl),
-        headers: factHeaders, body: factBody);
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      final String factText = jsonResponse['choices'][0]['text'];
-      return factText;
-    } else {
-      throw Exception('Failed to fetch data from ChatGPT API');
-    }
+  final response = await http.post(Uri.parse(factApiUrl),
+      headers: factHeaders, body: factBody);
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    final String factText = jsonResponse['choices'][0]['text'];
+    return factText;
+  } else {
+    throw Exception('Failed to fetch data from ChatGPT API');
   }
 }

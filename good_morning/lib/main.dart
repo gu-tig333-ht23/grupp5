@@ -10,18 +10,11 @@ import 'package:good_morning/utils/daily_history.dart';
 import 'ui/main_navigation/filter_model.dart';
 
 void main() async {
-  // fetching the daily fact text
-  //var dailyFactProvider = DailyFactProvider();
-  //var chosenCats = dailyFactProvider.getChosenCategories();
-  //String factText = (await fetchDailyFact(chosenCats)).trim();
-  String factText =
-      'Placeholder factText, in order to not use this API if not needed';
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => DailyFactProvider(),
-          //create: (context) => dailyFactProvider,
         ),
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
@@ -43,15 +36,13 @@ void main() async {
         ),
       ],
       // sends the fact for the day as parameter to myApp
-      child: MyApp(factText: factText),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final String factText; // parameter
-
-  const MyApp({Key? key, required this.factText}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +51,7 @@ class MyApp extends StatelessWidget {
       title: 'Good Morning',
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      // parameters sending forward to HomePage
-      home: HomePage(factText: factText),
+      home: HomePage(),
     );
   }
 }

@@ -6,12 +6,13 @@ import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
-  final String factText;
-
-  const DailyFactPage({super.key, required this.factText});
+  final ThemeData theme;
+  const DailyFactPage({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) {
+    String factText = Provider.of<DailyFactProvider>(context).factText;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,

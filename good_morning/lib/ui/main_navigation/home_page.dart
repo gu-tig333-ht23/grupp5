@@ -1,3 +1,4 @@
+import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -13,18 +14,15 @@ import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 class HomePage extends StatefulWidget {
-  final String factText;
-
-  HomePage({required this.factText, super.key});
+  HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
     //context.read<HistoryProvider>().fetchHistoryItem3();
@@ -101,14 +99,16 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-   
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
-        var month = Provider.of<HistoryProvider>(context).mmDate;
-        var day = Provider.of<HistoryProvider>(context).ddDate;
+    String selectedFilter =
+        Provider.of<HistoryProvider>(context).selectedFilter;
+    var month = Provider.of<HistoryProvider>(context).mmDate;
+    var day = Provider.of<HistoryProvider>(context).ddDate;
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+
+    String factText = Provider.of<DailyFactProvider>(context).factText;
 
     return Scaffold(
       appBar: AppBar(
@@ -143,23 +143,24 @@ void initState() {
                         'Little traffic, approximately 51 mins to work by bicycle.',
                     onTapAction: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyTrafficPage()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => DailyTrafficPage(),
+                    ),
+                  );
                   print('Navigating to Traffic Information Screen');
                 }),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
-                    onTapAction: () {
+                    imageUrl: thumbnail, onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyHistoryPage(theme: Theme.of(context),),
+                      builder: (BuildContext context) => DailyHistoryPage(
+                        theme: Theme.of(context),
+                      ),
                     ),
                   );
                   print('Navigating to Today in History Screen');
@@ -170,12 +171,13 @@ void initState() {
                     Expanded(
                       child: buildFullCard(context,
                           title: 'Fact of the Day',
-                          description: widget.factText, onTapAction: () {
+                          description: factText, onTapAction: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                DailyFactPage(factText: widget.factText),
+                            builder: (BuildContext context) => DailyFactPage(
+                              theme: Theme.of(context),
+                            ),
                           ),
                         );
                         print('Navigating to Fact of the Day Screen');
