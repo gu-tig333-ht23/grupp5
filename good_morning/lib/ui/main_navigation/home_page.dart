@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                     style: titleTextStyle);
               }
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),
@@ -219,7 +219,8 @@ class _HomePageState extends State<HomePage> {
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const OnBoardingScreen()),
                 );
               }),
             ],

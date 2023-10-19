@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/ui/main_navigation/home_page.dart';
 import 'filter_model.dart';
 import 'package:provider/provider.dart';
 
 class OnBoardingScreen extends StatefulWidget {
+  const OnBoardingScreen({super.key});
+
   @override
   OnBoardingScreenState createState() => OnBoardingScreenState();
 }
