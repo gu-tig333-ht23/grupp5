@@ -43,39 +43,34 @@ Future<List<double>> fetchDailyForecast() async {
   }
 }
 
-
 class WeatherPage extends StatelessWidget {
-
   // Funktion för att extrahera longitud och latitud för inmatad location
   Future<Map<String, double>> geocodeLocation(String location) async {
-  final apiKey = 'API_KEY'; // Ersätt med riktig API nyckel
-  final query = Uri.encodeComponent(location);
-  final url = 'https://maps.googleapis.com/maps/api/geocode/json?address=$query&key=$apiKey';
+    final apiKey = 'API_KEY'; // Ersätt med riktig API nyckel
+    final query = Uri.encodeComponent(location);
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?address=$query&key=$apiKey';
 
-  try {
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['status'] == 'OK') {
-        final results = data['results'][0]['geometry']['location'];
-        final double lat = results['lat'];
-        final double lng = results['lng'];
-        return {'latitude': lat, 'longitude': lng};
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          final results = data['results'][0]['geometry']['location'];
+          final double lat = results['lat'];
+          final double lng = results['lng'];
+          return {'latitude': lat, 'longitude': lng};
+        }
       }
+
+      // Handle other errors, if needed
+      return Future.error('Geocoding failed');
+    } catch (e) {
+      // Handle exceptions, e.g., network errors
+      return Future.error(e.toString());
     }
-
-    // Handle other errors, if needed
-    return Future.error('Geocoding failed');
-  } catch (e) {
-    // Handle exceptions, e.g., network errors
-    return Future.error(e.toString());
   }
-}
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -106,33 +101,33 @@ class WeatherPage extends StatelessWidget {
                 }
               },
             ),
+            Expanded(
+              child: FutureBuilder<List<double>>(
+                future: fetchDailyForecast(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    List<double> temperatures = snapshot.data!;
 
-            FutureBuilder<List<double>>(
-              future: fetchDailyForecast(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  List<double> temperatures = snapshot.data!;
-
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    itemCount: temperatures.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('${index}: ${temperatures[index]} °C'),
-                      );
-                    },
-                  );
-                }
-              },
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemCount: temperatures.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text('${index}: ${temperatures[index]} °C'),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
-
       ),
     );
   }
