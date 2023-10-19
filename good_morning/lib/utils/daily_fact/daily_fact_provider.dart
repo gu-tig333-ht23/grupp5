@@ -8,18 +8,18 @@ import 'package:good_morning/data_handling/secrets.dart' as config;
 // handles all changes to the list with categories
 class DailyFactProvider extends ChangeNotifier {
   final List<FactCategory> _categories = [
-    (FactCategory(categoryName: 'Animals', chosen: true)),
-    (FactCategory(categoryName: 'Natural Science', chosen: true)),
+    (FactCategory(categoryName: 'Animals', chosen: false)),
+    (FactCategory(categoryName: 'Natural Science', chosen: false)),
     (FactCategory(categoryName: 'Celebrities', chosen: false)),
-    (FactCategory(categoryName: 'Film Science', chosen: true)),
+    (FactCategory(categoryName: 'Film Science', chosen: false)),
     (FactCategory(categoryName: 'Literature and Reading', chosen: false)),
-    (FactCategory(categoryName: 'Space', chosen: true)),
+    (FactCategory(categoryName: 'Space', chosen: false)),
     (FactCategory(categoryName: 'The Human Body', chosen: false)),
     (FactCategory(categoryName: 'History of Sweden', chosen: false)),
     (FactCategory(categoryName: 'Engines and Vehicles', chosen: false)),
     (FactCategory(categoryName: 'Art', chosen: false)),
     (FactCategory(categoryName: 'Psychology and Behaviors', chosen: false)),
-    (FactCategory(categoryName: 'Fashion', chosen: true)),
+    (FactCategory(categoryName: 'Fashion', chosen: false)),
   ];
 
   List<FactCategory> get categories => _categories;
@@ -60,27 +60,33 @@ const factApiUrl = 'https://api.openai.com/v1/completions';
 
 // Function call to fetch fact from API with current chosen categorynames
 Future<String> fetchDailyFact(List<String> chosenCategoryNames) async {
-  final factPrompt =
-      'Pick one of these areas of interest: ${chosenCategoryNames.join(', ')} and tell me a fun, random fact from this area. Do not tell me which area you picked.';
+  String factPrompt;
 
-  final factHeaders = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $factApiKey',
-  };
-
-  final factBody = json.encode({
-    'prompt': factPrompt,
-    'max_tokens': 100,
-    'model': 'gpt-3.5-turbo-instruct',
-  });
-
-  final response = await http.post(Uri.parse(factApiUrl),
-      headers: factHeaders, body: factBody);
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    final String factText = jsonResponse['choices'][0]['text'];
-    return factText;
+  if (chosenCategoryNames.isEmpty) {
+    factPrompt = 'Tell me a fun, random fact';
   } else {
-    throw Exception('Failed to fetch data from ChatGPT API');
+    factPrompt =
+        'Pick one of these areas of interest: ${chosenCategoryNames.join(', ')} and tell me a fun, random fact from this area. Do not tell me which area you picked.';
+  }
+    final factHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $factApiKey',
+    };
+
+    final factBody = json.encode({
+      'prompt': factPrompt,
+      'max_tokens': 100,
+      'model': 'gpt-3.5-turbo-instruct',
+    });
+
+    final response = await http.post(Uri.parse(factApiUrl),
+        headers: factHeaders, body: factBody);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final String factText = jsonResponse['choices'][0]['text'];
+      return factText;
+    } else {
+      throw Exception('Failed to fetch data from ChatGPT API');
+    }
   }
 }
