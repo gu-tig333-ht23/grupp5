@@ -153,7 +153,7 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
+                    //imageUrl: thumbnail,
                     onTapAction: () {
                   Navigator.push(
                     context,

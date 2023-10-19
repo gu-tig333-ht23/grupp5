@@ -7,7 +7,6 @@ import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main_navigation/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_history.dart';
-
 import 'ui/main_navigation/filter_model.dart';
 
 void main() async {
