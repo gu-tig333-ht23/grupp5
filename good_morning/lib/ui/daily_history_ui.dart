@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_history.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class DailyHistoryPage extends StatefulWidget {
   final ThemeData theme;
@@ -22,7 +23,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     // Fetch data when the widget is initialized
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
-  
+
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     return Scaffold(
@@ -35,13 +36,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     historyProvider.setFilter(newValue);
                   });
                 },
-                items: [
-                  'selected',
-                  'births',
-                  'deaths',
-                  'events',
-                  'holidays'
-                ].map((filter) {
+                items: ['highlighted', 'births', 'deaths', 'events', 'holidays']
+                    .map((filter) {
                   return DropdownMenuItem<String>(
                     value: (filter),
                     child: Text(filter),
@@ -54,30 +50,18 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              buildFullCard(context, title :historyProvider.item.text,
-                  description: historyProvider.item.extract,),
+              buildFullCard(
+                context,
+                title: historyProvider.item.text,
+                description: historyProvider.item.extract,
+              ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 500,
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: const Color(0xff7c94b6),
-                    borderRadius: BorderRadius.circular(3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        historyProvider.item.thumbnail,
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+                child: Card(
+                  color: Theme.of(context).cardColor,
+                  child: FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: historyProvider.item.thumbnail,
                   ),
                 ),
               ),
