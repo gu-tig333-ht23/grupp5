@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:good_morning/data_handling/secrets.dart' as config;
+
 enum TransportMode { bicycling, walking, driving, transit }
 
 class DailyTrafficProvider extends ChangeNotifier {
@@ -445,7 +447,7 @@ Future<void> processDeleteDestination(
 // sends request through proxy server https://cors-anywhere.herokuapp.com
 const String mapUrl =
     'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json';
-const String mapApiKey = 'dinnyckelhär';
+const String mapApiKey = config.mapApiKey;
 
 Future<Map<String, dynamic>> getRouteInfoFromAPI(
     String toName, String fromName, String mode) async {
