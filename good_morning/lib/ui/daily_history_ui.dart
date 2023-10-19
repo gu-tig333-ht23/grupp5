@@ -61,7 +61,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   color: Theme.of(context).cardColor,
                   child: FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
-                    image: historyProvider.item.thumbnail,
+                    image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
                   ),
                 ),
               ),

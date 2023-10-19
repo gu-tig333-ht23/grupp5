@@ -90,7 +90,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                   padding: const EdgeInsets.all(24.0),
                   child: FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
-                    image: posterPath,
+                    image: posterPath, imageScale: 1, placeholderScale: 1
                   ),
                 ),
               ),

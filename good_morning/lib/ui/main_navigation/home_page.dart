@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    context.read<HistoryProvider>().fetchHistoryItem3();
+    //context.read<HistoryProvider>().fetchHistoryItem3();
   }
 
   void _showFilterDialog(BuildContext context) {

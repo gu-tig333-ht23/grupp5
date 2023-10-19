@@ -37,7 +37,7 @@ Widget buildFullCardWithImage(BuildContext context,
               image: DecorationImage(
                 image: FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
-                  image: imageUrl,
+                  image: imageUrl, imageScale: 1, placeholderScale: 1
                 ).image,
                 fit: BoxFit.cover,
               ),

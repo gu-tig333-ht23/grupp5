@@ -56,9 +56,9 @@ void storeHistory(selectedFilter) {
 
 //Empty history item
   var _item = HistoryItem(
-    text: '',
-    extract: '',
-    thumbnail: '',
+    text: 'asd',
+    extract: 'asd',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/320px-Mother_Teresa_1.jpg',
   );
   HistoryItem get item => _item;
 
