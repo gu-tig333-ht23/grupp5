@@ -3,7 +3,9 @@ import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyTrafficPage extends StatelessWidget {
-  const DailyTrafficPage({super.key});
+  final ThemeData theme;
+
+  const DailyTrafficPage({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -135,14 +137,17 @@ class DailyTrafficPage extends StatelessWidget {
                                           ['legs'][0]['duration']['text'];
                                       var distance = routeInfo['routes'][0]
                                           ['legs'][0]['distance']['text'];
+                                      String routeInfoText = (currentFrom
+                                                      .name !=
+                                                  null &&
+                                              currentTo.name != null
+                                          ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'
+                                          : (currentFrom.name != null)
+                                              ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.address} if ${transportMode.name.toString()}. The distance is $distance.'
+                                              : 'Right now it is approximately $duration from ${currentFrom.address} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.');
 
                                       return Column(children: [
-                                        Text(currentFrom.name != null &&
-                                                currentTo.name != null
-                                            ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'
-                                            : (currentFrom.name != null)
-                                                ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.address} if ${transportMode.name.toString()}. The distance is $distance.'
-                                                : 'Right now it is approximately $duration from ${currentFrom.address} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'),
+                                        Text(routeInfoText),
                                       ]);
                                     } else {
                                       return Text('No data');

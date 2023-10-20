@@ -1,5 +1,6 @@
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
@@ -108,8 +109,13 @@ class _HomePageState extends State<HomePage> {
         Provider.of<HistoryProvider>(context).selectedFilter;
     var month = Provider.of<HistoryProvider>(context).mmDate;
     var day = Provider.of<HistoryProvider>(context).ddDate;
+
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+
+    var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
+    var currentTo = context.watch<DailyTrafficProvider>().currentTo;
+    var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
       appBar: AppBar(
@@ -138,19 +144,49 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                buildFullCard(context,
-                    title: 'Traffic',
-                    description:
-                        'Little traffic, approximately 51 mins to work by bicycle.',
-                    onTapAction: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => DailyTrafficPage(),
-                    ),
-                  );
-                  print('Navigating to Traffic Information Screen');
-                }),
+                Expanded(
+                  child: FutureBuilder<Map<String, dynamic>>(
+                      future: getRouteInfoFromAPI(currentTo.address,
+                          currentFrom.address, transportMode.name.toString()),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          var routeInfo = snapshot.data!;
+                          var duration = routeInfo['routes'][0]['legs'][0]
+                              ['duration']['text'];
+                          var distance = routeInfo['routes'][0]['legs'][0]
+                              ['distance']['text'];
+                          String routeInfoText = (currentFrom.name != null &&
+                                  currentTo.name != null
+                              ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'
+                              : (currentFrom.name != null)
+                                  ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.address} if ${transportMode.name.toString()}. The distance is $distance.'
+                                  : 'Right now it is approximately $duration from ${currentFrom.address} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.');
+
+                          return buildFullCard(
+                            context,
+                            title: 'Traffic',
+                            description: routeInfoText,
+                            onTapAction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      DailyTrafficPage(
+                                          theme: Theme.of(context)),
+                                ),
+                              );
+
+                              print('Navigating to Traffic Information Screen');
+                            },
+                          );
+                        }
+                      }),
+                ),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
@@ -221,10 +257,6 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-              const SizedBox(height: 16.0),
-              buildSmallButton(context, "Small Button Test", () {
-                print("Small Button Pressed!");
-              }),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(

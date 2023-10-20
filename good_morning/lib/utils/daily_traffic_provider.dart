@@ -441,7 +441,6 @@ Future<void> processDeleteDestination(
     },
   );
 }
-
 // API code here
 
 // Google Maps Directions API
