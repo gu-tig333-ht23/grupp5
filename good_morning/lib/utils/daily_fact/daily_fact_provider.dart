@@ -34,10 +34,17 @@ class DailyFactProvider extends ChangeNotifier {
     return _storedDate;
   }
 
+  // function that checks if the dates are different days
+  bool isDifferentDay(DateTime stored, DateTime current) {
+    return (stored.year != current.year ||
+        stored.month != current.month ||
+        stored.day != current.day);
+  }
+
   Future<void> fetchAndUpdateFact() async {
     DateTime storedDate = await getDateFromStorage();
     DateTime currentDate = DateTime.now();
-    if (currentDate.isAfter(storedDate.add(Duration(days: 1)))) {
+    if (isDifferentDay(storedDate, currentDate)) {
       // last text fetched more than one day ago
       try {
         String factData = await fetchDailyFact(); // fetches new fact
