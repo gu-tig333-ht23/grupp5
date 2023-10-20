@@ -1,62 +1,64 @@
 import 'package:flutter/material.dart';
-import 'daily_fact_category_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:good_morning/data_handling/fact_data_storage.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
 // handles all changes to the list with categories
 class DailyFactProvider extends ChangeNotifier {
-  final List<FactCategory> _categories = [
-    (FactCategory(categoryName: 'Animals', chosen: false)),
-    (FactCategory(categoryName: 'Natural Science', chosen: false)),
-    (FactCategory(categoryName: 'Celebrities', chosen: false)),
-    (FactCategory(categoryName: 'Film Science', chosen: false)),
-    (FactCategory(categoryName: 'Literature and Reading', chosen: false)),
-    (FactCategory(categoryName: 'Space', chosen: false)),
-    (FactCategory(categoryName: 'The Human Body', chosen: false)),
-    (FactCategory(categoryName: 'History of Sweden', chosen: false)),
-    (FactCategory(categoryName: 'Engines and Vehicles', chosen: false)),
-    (FactCategory(categoryName: 'Art', chosen: false)),
-    (FactCategory(categoryName: 'Psychology and Behaviors', chosen: false)),
-    (FactCategory(categoryName: 'Fashion', chosen: false)),
-  ];
-
-  List<FactCategory> get categories => _categories;
-
   Future<String> _factText = Future.value('');
 
   Future<String> get factText => _factText;
 
   void getFactText() {
-    fetchFactOfTheDay();
+    fetchAndUpdateFact();
   }
 
-  // function that changes the category´s status when clicked
-  void toggleCircle(FactCategory category) {
-    category.chosen = !category.chosen;
-    notifyListeners();
+  // storing the fact text in the storage
+  void storeText(text) async {
+    await storeFactText(text);
   }
 
-  // function that retrieves the current chosen categories
-  List<String> getChosenCategories() {
-    List<String> chosenCategories = categories
-        .where((category) => category.chosen)
-        .map((category) => category.categoryName)
-        .toList();
-    return chosenCategories;
+  getStoredText() async {
+    var _factText = await getStoredFactData();
+    return _factText;
   }
 
-  // retrieves the fact text as correct text string to be displayed
-  Future<void> fetchFactOfTheDay() async {
-    try {
-      String factData = await fetchDailyFact([]);
-      int startIndex = factData.indexOf('\n\n');
-      _factText = Future.value(factData.substring(startIndex + 2).trim());
-      notifyListeners();
-    } catch (error) {
-      throw Exception('Failed to fetch fact text: $error');
+  Future<void> storeDate(date) async {
+    await storeFetchedDate(date);
+  }
+
+  getDateFromStorage() async {
+    var _storedDate = await getStoredDate();
+    return _storedDate;
+  }
+
+  Future<void> fetchAndUpdateFact() async {
+    DateTime storedDate = await getDateFromStorage();
+    DateTime currentDate = DateTime.now();
+    if (currentDate.isAfter(storedDate.add(Duration(days: 1)))) {
+      // last text fetched more than one day ago
+      try {
+        String factData = await fetchDailyFact(); // fetches new fact
+        int startIndex = factData.indexOf('\n\n');
+        String factText = factData.substring(startIndex + 2).trim();
+        _factText = Future.value(factText);
+        storeFactText(factText);
+
+        storeFetchedDate(currentDate);
+        print('Stored date for fetching: $currentDate');
+        notifyListeners();
+      } catch (error) {
+        throw Exception('Failed to fetch and update fact text: $error');
+      }
+    } else {
+      // fetch the stored fact text
+      Map<String, String> storedData = await getStoredFactData();
+      String factText = storedData['factText'] ?? '';
+      _factText = Future.value(factText);
     }
+    notifyListeners();
   }
 }
 
@@ -67,15 +69,9 @@ const String factApiKey = config.factApiKey;
 const factApiUrl = 'https://api.openai.com/v1/completions';
 
 // Function call to fetch fact from API with current chosen categorynames
-Future<String> fetchDailyFact(List<String> chosenCategoryNames) async {
-  String factPrompt;
+Future<String> fetchDailyFact() async {
+  String factPrompt = 'Tell me a fun, random fact';
 
-  if (chosenCategoryNames.isEmpty) {
-    factPrompt = 'Tell me a fun, random fact';
-  } else {
-    factPrompt =
-        'Pick one of these areas of interest: ${chosenCategoryNames.join(', ')} and tell me a fun, random fact from this area. Do not tell me which area you picked.';
-  }
   final factHeaders = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $factApiKey',

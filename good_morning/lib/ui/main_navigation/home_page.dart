@@ -166,63 +166,61 @@ class _HomePageState extends State<HomePage> {
                   );
                   print('Navigating to Today in History Screen');
                 }),
-              Row(
-                children: [
-                  if (visibilityModel.showFact)
-                    Expanded(
-                      child: FutureBuilder<String>(
-                        future:
-                            Provider.of<DailyFactProvider>(context).factText,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            var factText = snapshot.data;
-                            return buildFullCard(
+              if (visibilityModel.showFact)
+                Expanded(
+                  child: FutureBuilder<String>(
+                    future: Provider.of<DailyFactProvider>(context).factText,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        var factText = snapshot.data;
+                        return buildFullCard(
+                          context,
+                          title: 'Fact of the Day',
+                          description: factText ?? '',
+                          optionalWidget: IconButton(
+                            icon: Icon(Icons.lightbulb, size: 30),
+                            onPressed: () {},
+                          ),
+                          onTapAction: () {
+                            Navigator.push(
                               context,
-                              title: 'Fact of the Day',
-                              description: factText ?? '',
-                              onTapAction: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        DailyFactPage(
-                                      factText: factText,
-                                      theme: Theme.of(context),
-                                    ),
-                                  ),
-                                );
-                                print('Navigating to Fact of the Day Screen');
-                              },
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    DailyFactPage(
+                                  factText: factText,
+                                  theme: Theme.of(context),
+                                ),
+                              ),
                             );
-                          }
-                        },
-                      ),
-                    ),
-                  if (visibilityModel.showFilm)
-                    Expanded(
-                      child: buildFullCardWithImage(
+                            print('Navigating to Fact of the Day Screen');
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              if (visibilityModel.showFilm)
+                Expanded(
+                  child: buildFullCardWithImage(
+                    context,
+                    title: 'Film of the Day',
+                    description: movieTitle,
+                    imageUrl: posterPath,
+                    onTapAction: () {
+                      Navigator.push(
                         context,
-                        title: 'Film of the Day',
-                        description: movieTitle,
-                        imageUrl: posterPath,
-                        onTapAction: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DailyFilmPage(theme: Theme.of(context)),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                ],
-              ),
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DailyFilmPage(theme: Theme.of(context)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               const SizedBox(height: 16.0),
               buildSmallButton(context, "Small Button Test", () {
                 print("Small Button Pressed!");
