@@ -20,57 +20,78 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
-    // Fetch data when the widget is initialized
   }
+
+  Future<void> _refreshData() async {
+  var historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+  try { 
+    await historyProvider.fetchHistoryItem3();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Data refreshed successfully'),
+    ));
+  } catch (e) {
+    
+    print("Error refreshing data: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Error refreshing data: $e'),
+    ));
+  }
+}
 
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            DropdownButton<String>(
-                value: historyProvider.selectedFilter,
-                onChanged: (newValue) {
-                  setState(() {
-                    historyProvider.setFilter(newValue);
-                  });
-                },
-                items: ['selected', 'births', 'deaths', 'events', 'holidays']
-                    .map((filter) {
-                  return DropdownMenuItem<String>(
-                    value: (filter),
-                    child: Text(filter),
-                  );
-                }).toList()),
-          ],
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text('Today in History'),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                buildFullCard(
-                  context,
-                  title: historyProvider.item.text,
-                  description: historyProvider.item.extract,
-                ),
-                
-                  Card(
-                    color: Theme.of(context).cardColor,
-                    
-                    
-                    child: FadeInImage.memoryNetwork(
-                      placeholder: kTransparentImage,
-                      image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
-                    ),
-                  ),
-                
-              ],
-            ),
+      appBar: AppBar(
+        actions: [
+          DropdownButton<String>(
+            value: historyProvider.selectedFilter,
+            onChanged: (newValue) {
+              setState(() {
+                historyProvider.setFilter(newValue);
+              });
+            },
+            items: ['selected', 'births', 'deaths', 'events', 'holidays']
+                .map((filter) {
+              return DropdownMenuItem<String>(
+                value: filter,
+                child: Text(filter),
+              );
+            }).toList(),
           ),
-        ));
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              _refreshData(); // Refresh data
+            },
+          ),
+        ],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text('Today in History'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              buildFullCard(
+                context,
+                title: historyProvider.item.text,
+                description: historyProvider.item.extract,
+              ),
+              Card(
+                color: Theme.of(context).cardColor,
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: historyProvider.item.thumbnail,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
+
+

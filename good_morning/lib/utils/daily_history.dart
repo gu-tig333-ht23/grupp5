@@ -28,8 +28,6 @@ class HistoryItem {
 }
 
 class HistoryProvider extends ChangeNotifier {
-  
-
 // Date
   final DateTime _now = DateTime.now();
   DateTime get now => _now;
@@ -38,7 +36,7 @@ class HistoryProvider extends ChangeNotifier {
   get mmDate => _now.month;
 
 // Random number
-  var randomNumber = Random().nextInt(1);
+  var randomNumber = Random().nextInt(20);
 
 // Filter
   String _selectedFilter = 'births';
@@ -67,32 +65,25 @@ class HistoryProvider extends ChangeNotifier {
     var _storedData = await getHistoryData();
     return _storedData;
   }
-
   //Get historyitem from API-function
   fetchHistoryItem3() async {
     var historyitem = await fetchHistoryItemWiki(
-        randomNumber, selectedFilter, now.month, now.day);
-
-
-
+         selectedFilter, now.month, now.day);
     _item = HistoryItem.fromJson(historyitem);
-    
-    
-
     notifyListeners();
   }
-
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
-  randomNumber, selectedFilter, month, day) async {
+   selectedFilter, month, day) async {
   final apiHeaderWiki = {
     'ContentType': 'application/json',
     'accept': 'application/json',
   };
 
+//https://cors-anywhere.herokuapp.com/
   final response = await http.get(
     Uri.parse(
-        'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
+        'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
     headers: apiHeaderWiki,
   );
 
@@ -108,12 +99,12 @@ class HistoryProvider extends ChangeNotifier {
       };
     }
 
+    var nextRandomNumber = Random().nextInt(events.length);
     Map<String, dynamic> item;
     String text;
     String thumbnail;
     String extract;
-    int nextRandomNumber = randomNumber;
-
+    
     do {
       if (nextRandomNumber >= events.length) {
         nextRandomNumber = 0; // Wrap around to the beginning of the list
