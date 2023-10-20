@@ -22,11 +22,15 @@ class DailyFactProvider extends ChangeNotifier {
     (FactCategory(categoryName: 'Fashion', chosen: false)),
   ];
 
-  String _factText = 'Placeholder';
-
   List<FactCategory> get categories => _categories;
 
-  String get factText => _factText;
+  Future<String> _factText = Future.value('');
+
+  Future<String> get factText => _factText;
+
+  void getFactText() {
+    fetchFactOfTheDay();
+  }
 
   // function that changes the category´s status when clicked
   void toggleCircle(FactCategory category) {
@@ -44,24 +48,16 @@ class DailyFactProvider extends ChangeNotifier {
   }
 
   // retrieves the fact text as correct text string to be displayed
-  Future<String> fetchFactOfTheDay(List<String> chosenCategories) async {
+  Future<void> fetchFactOfTheDay() async {
     try {
-      String factData = await fetchDailyFact(chosenCategories);
+      String factData = await fetchDailyFact([]);
       int startIndex = factData.indexOf('\n\n');
-      String factText = factData.substring(startIndex + 2);
-      return factText.trim();
+      _factText = Future.value(factData.substring(startIndex + 2).trim());
+      notifyListeners();
     } catch (error) {
       throw Exception('Failed to fetch fact text: $error');
     }
   }
-}
-
-// fetching the daily fact text
-Future<String> getDailyFact() async {
-  var dailyFactProvider = DailyFactProvider();
-  var chosenCats = dailyFactProvider.getChosenCategories();
-  String factText = (await fetchDailyFact(chosenCats)).trim();
-  return factText;
 }
 
 // Handles all communication with ChatGPT API //

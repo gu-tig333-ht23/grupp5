@@ -36,9 +36,11 @@ Widget buildFullCardWithImage(BuildContext context,
           ? BoxDecoration(
               image: DecorationImage(
                 image: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: imageUrl, imageScale: 1, placeholderScale: 1
-                ).image,
+                        placeholder: kTransparentImage,
+                        image: imageUrl,
+                        imageScale: 1,
+                        placeholderScale: 1)
+                    .image,
                 fit: BoxFit.cover,
               ),
               borderRadius: BorderRadius.circular(8),

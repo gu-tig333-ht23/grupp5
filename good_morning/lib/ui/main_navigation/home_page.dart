@@ -25,6 +25,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
+
+    context.read<DailyFactProvider>().getFactText();
+
     //context.read<HistoryProvider>().fetchHistoryItem3();
   }
 
@@ -108,8 +111,6 @@ class _HomePageState extends State<HomePage> {
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
-    String factText = Provider.of<DailyFactProvider>(context).factText;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -169,19 +170,38 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   if (visibilityModel.showFact)
                     Expanded(
-                      child: buildFullCard(context,
-                          title: 'Fact of the Day',
-                          description: factText, onTapAction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => DailyFactPage(
-                              theme: Theme.of(context),
-                            ),
-                          ),
-                        );
-                        print('Navigating to Fact of the Day Screen');
-                      }),
+                      child: FutureBuilder<String>(
+                        future:
+                            Provider.of<DailyFactProvider>(context).factText,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            var factText = snapshot.data;
+                            return buildFullCard(
+                              context,
+                              title: 'Fact of the Day',
+                              description: factText ?? '',
+                              onTapAction: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        DailyFactPage(
+                                      factText: factText,
+                                      theme: Theme.of(context),
+                                    ),
+                                  ),
+                                );
+                                print('Navigating to Fact of the Day Screen');
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ),
                   if (visibilityModel.showFilm)
                     Expanded(

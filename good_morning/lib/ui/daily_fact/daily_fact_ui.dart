@@ -6,13 +6,13 @@ import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
+  final String? factText;
+
   final ThemeData theme;
-  const DailyFactPage({super.key, required this.theme});
+  const DailyFactPage({super.key, required this.factText, required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    String factText = Provider.of<DailyFactProvider>(context).factText;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -22,7 +22,8 @@ class DailyFactPage extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
         child: Column(
           children: [
-            buildFullCard(context, description: factText),
+            buildFullCard(context,
+                description: factText ?? 'No fact available'),
             Card(
               color: Theme.of(context).cardColor,
               child: Column(
