@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    //context.read<HistoryProvider>().fetchHistoryItem3();
+    context.read<HistoryProvider>().fetchHistoryItem3();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -102,11 +102,9 @@ void initState() {
   @override
   Widget build(BuildContext context) {
    
+    
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
-        var month = Provider.of<HistoryProvider>(context).mmDate;
-        var day = Provider.of<HistoryProvider>(context).ddDate;
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
@@ -187,7 +185,7 @@ void initState() {
                         context,
                         title: 'Film of the Day',
                         description: movieTitle,
-                        imageUrl: posterPath,
+                        //imageUrl: posterPath,
                         onTapAction: () {
                           Navigator.push(
                             context,

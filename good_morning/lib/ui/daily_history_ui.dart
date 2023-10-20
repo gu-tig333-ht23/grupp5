@@ -20,8 +20,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   void initState() {
     super.initState();
+    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
     // Fetch data when the widget is initialized
-    
   }
 
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     historyProvider.setFilter(newValue);
                   });
                 },
-                items: ['highlighted', 'births', 'deaths', 'events', 'holidays']
+                items: ['selected', 'births', 'deaths', 'events', 'holidays']
                     .map((filter) {
                   return DropdownMenuItem<String>(
                     value: (filter),
@@ -48,24 +48,28 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           title: const Text('Today in History'),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildFullCard(
-                context,
-                title: historyProvider.item.text,
-                description: historyProvider.item.extract,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Card(
-                  color: Theme.of(context).cardColor,
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
-                  ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                buildFullCard(
+                  context,
+                  title: historyProvider.item.text,
+                  description: historyProvider.item.extract,
                 ),
-              ),
-            ],
+                
+                  Card(
+                    color: Theme.of(context).cardColor,
+                    
+                    
+                    child: FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
+                    ),
+                  ),
+                
+              ],
+            ),
           ),
         ));
   }
