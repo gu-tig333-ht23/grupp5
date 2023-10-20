@@ -1,4 +1,4 @@
-import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
