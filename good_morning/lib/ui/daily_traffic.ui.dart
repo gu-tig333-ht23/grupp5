@@ -62,49 +62,44 @@ class DailyTrafficPage extends StatelessWidget {
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 10, left: 10, right: 20),
-                      child: Row(
+                      child: Column(
                         children: [
-                          const Column(
+                          Row(
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(left: 8.0, bottom: 15),
+                                padding:
+                                    EdgeInsets.only(left: 15.0, bottom: 15),
                                 child: Text('From:',
                                     style: TextStyle(fontSize: 20)),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    left: 30, top: 12, right: 8.0, bottom: 8),
-                                child:
-                                    Text('To:', style: TextStyle(fontSize: 20)),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                              width:
-                                  20), // Adjust the spacing between the columns if needed
-                          Column(
-                            children: [
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 6.0, right: 6, bottom: 2),
+                                      left: 10.0, right: 6, bottom: 2),
                                   child: DestinationItem(currentFrom),
                                 ),
                               ),
+                            ],
+                          ),
+                          Row(
+                            children: [
                               Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 6.0, right: 6),
-                                    child: DestinationItem(currentTo),
-                                  ),
+                                padding:
+                                    EdgeInsets.only(left: 15.0, bottom: 15),
+                                child:
+                                    Text('To:', style: TextStyle(fontSize: 20)),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 6, bottom: 2),
+                                  child: DestinationItem(currentTo),
                                 ),
                               ),
                             ],
@@ -112,29 +107,27 @@ class DailyTrafficPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: buildFullCard(
-                        context,
-                        optionalWidget: Column(
-                          children: [
-                            GoogleMapWidget(
-                                mapImage: getMapFromAPI(
-                                    currentTo.address,
-                                    currentFrom.address,
-                                    transportMode.name.toString())),
-                            SizedBox(height: 15),
-                            MapInfoWidget(
-                              routeInfo: getRouteInfoFromAPI(
-                                  currentTo.address,
-                                  currentFrom.address,
-                                  transportMode.name.toString()),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: buildFullCard(
+                  context,
+                  optionalWidget: Column(
+                    children: [
+                      GoogleMapWidget(
+                          mapImage: getMapFromAPI(
+                              currentTo.address,
+                              currentFrom.address,
+                              transportMode.name.toString())),
+                      SizedBox(height: 15),
+                      MapInfoWidget(
+                        routeInfo: getRouteInfoFromAPI(currentTo.address,
+                            currentFrom.address, transportMode.name.toString()),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
