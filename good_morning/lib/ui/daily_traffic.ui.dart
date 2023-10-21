@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -111,31 +112,25 @@ class DailyTrafficPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Card(
-                        color: Theme.of(context).cardColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              GoogleMapWidget(
-                                  mapImage: getMapFromAPI(
-                                      currentTo.address,
-                                      currentFrom.address,
-                                      transportMode.name.toString())),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: MapInfoWidget(
-                                  routeInfo: getRouteInfoFromAPI(
-                                      currentTo.address,
-                                      currentFrom.address,
-                                      transportMode.name.toString()),
-                                ),
-                              ),
-                            ],
-                          ),
+                      child: buildFullCard(
+                        context,
+                        optionalWidget: Column(
+                          children: [
+                            GoogleMapWidget(
+                                mapImage: getMapFromAPI(
+                                    currentTo.address,
+                                    currentFrom.address,
+                                    transportMode.name.toString())),
+                            SizedBox(height: 15),
+                            MapInfoWidget(
+                              routeInfo: getRouteInfoFromAPI(
+                                  currentTo.address,
+                                  currentFrom.address,
+                                  transportMode.name.toString()),
+                            ),
+                          ],
                         ),
                       ),
                     ),
