@@ -120,39 +120,20 @@ class DailyTrafficPage extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              FutureBuilder<Map<String, dynamic>>(
-                                  future: getRouteInfoFromAPI(
+                              GoogleMapWidget(
+                                  mapImage: getMapFromAPI(
+                                      currentTo.address,
+                                      currentFrom.address,
+                                      transportMode.name.toString())),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: MapInfoWidget(
+                                  routeInfo: getRouteInfoFromAPI(
                                       currentTo.address,
                                       currentFrom.address,
                                       transportMode.name.toString()),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: $snapshot.error}');
-                                    } else if (snapshot.hasData) {
-                                      var routeInfo = snapshot.data!;
-                                      var duration = routeInfo['routes'][0]
-                                          ['legs'][0]['duration']['text'];
-                                      var distance = routeInfo['routes'][0]
-                                          ['legs'][0]['distance']['text'];
-                                      String routeInfoText = (currentFrom
-                                                      .name !=
-                                                  null &&
-                                              currentTo.name != null
-                                          ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'
-                                          : (currentFrom.name != null)
-                                              ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.address} if ${transportMode.name.toString()}. The distance is $distance.'
-                                              : 'Right now it is approximately $duration from ${currentFrom.address} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.');
-
-                                      return Column(children: [
-                                        Text(routeInfoText),
-                                      ]);
-                                    } else {
-                                      return Text('No data');
-                                    }
-                                  }),
+                                ),
+                              ),
                             ],
                           ),
                         ),

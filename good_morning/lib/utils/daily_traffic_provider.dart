@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:typed_data';
 
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
@@ -469,11 +471,128 @@ Future<Map<String, dynamic>> getRouteInfoFromAPI(
   }
 }
 
+Future<Uint8List> getMapFromAPI(
+    String toName, String fromName, String mode) async {
+  String directionsUrl;
+  String embedStaticUrl;
+
+  if (kIsWeb) {
+    // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+    directionsUrl =
+        'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json';
+
+    embedStaticUrl =
+        'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/staticmap';
+  } else {
+    // for running in emulators, without proxy
+    directionsUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+    embedStaticUrl = 'https://maps.googleapis.com/maps/api/staticmap';
+  }
+  String markers =
+      'markers=color:red|label:A|$fromName&markers=color:blue|label:B|$toName';
+
+  // gets the direction data from API, decodes and encodes
+  http.Response directionsResponse = await http.get(Uri.parse(
+      '$directionsUrl?mode=$mode&destination=$toName&origin=$fromName&alternatives=true&key=$mapApiKey'));
+  if (directionsResponse.statusCode == 200) {
+    // if OK
+    Map<String, dynamic> data = json.decode(directionsResponse.body);
+    String polylineCoordinates =
+        data['routes'][0]['overview_polyline']['points'];
+
+    // builds the path for the route line
+    String path = '&path=color:0x0000ff|weight:5|enc:$polylineCoordinates';
+
+    // builds the static map url with polyline and markers
+    String mapUrl =
+        '$embedStaticUrl?size=600x300&$markers$path&key=$mapApiKey&mode=$mode';
+
+    // gets the static map with route line and markers from API
+    http.Response mapResponse = await http.get(Uri.parse(mapUrl));
+
+    if (mapResponse.statusCode == 200) {
+      // OK Response
+      return mapResponse.bodyBytes;
+    } else {
+      throw Exception('Failed to load map');
+    }
+  } else {
+    throw Exception('Failed to fetch directions');
+  }
+}
+
 class GoogleMapWidget extends StatelessWidget {
+  final Future<Uint8List> mapImage;
+
+  GoogleMapWidget({required this.mapImage});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [], // ska ha kartbild
+    return FutureBuilder<Uint8List>(
+      future: mapImage,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show loading indicator while waiting for the future to complete
+        } else if (snapshot.hasError) {
+          return Text(
+              'Error: ${snapshot.error}'); // Show error message if future completes with an error
+        } else if (snapshot.hasData) {
+          // If the future completes successfully, display the map image
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.memory(
+              snapshot.data!,
+              fit: BoxFit.cover,
+            ),
+          ); // Display the Uint8List image data
+        } else {
+          return Text('No data'); // Show a default message if there's no data
+        }
+      },
     );
+  }
+}
+
+class MapInfoWidget extends StatelessWidget {
+  final Future<Map<String, dynamic>> routeInfo;
+
+  MapInfoWidget({required this.routeInfo});
+
+  @override
+  Widget build(BuildContext context) {
+    var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
+    var currentTo = context.watch<DailyTrafficProvider>().currentTo;
+    var transportMode = context.watch<DailyTrafficProvider>().mode;
+
+    return FutureBuilder<Map<String, dynamic>>(
+        future: routeInfo,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: $snapshot.error}');
+          } else if (snapshot.hasData) {
+            var routeInfo = snapshot.data!;
+            var duration =
+                routeInfo['routes'][0]['legs'][0]['duration']['text'];
+            var distance =
+                routeInfo['routes'][0]['legs'][0]['distance']['text'];
+            String from = currentFrom.name != null
+                ? currentFrom.name!.toLowerCase()
+                : currentFrom.address;
+            String to = currentTo.name != null
+                ? currentTo.name!.toLowerCase()
+                : currentTo.address;
+
+            String routeInfoText =
+                'Right now it is approximately $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
+
+            return Column(children: [
+              Text(routeInfoText, style: TextStyle(fontSize: 18)),
+            ]);
+          } else {
+            return Text('No data');
+          }
+        });
   }
 }

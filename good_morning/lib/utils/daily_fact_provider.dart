@@ -11,8 +11,12 @@ class DailyFactProvider extends ChangeNotifier {
 
   Future<String> get factText => _factText;
 
-  void getFactText() {
-    fetchAndUpdateFact();
+  DailyFactProvider() {
+    getFactText();
+  }
+
+  Future<void> getFactText() async {
+    await fetchAndUpdateFact();
   }
 
   // storing the fact text in the storage
@@ -29,9 +33,9 @@ class DailyFactProvider extends ChangeNotifier {
     await storeFetchedDate(date);
   }
 
-  getDateFromStorage() async {
-    var _storedDate = await getStoredDate();
-    return _storedDate;
+  Future<DateTime> getDateFromStorage() async {
+    var storedDate = await getStoredDate();
+    return storedDate;
   }
 
   // function that checks if the dates are different days
@@ -43,19 +47,21 @@ class DailyFactProvider extends ChangeNotifier {
 
   Future<void> fetchAndUpdateFact() async {
     DateTime storedDate = await getDateFromStorage();
+    print('Date for last fetching: $storedDate');
     DateTime currentDate = DateTime.now();
     if (isDifferentDay(storedDate, currentDate)) {
       // last text fetched more than one day ago
       try {
         String factData = await fetchDailyFact(); // fetches new fact
+        print('New text fetched: $factData');
         int startIndex = factData.indexOf('\n\n');
         String factText = factData.substring(startIndex + 2).trim();
         _factText = Future.value(factText);
         storeFactText(factText);
+        print('Facttext stored: $factText');
 
         storeFetchedDate(currentDate);
-        print('Stored date for fetching: $currentDate');
-        notifyListeners();
+        print('Storing date for fetching: $currentDate');
       } catch (error) {
         throw Exception('Failed to fetch and update fact text: $error');
       }
@@ -64,6 +70,7 @@ class DailyFactProvider extends ChangeNotifier {
       Map<String, String> storedData = await getStoredFactData();
       String factText = storedData['factText'] ?? '';
       _factText = Future.value(factText);
+      print('Retrieved factText from storage: $factText');
     }
     notifyListeners();
   }

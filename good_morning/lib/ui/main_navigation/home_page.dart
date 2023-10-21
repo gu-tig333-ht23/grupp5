@@ -160,12 +160,16 @@ class _HomePageState extends State<HomePage> {
                               ['duration']['text'];
                           var distance = routeInfo['routes'][0]['legs'][0]
                               ['distance']['text'];
-                          String routeInfoText = (currentFrom.name != null &&
-                                  currentTo.name != null
-                              ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.'
-                              : (currentFrom.name != null)
-                                  ? 'Right now it is approximately $duration from ${currentFrom.name!.toLowerCase()} to ${currentTo.address} if ${transportMode.name.toString()}. The distance is $distance.'
-                                  : 'Right now it is approximately $duration from ${currentFrom.address} to ${currentTo.name!.toLowerCase()} if ${transportMode.name.toString()}. The distance is $distance.');
+
+                          String from = currentFrom.name != null
+                              ? currentFrom.name!.toLowerCase()
+                              : currentFrom.address;
+                          String to = currentTo.name != null
+                              ? currentTo.name!.toLowerCase()
+                              : currentTo.address;
+
+                          String routeInfoText =
+                              'Right now it is approximately $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
 
                           return buildFullCard(
                             context,
