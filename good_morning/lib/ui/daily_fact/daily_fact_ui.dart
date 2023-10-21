@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
+import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
-  final String? factText;
-
   final ThemeData theme;
-  const DailyFactPage({super.key, required this.factText, required this.theme});
+  const DailyFactPage({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +21,18 @@ class DailyFactPage extends StatelessWidget {
             buildFullCard(
               context,
               title: 'Did you know that...?',
-              description: factText ?? 'No fact available',
-              optionalWidget: IconButton(
-                icon: Icon(Icons.lightbulb, size: 40),
-                onPressed: () {},
+              optionalWidget: Row(
+                children: [
+                  Expanded(
+                    child: DailyFactWidget(
+                        factText:
+                            Provider.of<DailyFactProvider>(context).factText),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.lightbulb, size: 50),
+                    onPressed: () {},
+                  ),
+                ],
               ),
             ),
           ],

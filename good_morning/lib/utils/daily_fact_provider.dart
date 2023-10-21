@@ -107,3 +107,28 @@ Future<String> fetchDailyFact() async {
     throw Exception('Failed to fetch data from ChatGPT API');
   }
 }
+
+class DailyFactWidget extends StatelessWidget {
+  final Future<String> factText;
+
+  DailyFactWidget({required this.factText});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+        future: factText,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            var factText = snapshot.data!;
+
+            return Text(factText);
+          } else {
+            return Text('No data');
+          }
+        });
+  }
+}

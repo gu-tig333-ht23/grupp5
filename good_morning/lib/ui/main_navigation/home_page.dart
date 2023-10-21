@@ -27,8 +27,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getMovie(context, FilmApi(dio));
 
-    context.read<DailyFactProvider>().getFactText();
-
     //context.read<HistoryProvider>().fetchHistoryItem3();
   }
 
@@ -145,52 +143,24 @@ class _HomePageState extends State<HomePage> {
                 }),
               if (visibilityModel.showTraffic)
                 Expanded(
-                  child: FutureBuilder<Map<String, dynamic>>(
-                      future: getRouteInfoFromAPI(currentTo.address,
-                          currentFrom.address, transportMode.name.toString()),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          var routeInfo = snapshot.data!;
-                          var duration = routeInfo['routes'][0]['legs'][0]
-                              ['duration']['text'];
-                          var distance = routeInfo['routes'][0]['legs'][0]
-                              ['distance']['text'];
+                    child: buildFullCard(
+                  context,
+                  title: 'Traffic',
+                  optionalWidget: MapInfoWidget(
+                      routeInfo: getRouteInfoFromAPI(currentTo.address,
+                          currentFrom.address, transportMode.name.toString())),
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DailyTrafficPage(theme: Theme.of(context)),
+                      ),
+                    );
 
-                          String from = currentFrom.name != null
-                              ? currentFrom.name!.toLowerCase()
-                              : currentFrom.address;
-                          String to = currentTo.name != null
-                              ? currentTo.name!.toLowerCase()
-                              : currentTo.address;
-
-                          String routeInfoText =
-                              'Right now it is approximately $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
-
-                          return buildFullCard(
-                            context,
-                            title: 'Traffic',
-                            description: routeInfoText,
-                            onTapAction: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      DailyTrafficPage(
-                                          theme: Theme.of(context)),
-                                ),
-                              );
-
-                              print('Navigating to Traffic Information Screen');
-                            },
-                          );
-                        }
-                      }),
-                ),
+                    print('Navigating to Traffic Information Screen');
+                  },
+                )),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
@@ -207,41 +177,33 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Today in History Screen');
                 }),
               if (visibilityModel.showFact)
-                Expanded(
-                  child: FutureBuilder<String>(
-                    future: Provider.of<DailyFactProvider>(context).factText,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        var factText = snapshot.data;
-                        return buildFullCard(
-                          context,
-                          title: 'Fact of the Day',
-                          description: factText ?? '',
-                          optionalWidget: IconButton(
-                            icon: Icon(Icons.lightbulb, size: 30),
-                            onPressed: () {},
-                          ),
-                          onTapAction: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    DailyFactPage(
-                                  factText: factText,
-                                  theme: Theme.of(context),
-                                ),
-                              ),
-                            );
-                            print('Navigating to Fact of the Day Screen');
-                          },
-                        );
-                      }
-                    },
+                buildFullCard(
+                  context,
+                  title: 'Fact of the Day',
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: DailyFactWidget(
+                            factText: Provider.of<DailyFactProvider>(context)
+                                .factText),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.lightbulb, size: 40),
+                        onPressed: () {},
+                      ),
+                    ],
                   ),
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context),
+                        ),
+                      ),
+                    );
+                    print('Navigating to Fact of the Day Screen');
+                  },
                 ),
               if (visibilityModel.showFilm)
                 Expanded(

@@ -19,7 +19,7 @@ class DailyTrafficProvider extends ChangeNotifier {
   final List<Destination> _savedDestinations = [
     Destination(name: 'Home', address: 'Parallellvägen 13E, 433 35 Partille'),
     Destination(name: 'Work', address: 'Medicinaregatan 15A, 413 90 Göteborg'),
-    Destination(name: 'School', address: 'Skolvägen 12, 432 32 Jönköping'),
+    Destination(name: 'School', address: 'Forskningsgången 6, 417 56 Göteborg'),
     Destination(name: 'The stable', address: 'Töpelsgatan 16, 416 55 Göteborg'),
     Destination(name: 'The gym', address: 'Klättercentret 31, 433 35 Partille')
   ];
@@ -587,9 +587,7 @@ class MapInfoWidget extends StatelessWidget {
             String routeInfoText =
                 'Right now it is approximately $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
 
-            return Column(children: [
-              Text(routeInfoText, style: TextStyle(fontSize: 18)),
-            ]);
+            return Text(routeInfoText);
           } else {
             return Text('No data');
           }
