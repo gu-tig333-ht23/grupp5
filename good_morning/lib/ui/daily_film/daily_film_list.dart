@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -55,11 +56,12 @@ class DailyFilmList extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: buildSmallButton(
+                      context,
+                      'Remove from watchlist',
+                      () {
                         context.read<FavoriteMoviesModel>().removeMovie(index);
                       },
-                      child: const Text('Remove from Watchlist'),
                     ),
                   ),
                   Consumer<MovieProvider>(

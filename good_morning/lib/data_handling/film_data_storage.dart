@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 //Lagring för daily film
@@ -9,6 +11,8 @@ Future<void> storeMovieData({
   required String movieRating,
   required String moviePoster,
   required String movieId,
+  required List<Map<String, String>> streamInfo,
+  required String fetchDate,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('movieTitle', movieTitle);
@@ -17,11 +21,11 @@ Future<void> storeMovieData({
   prefs.setString('movieRating', movieRating);
   prefs.setString('moviePoster', moviePoster);
   prefs.setString('movieId', movieId);
-  print('Storage printer');
-  print(prefs.getString('movieTitle'));
+  prefs.setString('streamInfo', jsonEncode(streamInfo));
+  prefs.setString('fetchDate', fetchDate);
 }
 
-Future<Map<String, String>> getMovieData() async {
+Future<Map<String, dynamic>> getMovieData() async {
   final prefs = await SharedPreferences.getInstance();
   final movieTitle = prefs.getString('movieTitle');
   final movieDescription = prefs.getString('movieDescription');
@@ -29,6 +33,19 @@ Future<Map<String, String>> getMovieData() async {
   final movieRating = prefs.getString('movieRating');
   final moviePoster = prefs.getString('moviePoster');
   final movieId = prefs.getString('movieId');
+  final streamInfoString = prefs.getString('streamInfo');
+  final fetchDate = prefs.getString('fetchDate');
+
+  List<Map<String, String>> streamInfo = [];
+
+  if (streamInfoString != null) {
+    try {
+      streamInfo =
+          (jsonDecode(streamInfoString) as List).cast<Map<String, String>>();
+    } catch (e) {
+      print('Error parsing streamInfo: $e');
+    }
+  }
 
   return {
     'movieTitle': movieTitle ?? '',
@@ -37,25 +54,23 @@ Future<Map<String, String>> getMovieData() async {
     'movieRating': movieRating ?? '',
     'moviePoster': moviePoster ?? '',
     'movieId': movieId ?? '',
+    'streamInfo': streamInfo,
+    'fetchDate': fetchDate ?? '',
   };
 }
 
-Future<void> storeFilmSettingsData({
-  required String releaseYear,
-  required String excludedCategory,
-}) async {
+Future<bool> shouldFetchNewData() async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('releaseYear', releaseYear);
-  prefs.setString('excludedCategory', excludedCategory);
-}
+  final fetchDate = prefs.getString('fetchDate');
 
-Future<Map<String, String>> getSettingsData() async {
-  final prefs = await SharedPreferences.getInstance();
-  final releaseYear = prefs.getString('releaseYear');
-  final excludedCategory = prefs.getString('excludedCategory');
+  if (fetchDate == null) {
+    print('No fetch date stored, returning true');
+    return true;
+  }
 
-  return {
-    'releaseYear': releaseYear ?? '',
-    'excludedCategory': excludedCategory ?? '',
-  };
+  final currentDate = DateTime.now();
+  final storedDate = DateTime.parse(fetchDate);
+
+  print('Data avaiblie for $currentDate, storedDate: $storedDate');
+  return currentDate.difference(storedDate).inDays > 0;
 }

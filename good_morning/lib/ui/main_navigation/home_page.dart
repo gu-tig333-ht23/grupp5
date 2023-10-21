@@ -22,9 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
     //context.read<HistoryProvider>().fetchHistoryItem3();
@@ -101,12 +100,12 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-   
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
-        var month = Provider.of<HistoryProvider>(context).mmDate;
-        var day = Provider.of<HistoryProvider>(context).ddDate;
+    String selectedFilter =
+        Provider.of<HistoryProvider>(context).selectedFilter;
+    var month = Provider.of<HistoryProvider>(context).mmDate;
+    var day = Provider.of<HistoryProvider>(context).ddDate;
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
@@ -153,13 +152,13 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
-                    onTapAction: () {
+                    imageUrl: thumbnail, onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyHistoryPage(theme: Theme.of(context),),
+                      builder: (BuildContext context) => DailyHistoryPage(
+                        theme: Theme.of(context),
+                      ),
                     ),
                   );
                   print('Navigating to Today in History Screen');
