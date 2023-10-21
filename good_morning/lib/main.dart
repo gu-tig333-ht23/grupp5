@@ -67,14 +67,11 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data == true) {
-              // Onboarding has been completed, so show the HomePage
               return HomePage(factText: factText);
             } else {
-              // Onboarding has not been completed, so show the OnBoardingScreen
-              return OnBoardingScreen();
+              return const OnBoardingScreen();
             }
           } else {
-            // While waiting for the Future to complete, show a splash screen or a loader
             return const CircularProgressIndicator();
           }
         },

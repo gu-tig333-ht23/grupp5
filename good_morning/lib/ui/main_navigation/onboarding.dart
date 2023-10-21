@@ -154,10 +154,9 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
       );
     } else {
       setState(() {
-        _canSwipe = true; // Enable swiping
+        _canSwipe = true;
       });
-      await setUserName(
-          _nameController.text.trim()); // Save the name to SharedPreferences
+      await setUserName(_nameController.text.trim());
       _pageController.nextPage(
         duration: const Duration(milliseconds: 500),
         curve: Curves.ease,
@@ -227,7 +226,7 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               //Navigator.pushReplacement(
               //context,
               //MaterialPageRoute(builder: (context) => MainScreen()),
-              //); Inväntar Stines fix
+              //); Byt pop till pushReplacement efter Stines home_page fix.
             },
           ),
         ],
