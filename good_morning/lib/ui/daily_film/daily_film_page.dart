@@ -101,7 +101,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: streamInfo.map((info) {
                               return Text(
-                                  'Available on ${info['service']}: ${info['streamingType']}');
+                                  'Available on ${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}');
                             }).toList(),
                           ),
                         );
@@ -155,7 +155,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
 }
 
 Future<void> getMovie(BuildContext context, FilmApi filmApi,
-    {bool forceFetch = false}) async {
+    {bool forceFetch = true}) async {
   final shouldFetch = forceFetch || await shouldFetchNewData();
 
   if (shouldFetch) {
@@ -177,6 +177,10 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
   } else {
     final storedData = await getMovieData();
     if (storedData.isNotEmpty) {
+      final List<Map<String, String>> streamInfo =
+          (storedData['streamInfo'] as List<dynamic>)
+              .cast<Map<String, String>>();
+
       Provider.of<MovieProvider>(context, listen: false).setMovie(
           storedData['movieTitle']!,
           storedData['movieDescription']!,
@@ -184,7 +188,7 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
           storedData['movieRating']!,
           storedData['moviePoster']!,
           storedData['movieId']!,
-          storedData['streamInfo'] as List<Map<String, String>>,
+          streamInfo,
           storedData['fetchDate']!);
     }
   }

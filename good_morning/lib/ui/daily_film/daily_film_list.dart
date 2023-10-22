@@ -21,7 +21,6 @@ class DailyFilmList extends StatelessWidget {
         itemBuilder: (context, index) {
           List<String> movieDetails =
               context.watch<FavoriteMoviesModel>().favoriteMovies[index];
-
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -64,10 +63,12 @@ class DailyFilmList extends StatelessWidget {
                       },
                     ),
                   ),
-                  Consumer<MovieProvider>(
-                    builder: (context, movieProvider, child) {
+                  Consumer<FavoriteMoviesModel>(
+                    builder: (context, favoriteMoviesModel, child) {
+                      String movieTitle = movieDetails[0];
+
                       List<Map<String, String>> streamInfo =
-                          movieProvider.streamInfo;
+                          favoriteMoviesModel.getStreamInfo(movieTitle);
 
                       if (streamInfo.isEmpty) {
                         return const Center(
@@ -75,12 +76,13 @@ class DailyFilmList extends StatelessWidget {
                         );
                       } else {
                         return ListTile(
-                          title: const Text('Streaming Information'),
+                          title: const Text(
+                              'Streaming information for Swedish providers'),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: streamInfo.map((info) {
                               return Text(
-                                  '${info['service']}: ${info['streamingType']}');
+                                  '${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}');
                             }).toList(),
                           ),
                         );

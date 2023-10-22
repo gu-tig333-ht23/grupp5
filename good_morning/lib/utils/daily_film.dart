@@ -8,6 +8,12 @@ final Dio dio = Dio();
 String bearerKey = config.movieBearerKey;
 String streamKey = config.rapidAPIKey;
 
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+}
+
 class FilmApi {
   final Dio dio;
 
@@ -169,17 +175,27 @@ class FavoriteMoviesModel extends ChangeNotifier {
         movieRating,
         moviePosterPath,
         tmdbId,
-        streamInfo.toString(),
         fetchDate,
       ];
       _favoriteMovies.add(favoriteMovie);
+
+      _streamInfoMap[movieTitle] = streamInfo;
+
       notifyListeners();
       return 'Movie added to your watchlist';
     }
   }
 
+  final Map<String, List<Map<String, String>>> _streamInfoMap = {};
+
+  List<Map<String, String>> getStreamInfo(String movieTitle) {
+    return _streamInfoMap[movieTitle] ?? [];
+  }
+
   void removeMovie(int index) {
+    final String movieTitle = _favoriteMovies[index][0];
     _favoriteMovies.removeAt(index);
+    _streamInfoMap.remove(movieTitle);
     notifyListeners();
   }
 }

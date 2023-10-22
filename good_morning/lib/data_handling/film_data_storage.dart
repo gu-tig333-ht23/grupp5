@@ -27,36 +27,34 @@ Future<void> storeMovieData({
 
 Future<Map<String, dynamic>> getMovieData() async {
   final prefs = await SharedPreferences.getInstance();
-  final movieTitle = prefs.getString('movieTitle');
-  final movieDescription = prefs.getString('movieDescription');
-  final movieDate = prefs.getString('movieDate');
-  final movieRating = prefs.getString('movieRating');
-  final moviePoster = prefs.getString('moviePoster');
-  final movieId = prefs.getString('movieId');
-  final streamInfoString = prefs.getString('streamInfo');
-  final fetchDate = prefs.getString('fetchDate');
+  final movieTitle = prefs.getString('movieTitle') ?? '';
+  final movieDescription = prefs.getString('movieDescription') ?? '';
+  final movieDate = prefs.getString('movieDate') ?? '';
+  final movieRating = prefs.getString('movieRating') ?? '';
+  final moviePoster = prefs.getString('moviePoster') ?? '';
+  final movieId = prefs.getString('movieId') ?? '';
+  final streamInfoString = prefs.getString('streamInfo') ?? '[]';
+  final fetchDate = prefs.getString('fetchDate') ?? '';
 
   List<Map<String, String>> streamInfo = [];
 
-  if (streamInfoString != null) {
-    try {
-      streamInfo =
-          (jsonDecode(streamInfoString) as List).cast<Map<String, String>>();
-      print('JsonDecode success');
-    } catch (e) {
-      print('Error parsing streamInfo: $e');
-    }
+  try {
+    streamInfo = (jsonDecode(streamInfoString) as List<dynamic>)
+        .cast<Map<String, String>>();
+    print('JsonDecode success');
+  } catch (e) {
+    print('Error parsing streamInfo: $e');
   }
 
   return {
-    'movieTitle': movieTitle ?? '',
-    'movieDescription': movieDescription ?? '',
-    'movieDate': movieDate ?? '',
-    'movieRating': movieRating ?? '',
-    'moviePoster': moviePoster ?? '',
-    'movieId': movieId ?? '',
+    'movieTitle': movieTitle,
+    'movieDescription': movieDescription,
+    'movieDate': movieDate,
+    'movieRating': movieRating,
+    'moviePoster': moviePoster,
+    'movieId': movieId,
     'streamInfo': streamInfo,
-    'fetchDate': fetchDate ?? '',
+    'fetchDate': fetchDate,
   };
 }
 
