@@ -119,6 +119,66 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 }
 
+class TransportationModeWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var mode = context.watch<DailyTrafficProvider>().mode;
+
+    Icon getIconForMode() {
+      switch (mode) {
+        case TransportMode.driving:
+          return Icon(Icons.directions_car, size: 50);
+        case TransportMode.bicycling:
+          return Icon(Icons.directions_bike, size: 50);
+        case TransportMode.walking:
+          return Icon(Icons.directions_walk, size: 50);
+        case TransportMode.transit:
+          return Icon(Icons.directions_bus, size: 50);
+        default:
+          return Icon(Icons.directions_car, size: 50);
+      }
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: PopupMenuButton<TransportMode>(
+              tooltip: 'Change Transportation Mode',
+              icon: getIconForMode(),
+              onSelected: (TransportMode mode) {
+                Provider.of<DailyTrafficProvider>(context, listen: false)
+                    .setMode(mode);
+              },
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<TransportMode>>[
+                    const PopupMenuItem<TransportMode>(
+                      value: TransportMode.driving,
+                      child: Icon(Icons.directions_car),
+                    ),
+                    const PopupMenuItem<TransportMode>(
+                      value: TransportMode.bicycling,
+                      child: Icon(Icons.directions_bike),
+                    ),
+                    const PopupMenuItem<TransportMode>(
+                      value: TransportMode.walking,
+                      child: Icon(Icons.directions_walk),
+                    ),
+                    const PopupMenuItem<TransportMode>(
+                      value: TransportMode.transit,
+                      child: Icon(Icons.directions_bus),
+                    ),
+                  ]),
+        )
+      ],
+    );
+  }
+}
+
+void editModeDialog(context, mode) {}
+
 class Destination {
   String? name;
   String address;

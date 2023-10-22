@@ -62,48 +62,69 @@ class DailyTrafficPage extends StatelessWidget {
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 10, left: 10, right: 20),
-                      child: Column(
+                      child: Row(
                         children: [
-                          Row(
+                          Column(
                             children: [
-                              Padding(
-                                padding:
-                                    EdgeInsets.only(left: 15.0, bottom: 15),
-                                child: Text('From:',
-                                    style: TextStyle(fontSize: 20)),
+                              Row(
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 8.0, bottom: 2),
+                                        child: Text('From:',
+                                            style: TextStyle(fontSize: 15)),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, bottom: 2),
+                                          child: DestinationItem(currentFrom),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 6, bottom: 2),
-                                  child: DestinationItem(currentFrom),
-                                ),
+                              Row(
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 8.0, bottom: 2),
+                                        child: Text('To:',
+                                            style: TextStyle(fontSize: 15)),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, bottom: 2),
+                                          child: DestinationItem(currentTo),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    EdgeInsets.only(left: 15.0, bottom: 15),
-                                child:
-                                    Text('To:', style: TextStyle(fontSize: 20)),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 6, bottom: 2),
-                                  child: DestinationItem(currentTo),
-                                ),
-                              ),
-                            ],
-                          ),
+                          TransportationModeWidget(),
                         ],
                       ),
                     ),
