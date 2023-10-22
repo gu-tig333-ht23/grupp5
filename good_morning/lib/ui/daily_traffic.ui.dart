@@ -87,7 +87,8 @@ class DailyTrafficPage extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               left: 8.0, bottom: 2),
-                                          child: DestinationItem(currentFrom),
+                                          child: DestinationItem(
+                                              currentFrom, 'From:'),
                                         ),
                                       ),
                                     ],
@@ -115,7 +116,8 @@ class DailyTrafficPage extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               left: 8.0, bottom: 2),
-                                          child: DestinationItem(currentTo),
+                                          child:
+                                              DestinationItem(currentTo, 'To:'),
                                         ),
                                       ),
                                     ],
@@ -124,18 +126,30 @@ class DailyTrafficPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          TransportationModeWidget(),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 15),
               Padding(
-                padding: EdgeInsets.all(8.0),
-                child: buildFullCard(
-                  context,
-                  optionalWidget: Column(
+                padding: const EdgeInsets.only(left: 8, top: 8),
+                child: Row(
+                  children: [
+                    CarIconButton(),
+                    BikeIconButton(),
+                    WalkIconButton(),
+                    TransitIconButton(),
+                  ],
+                ),
+              ),
+              Card(
+                color: Theme.of(context).cardColor,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
+                  child: Column(
                     children: [
                       GoogleMapWidget(
                           mapImage: getMapFromAPI(

@@ -117,67 +117,143 @@ class DailyTrafficProvider extends ChangeNotifier {
     destination.address = address;
     notifyListeners();
   }
+
+  bool _carIsSelected = true; // default transportation mode
+  bool get carIsSelected => _carIsSelected;
+
+  bool _bikeIsSelected = false;
+  bool get bikeIsSelected => _bikeIsSelected;
+
+  bool _walkIsSelected = false;
+  bool get walkIsSelected => _walkIsSelected;
+
+  bool _transitIsSelected = false;
+  bool get transitIsSelected => _transitIsSelected;
+
+  void toggleCarButton() {
+    _carIsSelected = true;
+    _bikeIsSelected = false;
+    _walkIsSelected = false;
+    _transitIsSelected = false;
+    notifyListeners();
+  }
+
+  void toggleBikeButton() {
+    _carIsSelected = false;
+    _bikeIsSelected = true;
+    _walkIsSelected = false;
+    _transitIsSelected = false;
+    notifyListeners();
+  }
+
+  void toggleWalkButton() {
+    _carIsSelected = false;
+    _bikeIsSelected = false;
+    _walkIsSelected = true;
+    _transitIsSelected = false;
+    notifyListeners();
+  }
+
+  void toggleTransitButton() {
+    _carIsSelected = false;
+    _bikeIsSelected = false;
+    _walkIsSelected = false;
+    _transitIsSelected = true;
+    notifyListeners();
+  }
 }
 
-class TransportationModeWidget extends StatelessWidget {
+class CarIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var mode = context.watch<DailyTrafficProvider>().mode;
+    bool selected = context.watch<DailyTrafficProvider>().carIsSelected;
 
-    Icon getIconForMode() {
-      switch (mode) {
-        case TransportMode.driving:
-          return Icon(Icons.directions_car, size: 50);
-        case TransportMode.bicycling:
-          return Icon(Icons.directions_bike, size: 50);
-        case TransportMode.walking:
-          return Icon(Icons.directions_walk, size: 50);
-        case TransportMode.transit:
-          return Icon(Icons.directions_bus, size: 50);
-        default:
-          return Icon(Icons.directions_car, size: 50);
-      }
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: PopupMenuButton<TransportMode>(
-              tooltip: 'Change Transportation Mode',
-              icon: getIconForMode(),
-              onSelected: (TransportMode mode) {
-                Provider.of<DailyTrafficProvider>(context, listen: false)
-                    .setMode(mode);
-              },
-              itemBuilder: (BuildContext context) =>
-                  <PopupMenuEntry<TransportMode>>[
-                    const PopupMenuItem<TransportMode>(
-                      value: TransportMode.driving,
-                      child: Icon(Icons.directions_car),
-                    ),
-                    const PopupMenuItem<TransportMode>(
-                      value: TransportMode.bicycling,
-                      child: Icon(Icons.directions_bike),
-                    ),
-                    const PopupMenuItem<TransportMode>(
-                      value: TransportMode.walking,
-                      child: Icon(Icons.directions_walk),
-                    ),
-                    const PopupMenuItem<TransportMode>(
-                      value: TransportMode.transit,
-                      child: Icon(Icons.directions_bus),
-                    ),
-                  ]),
-        )
-      ],
+    return IconButton(
+      icon: selected
+          ? Icon(
+              Icons.directions_car,
+              size: 25,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : Icon(Icons.directions_car, size: 25),
+      onPressed: () {
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .setMode(TransportMode.driving);
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .toggleCarButton();
+      },
     );
   }
 }
 
-void editModeDialog(context, mode) {}
+class BikeIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    bool selected = context.watch<DailyTrafficProvider>().bikeIsSelected;
+
+    return IconButton(
+      icon: selected
+          ? Icon(
+              Icons.directions_bike,
+              size: 25,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : Icon(Icons.directions_bike, size: 25),
+      onPressed: () {
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .setMode(TransportMode.bicycling);
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .toggleBikeButton();
+      },
+    );
+  }
+}
+
+class WalkIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    bool selected = context.watch<DailyTrafficProvider>().walkIsSelected;
+
+    return IconButton(
+      icon: selected
+          ? Icon(
+              Icons.directions_walk,
+              size: 25,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : Icon(Icons.directions_walk, size: 25),
+      onPressed: () {
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .setMode(TransportMode.walking);
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .toggleWalkButton();
+      },
+    );
+  }
+}
+
+class TransitIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    bool selected = context.watch<DailyTrafficProvider>().transitIsSelected;
+
+    return IconButton(
+      icon: selected
+          ? Icon(
+              Icons.directions_bus,
+              size: 25,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : Icon(Icons.directions_bus, size: 25),
+      onPressed: () {
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .setMode(TransportMode.transit);
+        Provider.of<DailyTrafficProvider>(context, listen: false)
+            .toggleTransitButton();
+      },
+    );
+  }
+}
 
 class Destination {
   String? name;
@@ -186,18 +262,35 @@ class Destination {
   Destination({this.name, required this.address});
 }
 
-// for showing from/to destinations in route
+// for showing from destinations in route
 class DestinationItem extends StatelessWidget {
   final Destination destination;
-  DestinationItem(this.destination);
+  final String type;
+  DestinationItem(this.destination, this.type);
 
   @override
   Widget build(BuildContext context) {
+    var savedDestinations =
+        context.watch<DailyTrafficProvider>().savedDestinations;
+
+    void _showDestinationInputDialog(BuildContext context) {
+      TextEditingController addressController = TextEditingController();
+
+      // fortsätt här imorgon, måndag
+    }
+
     return Tooltip(
       message: destination.address,
-      child: (destination.name != null)
-          ? buildSmallButton(context, destination.name!, () {})
-          : buildSmallButton(context, destination.address, () {}),
+      child: Container(
+        width: 300,
+        child: (destination.name != null)
+            ? buildSmallButton(context, destination.name!, () {
+                _showDestinationInputDialog(context);
+              })
+            : buildSmallButton(context, destination.address, () {
+                _showDestinationInputDialog(context);
+              }),
+      ),
     );
   }
 }
@@ -520,7 +613,7 @@ Future<Map<String, dynamic>> getRouteInfoFromAPI(
     mapUrl = 'https://maps.googleapis.com/maps/api/directions/json';
   }
   http.Response response = await http.get(Uri.parse(
-      '$mapUrl?mode=$mode&destination=$toName&origin=$fromName&key=$mapApiKey'));
+      '$mapUrl?mode=$mode&destination=$toName&origin=$fromName&language=en&key=$mapApiKey'));
 
   if (response.statusCode == 200) {
     // the server returned 200 OK response
