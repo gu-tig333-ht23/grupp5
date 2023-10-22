@@ -42,6 +42,7 @@ Future<Map<String, dynamic>> getMovieData() async {
     try {
       streamInfo =
           (jsonDecode(streamInfoString) as List).cast<Map<String, String>>();
+      print('JsonDecode success');
     } catch (e) {
       print('Error parsing streamInfo: $e');
     }
