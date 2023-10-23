@@ -20,14 +20,16 @@ class DailyFilmPage extends StatefulWidget {
 class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
-    final title = Provider.of<MovieProvider>(context).movieTitle;
-    final description = Provider.of<MovieProvider>(context).movieDescription;
-    final date = Provider.of<MovieProvider>(context).movieDate;
-    final rating = Provider.of<MovieProvider>(context).movieRating;
-    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
-    final tmdbId = Provider.of<MovieProvider>(context).movieId;
-    final movieStreamInfo = Provider.of<MovieProvider>(context).streamInfo;
-    final fetchDate = Provider.of<MovieProvider>(context).fetchDate;
+    final movieProvider = Provider.of<MovieProvider>(context);
+
+    final title = movieProvider.movieTitle;
+    final description = movieProvider.movieDescription;
+    final date = movieProvider.movieDate;
+    final rating = movieProvider.movieRating;
+    final posterPath = movieProvider.moviePosterPath;
+    final tmdbId = movieProvider.movieId;
+    final movieStreamInfo = movieProvider.streamInfo;
+    final fetchDate = movieProvider.fetchDate;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -112,9 +114,13 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: buildSmallButton(context, 'Fetch another movie', () {
-                  getMovie(context, FilmApi(dio), forceFetch: true);
-                }),
+                child: buildSmallButton(
+                  context,
+                  'Fetch another movie',
+                  () {
+                    getMovie(context, FilmApi(dio), forceFetch: true);
+                  },
+                ),
               )
             ],
           ),
@@ -155,7 +161,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
 }
 
 Future<void> getMovie(BuildContext context, FilmApi filmApi,
-    {bool forceFetch = true}) async {
+    {bool forceFetch = false}) async {
   final shouldFetch = forceFetch || await shouldFetchNewData();
 
   if (shouldFetch) {
