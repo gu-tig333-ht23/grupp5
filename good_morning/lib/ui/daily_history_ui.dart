@@ -22,23 +22,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     super.initState();
   }
 
-  Future<void> _refreshData() async {
-  var historyProvider = Provider.of<HistoryProvider>(context, listen: false);
-  try { 
-    await historyProvider.fetchHistoryItem3();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Data refreshed successfully'),
-    ));
-  } catch (e) {
-    
-    print("Error refreshing data: $e");
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Error refreshing data: $e'),
-    ));
-  }
-}
-
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     return Scaffold(
@@ -60,9 +43,9 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             }).toList(),
           ),
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
-              _refreshData(); // Refresh data
+              historyProvider.fetchHistoryItem3(); // Refresh data
             },
           ),
         ],
@@ -93,5 +76,3 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     );
   }
 }
-
-

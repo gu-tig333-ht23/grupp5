@@ -19,12 +19,6 @@ class HistoryItem {
       extract: json['extract'] as String,
     );
   }
-
-  Map<String, dynamic> json = {
-    'text': 'Sample text',
-    'thumbnail': 'sample_thumbnail_url',
-    'extract': 'Sample extract',
-  };
 }
 
 class HistoryProvider extends ChangeNotifier {
@@ -39,7 +33,7 @@ class HistoryProvider extends ChangeNotifier {
   var randomNumber = Random().nextInt(20);
 
 // Filter
-  String _selectedFilter = 'births';
+  String _selectedFilter = 'events';
   String get selectedFilter => _selectedFilter;
   @override
   notifyListeners();
