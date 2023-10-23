@@ -31,6 +31,7 @@ class FilterModel extends ChangeNotifier {
 
   Future<void> loadFromPreferences() async {
     List<String> selectedCards = await getUserSelectedCards();
+    if (selectedCards.isEmpty) return;
     _showWeather = selectedCards.contains('weather');
     _showHistory = selectedCards.contains('history');
     _showFact = selectedCards.contains('fact');

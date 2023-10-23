@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'filter_model.dart';
+import '../../utils/filter_model.dart';
 import 'package:provider/provider.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -172,48 +172,54 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
         children: [
           const Text("Select Cards to Show",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20.0),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Weather'),
-              value: visibilityModel.showWeather,
+              subtitle: const Text('Displays daily weather updates for your preferred location.'),
+              value: filterModel.showWeather,
               onChanged: (bool? value) {
-                visibilityModel.toggleWeather();
+                filterModel.toggleWeather();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Today in History'),
-              value: visibilityModel.showHistory,
+              subtitle: const Text('Highlights significant events from the past on this day.'),
+              value: filterModel.showHistory,
               onChanged: (bool? value) {
-                visibilityModel.toggleHistory();
+                filterModel.toggleHistory();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Fact of the Day'),
-              value: visibilityModel.showFact,
+              subtitle: const Text('Your daily fun fact.'),
+              value: filterModel.showFact,
               onChanged: (bool? value) {
-                visibilityModel.toggleFact();
+                filterModel.toggleFact();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Film of the Day'),
-              value: visibilityModel.showFilm,
+              subtitle: const Text('Learn about one film every day.'),
+              value: filterModel.showFilm,
               onChanged: (bool? value) {
-                visibilityModel.toggleFilm();
+                filterModel.toggleFilm();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Traffic'),
-              value: visibilityModel.showTraffic,
+              subtitle: const Text('Shows your estimated daily commute time.'),
+              value: filterModel.showTraffic,
               onChanged: (bool? value) {
-                visibilityModel.toggleTraffic();
+                filterModel.toggleTraffic();
               },
             ),
           ),
@@ -266,5 +272,5 @@ final Gradient lightModeGradient = LinearGradient(
 final Gradient darkModeGradient = LinearGradient(
   begin: Alignment.topRight,
   end: Alignment.bottomLeft,
-  colors: [Colors.green[700]!, Colors.teal[700]!],
+  colors: [Colors.deepOrange[700]!, Colors.brown[600]!],
 );
