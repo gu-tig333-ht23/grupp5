@@ -15,6 +15,7 @@ Future<void> storeMovieData({
   required String fetchDate,
 }) async {
   final prefs = await SharedPreferences.getInstance();
+  print(streamInfo);
   prefs.setString('movieTitle', movieTitle);
   prefs.setString('movieDescription', movieDescription);
   prefs.setString('movieDate', movieDate);
@@ -46,11 +47,11 @@ Future<Map<String, dynamic>> getMovieData() async {
       }
       return <String, String>{};
     }).toList();
-    print('JsonDecode success');
   } catch (e) {
     print('Error parsing streamInfo: $e');
   }
 
+  print(streamInfo);
   return {
     'movieTitle': movieTitle,
     'movieDescription': movieDescription,

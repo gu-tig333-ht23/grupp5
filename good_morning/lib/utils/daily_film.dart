@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
+import 'package:shared_preferences/shared_preferences.dart';
 
 final Dio dio = Dio();
 String bearerKey = config.movieBearerKey;
@@ -99,8 +101,6 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
           uniqueItems.add(combination);
 
           result.add({'service': service, 'streamingType': streamingType});
-
-          print('Service: $service, Streaming Type: $streamingType');
         }
       }
     }
@@ -154,6 +154,31 @@ class FavoriteMoviesModel extends ChangeNotifier {
   List<List<String>> _favoriteMovies = [];
 
   List<List<String>> get favoriteMovies => _favoriteMovies;
+  final String _watchlistKey = 'watchlist11';
+
+  Future<void> loadWatchlist() async {
+    final prefs = await SharedPreferences.getInstance();
+    final watchlistJson = prefs.getString(_watchlistKey);
+
+    final List<dynamic> decodedData = jsonDecode(watchlistJson!);
+
+    final List<List<String>> watchlist = decodedData.map((movieData) {
+      if (movieData is List) {
+        return List<String>.from(movieData);
+      } else {
+        return <String>[];
+      }
+    }).toList();
+
+    _favoriteMovies = watchlist;
+    notifyListeners();
+  }
+
+  Future<void> saveWatchlist() async {
+    final prefs = await SharedPreferences.getInstance();
+    final watchlistJson = jsonEncode(_favoriteMovies);
+    await prefs.setString(_watchlistKey, watchlistJson);
+  }
 
   Future<String> addFavorite(
     String movieTitle,
@@ -177,10 +202,14 @@ class FavoriteMoviesModel extends ChangeNotifier {
         tmdbId,
         fetchDate,
       ];
+      print(streamInfo);
+      if (streamInfo != null && streamInfo.isNotEmpty) {
+        _streamInfoMap[movieTitle] = streamInfo;
+      }
+
       _favoriteMovies.add(favoriteMovie);
 
-      _streamInfoMap[movieTitle] = streamInfo;
-
+      saveWatchlist();
       notifyListeners();
       return 'Movie added to your watchlist';
     }
@@ -196,6 +225,8 @@ class FavoriteMoviesModel extends ChangeNotifier {
     final String movieTitle = _favoriteMovies[index][0];
     _favoriteMovies.removeAt(index);
     _streamInfoMap.remove(movieTitle);
+
+    saveWatchlist();
     notifyListeners();
   }
 }
