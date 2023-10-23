@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-//Lagring för daily fact
+// Persistent storage for Daily Fact
 
 Future<void> storeFactText(String factText) async {
   try {

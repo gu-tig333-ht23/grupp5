@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -10,8 +9,6 @@ class DailyTrafficPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var destinations = context.watch<DailyTrafficProvider>().savedDestinations;
-
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
 
@@ -44,7 +41,7 @@ class DailyTrafficPage extends StatelessWidget {
                         ),
                         child: TextButton(
                           onPressed: () {
-                            editRouteDialog(context);
+                            editDefaultSettingsDialog(context);
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -73,7 +70,7 @@ class DailyTrafficPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.only(
                                             left: 8.0, bottom: 2),
                                         child: Text('From:',
@@ -102,7 +99,7 @@ class DailyTrafficPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.only(
                                             left: 8.0, bottom: 2),
                                         child: Text('To:',
@@ -123,6 +120,18 @@ class DailyTrafficPage extends StatelessWidget {
                                     ],
                                   ),
                                 ],
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.swap_vert, size: 40),
+                                onPressed: () {
+                                  Provider.of<DailyTrafficProvider>(context,
+                                          listen: false)
+                                      .swapDestinations(currentFrom, currentTo);
+                                },
                               ),
                             ],
                           ),
