@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/film_data_storage.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_list.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
-import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class DailyFilmPage extends StatefulWidget {
   final ThemeData theme;
@@ -17,31 +20,23 @@ class DailyFilmPage extends StatefulWidget {
 class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
-    final title = Provider.of<MovieProvider>(context).movieTitle;
-    final description = Provider.of<MovieProvider>(context).movieDescription;
-    final date = Provider.of<MovieProvider>(context).movieDate;
-    final rating = Provider.of<MovieProvider>(context).movieRating;
-    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
-    final tmdbId = Provider.of<MovieProvider>(context).movieId;
-    final movieStreamInfo = Provider.of<MovieProvider>(context).streamInfo;
+    final movieProvider = Provider.of<MovieProvider>(context);
+
+    final title = movieProvider.movieTitle;
+    final description = movieProvider.movieDescription;
+    final date = movieProvider.movieDate;
+    final rating = movieProvider.movieRating;
+    final posterPath = movieProvider.moviePosterPath;
+    final tmdbId = movieProvider.movieId;
+    final movieStreamInfo = movieProvider.streamInfo;
+    final fetchDate = movieProvider.fetchDate;
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text("Today's Film"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      DailyFilmSettings(theme: Theme.of(context)),
-                ),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.favorite),
             onPressed: () {
@@ -53,14 +48,6 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               );
             },
           ),
-          Text(
-            context
-                .watch<FavoriteMoviesModel>()
-                .favoriteMovies
-                .length
-                .toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          )
         ],
       ),
       body: Stack(
@@ -88,10 +75,13 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
+
                   child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: posterPath, imageScale: 1, placeholderScale: 1
-                  ),
+                      placeholder: kTransparentImage,
+                      image: posterPath,
+                      imageScale: 1,
+                      placeholderScale: 1),
+
                 ),
               ),
               Card(
@@ -115,7 +105,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: streamInfo.map((info) {
                               return Text(
-                                  'Available on ${info['service']}: ${info['streamingType']}');
+                                  'Available on ${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}');
                             }).toList(),
                           ),
                         );
@@ -124,6 +114,16 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: buildSmallButton(
+                  context,
+                  'Fetch another movie',
+                  () {
+                    getMovie(context, FilmApi(dio), forceFetch: true);
+                  },
+                ),
+              )
             ],
           ),
           Positioned(
@@ -133,14 +133,25 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               onPressed: () async {
-                context.read<FavoriteMoviesModel>().addFavorite(
-                    title,
-                    description,
-                    date,
-                    rating,
-                    posterPath,
-                    tmdbId,
-                    movieStreamInfo);
+                var outputText = await context
+                    .read<FavoriteMoviesModel>()
+                    .addFavorite(title, description, date, rating, posterPath,
+                        tmdbId, movieStreamInfo, fetchDate);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(outputText),
+                    action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () {
+                          context.read<FavoriteMoviesModel>().removeMovie(
+                              context
+                                      .read<FavoriteMoviesModel>()
+                                      .favoriteMovies
+                                      .length -
+                                  1);
+                        }),
+                  ),
+                );
               },
               child: const Icon(Icons.favorite),
             ),
@@ -151,20 +162,44 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   }
 }
 
-void getMovie(BuildContext context, FilmApi filmApi) async {
-  try {
-    Map<String, dynamic> movieData = await filmApi.getMovie();
+Future<void> getMovie(BuildContext context, FilmApi filmApi,
+    {bool forceFetch = false}) async {
+  final shouldFetch = forceFetch || await shouldFetchNewData();
 
-    // ignore: use_build_context_synchronously
-    Provider.of<MovieProvider>(context, listen: false).setMovie(
-        movieData['title'],
-        movieData['description'],
-        movieData['release_year'],
-        movieData['vote_average'],
-        movieData['poster_path'],
-        movieData['tmdb_id'],
-        movieData['streamingInfo']);
-  } catch (e) {
-    print('Error fetching movie: $e');
+  if (shouldFetch) {
+    try {
+      Map<String, dynamic> movieData = await filmApi.fetchMovie();
+
+      Provider.of<MovieProvider>(context, listen: false).setMovie(
+          movieData['title'],
+          movieData['description'],
+          movieData['release_year'],
+          movieData['vote_average'],
+          movieData['poster_path'],
+          movieData['tmdb_id'],
+          movieData['streamingInfo'],
+          movieData['fetchDate']);
+    } catch (e) {
+      print('Error fetching movie: $e');
+    }
+  } else {
+    final storedData = await getMovieData();
+    if (storedData.isNotEmpty) {
+      final List<Map<String, String>> streamInfo =
+          (storedData['streamInfo'] as List<dynamic>)
+              .cast<Map<String, String>>();
+      print(storedData);
+
+      Provider.of<MovieProvider>(context, listen: false).setMovie(
+          storedData['movieTitle']!,
+          storedData['movieDescription']!,
+          storedData['movieDate']!,
+          storedData['movieRating']!,
+          storedData['moviePoster']!,
+          storedData['movieId']!,
+          streamInfo,
+          storedData['fetchDate']!);
+      print(streamInfo);
+    }
   }
 }

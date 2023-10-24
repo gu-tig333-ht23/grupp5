@@ -20,34 +20,41 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch data when the widget is initialized
-    
   }
 
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            DropdownButton<String>(
-                value: historyProvider.selectedFilter,
-                onChanged: (newValue) {
-                  setState(() {
-                    historyProvider.setFilter(newValue);
-                  });
-                },
-                items: ['highlighted', 'births', 'deaths', 'events', 'holidays']
-                    .map((filter) {
-                  return DropdownMenuItem<String>(
-                    value: (filter),
-                    child: Text(filter),
-                  );
-                }).toList()),
-          ],
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text('Today in History'),
-        ),
-        body: SingleChildScrollView(
+      appBar: AppBar(
+        actions: [
+          DropdownButton<String>(
+            value: historyProvider.selectedFilter,
+            onChanged: (newValue) {
+              setState(() {
+                historyProvider.setFilter(newValue);
+              });
+            },
+            items: ['selected', 'births', 'deaths', 'events', 'holidays']
+                .map((filter) {
+              return DropdownMenuItem<String>(
+                value: filter,
+                child: Text(filter),
+              );
+            }).toList(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              historyProvider.fetchHistoryItem3(); // Refresh data
+            },
+          ),
+        ],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text('Today in History'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               buildFullCard(
@@ -55,18 +62,17 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                 title: historyProvider.item.text,
                 description: historyProvider.item.extract,
               ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Card(
-                  color: Theme.of(context).cardColor,
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
-                  ),
+              Card(
+                color: Theme.of(context).cardColor,
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: historyProvider.item.thumbnail,
                 ),
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

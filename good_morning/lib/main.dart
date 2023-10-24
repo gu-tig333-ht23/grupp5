@@ -4,6 +4,8 @@ import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/main_navigation/onboarding.dart';
 import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
+import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main_navigation/home_page.dart';
@@ -12,24 +14,14 @@ import 'package:good_morning/utils/daily_history.dart';
 import 'utils/filter_model.dart';
 
 void main() async {
-  // fetching the daily fact text
-  //var dailyFactProvider = DailyFactProvider();
-  //var chosenCats = dailyFactProvider.getChosenCategories();
-  //String factText = (await fetchDailyFact(chosenCats)).trim();
-  String factText =
-      'Placeholder factText, in order to not use this API if not needed';
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => DailyFactProvider(),
-          //create: (context) => dailyFactProvider,
         ),
         ChangeNotifierProvider(
           create: (context) => MovieProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => DailyFilmSettingsProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => HistoryProvider(),
@@ -45,15 +37,13 @@ void main() async {
         ),
       ],
       // sends the fact for the day as parameter to myApp
-      child: MyApp(factText: factText),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final String factText; // parameter
-
-  const MyApp({Key? key, required this.factText}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +57,7 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data == true) {
-              return HomePage(factText: factText);
+              return HomePage(),
             } else {
               return const OnBoardingScreen();
             }
