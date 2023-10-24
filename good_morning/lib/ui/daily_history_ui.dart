@@ -32,6 +32,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             onChanged: (newValue) {
               setState(() {
                 historyProvider.setFilter(newValue);
+                historyProvider.fetchHistoryItem();
               });
             },
             items: ['selected', 'births', 'deaths', 'events', 'holidays']
@@ -45,7 +46,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              historyProvider.fetchHistoryItem3(); // Refresh data
+              historyProvider.fetchHistoryItem(); // Refresh data
             },
           ),
         ],
@@ -59,14 +60,14 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             children: [
               buildFullCard(
                 context,
-                title: historyProvider.item.text,
-                description: historyProvider.item.extract,
+                title: historyProvider.historyItem.historyText,
+                description: historyProvider.historyItem.historyExtract,
               ),
               Card(
                 color: Theme.of(context).cardColor,
                 child: FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
-                  image: historyProvider.item.thumbnail,
+                  image: historyProvider.historyItem.historyThumbnail,
                 ),
               ),
             ],

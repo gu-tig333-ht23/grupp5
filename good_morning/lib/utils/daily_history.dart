@@ -5,18 +5,18 @@ import 'dart:math';
 import 'package:good_morning/data_handling/history_data_storage.dart';
 
 class HistoryItem {
-  String text;
-  String thumbnail;
-  String extract;
+  String historyText;
+  String historyThumbnail;
+  String historyExtract;
 
   HistoryItem(
-      {required this.text, required this.thumbnail, required this.extract});
+      {required this.historyText, required this.historyThumbnail, required this.historyExtract});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
-      text: json['text'] as String,
-      thumbnail: json['thumbnail'] as String,
-      extract: json['extract'] as String,
+      historyText: json['text'] as String,
+      historyThumbnail: json['thumbnail'] as String,
+      historyExtract: json['extract'] as String,
     );
   }
 }
@@ -29,14 +29,12 @@ class HistoryProvider extends ChangeNotifier {
   get ddDate => _now.day;
   get mmDate => _now.month;
 
-// Random number
-  var randomNumber = Random().nextInt(20);
-
 // Filter
   String _selectedFilter = 'events';
   String get selectedFilter => _selectedFilter;
-  @override
-  notifyListeners();
+
+// Random number
+  var randomNumber = Random().nextInt(20);
 
   void setFilter(filter) {
     _selectedFilter = filter;
@@ -48,22 +46,42 @@ class HistoryProvider extends ChangeNotifier {
   }
 
 //Empty history item
-  var _item = HistoryItem(
-    text: '',
-    extract: '',
-    thumbnail: '',
+  var _historyItem = HistoryItem(
+    historyText: '',
+    historyThumbnail: '',
+    historyExtract: '',
   );
-  HistoryItem get item => _item;
+  HistoryItem get historyItem => _historyItem;
 
+  var _storedHistoryItem = HistoryItem(
+    historyText: '',
+    historyThumbnail: '',
+    historyExtract: '',
+  );
+  HistoryItem get storedHistoryItem => _storedHistoryItem;
+
+  //get HistoryItem from SharedPreferences
   getStoredHistoryData() async {
-    var _storedData = await getHistoryData();
-    return _storedData;
+    var storedHistoryItem = await getHistoryData();
+    _storedHistoryItem = HistoryItem.fromJson(storedHistoryItem);
+    notifyListeners();
   }
+
   //Get historyitem from API-function
-  fetchHistoryItem3() async {
-    var historyitem = await fetchHistoryItemWiki(
+  fetchHistoryItem() async {
+    var historyItemApi = await fetchHistoryItemWiki(
          selectedFilter, now.month, now.day);
-    _item = HistoryItem.fromJson(historyitem);
+    _historyItem = HistoryItem.fromJson(historyItemApi);
+    //Store HistoryItem
+    print('i Fetch Innan Store');
+    print(_historyItem.historyText);
+    print(historyItem.historyThumbnail);
+    print(historyItem.historyExtract);
+
+    storeHistoryData(
+      historyText: _historyItem.historyText, 
+      historyThumbnail: _historyItem.historyThumbnail, 
+      historyExtract: _historyItem.historyExtract);
     notifyListeners();
   }
   // API function
