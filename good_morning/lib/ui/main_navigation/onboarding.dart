@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/ui/main_navigation/home_page.dart';
 import '../../utils/filter_model.dart';
 import 'package:provider/provider.dart';
 
@@ -228,11 +229,9 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
             'Finish Setup',
             () {
               setOnboardingCompleted(true);
-              Navigator.pop(context);
-              //Navigator.pushReplacement(
-              //context,
-              //MaterialPageRoute(builder: (context) => MainScreen()),
-              //); Byt pop till pushReplacement efter Stines home_page fix.
+              Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()));
             },
           ),
         ],
