@@ -27,9 +27,6 @@ class DailyFilmList extends StatelessWidget {
           }
           if (index >= 0 && index < favoriteMovies.length) {
             List<String> movieDetails = favoriteMovies[index];
-            // if (movieDetails.isEmpty) {
-            //   return const SizedBox();
-            // }
 
             return Card(
               child: Padding(
@@ -63,7 +60,7 @@ class DailyFilmList extends StatelessWidget {
                     Consumer<FavoriteMoviesModel>(
                       builder: (context, favoriteMoviesModel, child) {
                         List<Map<String, String>> streamInfo =
-                            parseStringToList(movieDetails[7]);
+                            formatMovieStreamInfo(movieDetails[7]);
 
                         if (streamInfo.isEmpty) {
                           return const Center(
@@ -111,7 +108,7 @@ class DailyFilmList extends StatelessWidget {
   }
 }
 
-List<Map<String, String>> parseStringToList(String input) {
+List<Map<String, String>> formatMovieStreamInfo(String input) {
   List<Map<String, String>> list = [];
   final regex = RegExp(r'{(.*?)}');
   final matches = regex.allMatches(input);
