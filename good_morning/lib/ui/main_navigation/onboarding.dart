@@ -35,6 +35,9 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (pageIndex) {
+                    if (_currentPage == 1 && pageIndex != 1) {
+    FocusScope.of(context).unfocus();
+  }
                   setState(() {
                     _currentPage = pageIndex;
                     if (pageIndex == 1) {
@@ -137,6 +140,7 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   void _saveNameAndNavigate() async {
+    FocusScope.of(context).unfocus();
     if (_nameController.text.trim().isEmpty) {
       showDialog(
         context: context,
