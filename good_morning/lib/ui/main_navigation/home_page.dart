@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
     context.read<FavoriteMoviesModel>().loadWatchlist();
     //context.read<HistoryProvider>().fetchHistoryItem3();
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
-
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -201,9 +200,7 @@ class _HomePageState extends State<HomePage> {
                         child: DailyFactWidget(
                             factText: Provider.of<DailyFactProvider>(context)
                                 .factText),
-                    ),
-                ],
-              ),
+                      ),
                       IconButton(
                         icon: Icon(Icons.lightbulb, size: 40),
                         onPressed: () {},
