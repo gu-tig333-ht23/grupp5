@@ -39,6 +39,7 @@ Widget buildFullCardWithImage(BuildContext context,
     color: Colors.transparent,
     child: Container(
       decoration: decoration,
+
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
         title: title != null
