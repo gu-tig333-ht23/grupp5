@@ -83,7 +83,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                       placeholderScale: 1),
 
                 ),
-              //),
+              ),
               Card(
                 color: Theme.of(context).cardColor,
                 child: Padding(
