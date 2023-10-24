@@ -83,7 +83,7 @@ class DailyTrafficProvider extends ChangeNotifier {
     print(
         'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
     _defaultTo = Destination(name: defaultToName, address: defaultToAddress);
-    setCurrentTo(defaultToName);
+    setCurrentTo(defaultToAddress);
 
     // default from-destination
     Map<String, String> defaultFrom = await getStoredDefaultFrom();
@@ -94,7 +94,7 @@ class DailyTrafficProvider extends ChangeNotifier {
         'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
     _defaultFrom =
         Destination(name: defaultFromName, address: defaultFromAddress);
-    setCurrentFrom(defaultFromName);
+    setCurrentFrom(defaultFromAddress);
 
     notifyListeners();
   }
@@ -520,44 +520,55 @@ class DestinationDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DailyTrafficProvider>(
-      builder: (context, provider, child) {
-        List<Destination> savedDestinations = provider.savedDestinations;
-        Destination? selectedDestination =
-            (type == 'From:' ? provider.defaultFrom : provider.defaultTo);
-        // find the destination among saved ones that corresponds to the default one
-        int index = savedDestinations
+    return Consumer<DailyTrafficProvider>(builder: (context, provider, child) {
+      List<Destination> savedDestinations = provider.savedDestinations;
+      Destination? selectedDestination =
+          (type == 'From:' ? provider.defaultFrom : provider.defaultTo);
+      // find the destination among saved ones that corresponds to the default one
+      // Find the destination among saved ones that corresponds to the default one
+      int index;
+      if (savedDestinations.isNotEmpty) {
+        index = savedDestinations
             .indexWhere((element) => selectedDestination.name == element.name);
+      } else {
+        index = -1;
+      }
 
-        Destination currentDefault = savedDestinations[index];
+      Destination currentDefault;
+      if (index != -1) {
+        // If the destination is found in savedDestinations, use it as the currentDefault
+        currentDefault = savedDestinations[index];
+      } else {
+        // If the destination is not found, set a default value
+        currentDefault = provider.currentFrom;
+      }
 
-        return DropdownButton<Destination>(
-          value: currentDefault,
-          onChanged: (Destination? newDestination) {
-            if (type == 'From:') {
-              provider.storeFromDestination(
-                  newDestination!.name!, newDestination.address);
-            } else {
-              provider.storeToDestination(
-                  newDestination!.name!, newDestination.address);
-            }
-          },
-          items: savedDestinations.map((destination) {
-            return DropdownMenuItem<Destination>(
-              value: destination,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(destination.name!,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(destination.address, style: TextStyle(fontSize: 12)),
-                ],
-              ),
-            );
-          }).toList(),
-        );
-      },
-    );
+      return DropdownButton<Destination>(
+        value: currentDefault,
+        onChanged: (Destination? newDestination) {
+          if (type == 'From:') {
+            provider.storeFromDestination(
+                newDestination!.name!, newDestination.address);
+          } else {
+            provider.storeToDestination(
+                newDestination!.name!, newDestination.address);
+          }
+        },
+        items: savedDestinations.map((destination) {
+          return DropdownMenuItem<Destination>(
+            value: destination,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(destination.name!,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(destination.address, style: TextStyle(fontSize: 12)),
+              ],
+            ),
+          );
+        }).toList(),
+      );
+    });
   }
 }
 
