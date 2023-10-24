@@ -10,7 +10,7 @@ import 'dart:typed_data';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
-enum TransportMode { bicycling, walking, driving, transit }
+enum TransportMode { bicycling, walking, driving }
 
 class DailyTrafficProvider extends ChangeNotifier {
   List<Destination> _savedDestinations = [];
@@ -50,11 +50,11 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 
   Future<void> loadDefaultTrafficSettings() async {
-    await fetchTrafficInfo();
+    await fetchDefaultTrafficSettings();
     await fetchSavedDestinations();
   }
 
-  Future<void> fetchTrafficInfo() async {
+  Future<void> fetchDefaultTrafficSettings() async {
     // default transportation mode
     String defaultModeName = await getStoredDefaultMode();
     print('Stored default mode: $defaultModeName');
@@ -67,9 +67,6 @@ class DailyTrafficProvider extends ChangeNotifier {
         break;
       case 'Walking':
         _defaultMode = TransportMode.walking;
-        break;
-      case 'Transit':
-        _defaultMode = TransportMode.transit;
         break;
       default:
         _defaultMode = TransportMode.driving;
@@ -235,14 +232,10 @@ class DailyTrafficProvider extends ChangeNotifier {
   bool _walkIsSelected = false;
   bool get walkIsSelected => _walkIsSelected;
 
-  bool _transitIsSelected = false;
-  bool get transitIsSelected => _transitIsSelected;
-
   void toggleCarButton() {
     _carIsSelected = true;
     _bikeIsSelected = false;
     _walkIsSelected = false;
-    _transitIsSelected = false;
     notifyListeners();
   }
 
@@ -250,7 +243,6 @@ class DailyTrafficProvider extends ChangeNotifier {
     _carIsSelected = false;
     _bikeIsSelected = true;
     _walkIsSelected = false;
-    _transitIsSelected = false;
     notifyListeners();
   }
 
@@ -258,20 +250,13 @@ class DailyTrafficProvider extends ChangeNotifier {
     _carIsSelected = false;
     _bikeIsSelected = false;
     _walkIsSelected = true;
-    _transitIsSelected = false;
-    notifyListeners();
-  }
-
-  void toggleTransitButton() {
-    _carIsSelected = false;
-    _bikeIsSelected = false;
-    _walkIsSelected = false;
-    _transitIsSelected = true;
     notifyListeners();
   }
 }
 
 class CarIconButton extends StatelessWidget {
+  const CarIconButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     bool selected = context.watch<DailyTrafficProvider>().carIsSelected;
@@ -295,6 +280,8 @@ class CarIconButton extends StatelessWidget {
 }
 
 class BikeIconButton extends StatelessWidget {
+  const BikeIconButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     bool selected = context.watch<DailyTrafficProvider>().bikeIsSelected;
@@ -318,6 +305,8 @@ class BikeIconButton extends StatelessWidget {
 }
 
 class WalkIconButton extends StatelessWidget {
+  const WalkIconButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     bool selected = context.watch<DailyTrafficProvider>().walkIsSelected;
@@ -340,29 +329,6 @@ class WalkIconButton extends StatelessWidget {
   }
 }
 
-class TransitIconButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    bool selected = context.watch<DailyTrafficProvider>().transitIsSelected;
-
-    return IconButton(
-      icon: selected
-          ? Icon(
-              Icons.directions_bus,
-              size: 25,
-              color: Theme.of(context).colorScheme.primary,
-            )
-          : const Icon(Icons.directions_bus, size: 25),
-      onPressed: () {
-        Provider.of<DailyTrafficProvider>(context, listen: false)
-            .setMode(TransportMode.transit);
-        Provider.of<DailyTrafficProvider>(context, listen: false)
-            .toggleTransitButton();
-      },
-    );
-  }
-}
-
 class Destination {
   String? name;
   String address;
@@ -374,16 +340,10 @@ class Destination {
 class DestinationItem extends StatelessWidget {
   final Destination destination;
   final String type;
-  DestinationItem(this.destination, this.type);
+  const DestinationItem(this.destination, this.type, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    var savedDestinations =
-        context.watch<DailyTrafficProvider>().savedDestinations;
-
-    SingleValueDropDownController dropDownController =
-        SingleValueDropDownController();
-
     TextEditingController textInputController = TextEditingController();
 
     void showDestinationInputDialog(BuildContext context) {
@@ -405,13 +365,13 @@ class DestinationItem extends StatelessWidget {
                     'Save',
                     () {
                       String destination = textInputController.text;
-                      if (type == 'From:') {
+                      if (type == 'From') {
                         Provider.of<DailyTrafficProvider>(context,
                                 listen: false)
                             .setCurrentFrom(destination);
                         Navigator.pop(context);
                       } else {
-                        // the type is "To:"
+                        // the type is "To"
                         Provider.of<DailyTrafficProvider>(context,
                                 listen: false)
                             .setCurrentTo(destination);
@@ -421,33 +381,7 @@ class DestinationItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text('Or choose from your saved destinations:'),
-                  DropDownTextField(
-                      controller: dropDownController,
-                      clearOption: true,
-                      textFieldDecoration:
-                          InputDecoration(hintText: 'Select destination'),
-                      dropDownItemCount: savedDestinations.length,
-                      dropDownList: savedDestinations
-                          .map<DropDownValueModel>((destination) {
-                        return DropDownValueModel(
-                            name: destination.name!,
-                            value: destination.address);
-                      }).toList(),
-                      onChanged: (destination) {
-                        if (type == 'From:') {
-                          Provider.of<DailyTrafficProvider>(context,
-                                  listen: false)
-                              .setCurrentFrom(
-                                  destination.name ?? destination.address);
-                          Navigator.pop(context);
-                        } else {
-                          Provider.of<DailyTrafficProvider>(context,
-                                  listen: false)
-                              .setCurrentTo(
-                                  destination.name ?? destination.address);
-                          Navigator.pop(context);
-                        }
-                      }),
+                  DestinationDropdown(type: type, defaultOrCurrent: 'Current'),
                 ],
               ),
             );
@@ -473,7 +407,7 @@ class DestinationItem extends StatelessWidget {
 // for showing saved destination in list
 class SavedDestinationItem extends StatelessWidget {
   final Destination destination;
-  SavedDestinationItem(this.destination);
+  const SavedDestinationItem(this.destination, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -515,17 +449,27 @@ class SavedDestinationItem extends StatelessWidget {
 
 class DestinationDropdown extends StatelessWidget {
   final String type;
+  final String defaultOrCurrent;
 
-  DestinationDropdown({required this.type});
+  const DestinationDropdown(
+      {super.key, required this.type, required this.defaultOrCurrent});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DailyTrafficProvider>(builder: (context, provider, child) {
       List<Destination> savedDestinations = provider.savedDestinations;
-      Destination? selectedDestination =
-          (type == 'From:' ? provider.defaultFrom : provider.defaultTo);
+      Destination selectedDestination;
+      if (type == 'From' && defaultOrCurrent == 'Default') {
+        selectedDestination = provider.defaultFrom;
+      } else if (type == 'From' && defaultOrCurrent == 'Current') {
+        selectedDestination = provider.currentFrom;
+      } else if (type == 'To' && defaultOrCurrent == 'Default') {
+        selectedDestination = provider.defaultTo;
+      } else {
+        // To and Current
+        selectedDestination = provider.currentTo;
+      }
       // find the destination among saved ones that corresponds to the default one
-      // Find the destination among saved ones that corresponds to the default one
       int index;
       if (savedDestinations.isNotEmpty) {
         index = savedDestinations
@@ -534,24 +478,35 @@ class DestinationDropdown extends StatelessWidget {
         index = -1;
       }
 
-      Destination currentDefault;
+      Destination currentDestination;
       if (index != -1) {
         // If the destination is found in savedDestinations, use it as the currentDefault
-        currentDefault = savedDestinations[index];
+        currentDestination = savedDestinations[index];
       } else {
         // If the destination is not found, set a default value
-        currentDefault = provider.currentFrom;
+        currentDestination = provider.currentFrom;
       }
 
       return DropdownButton<Destination>(
-        value: currentDefault,
+        // no preselected value when editing current destinations since they can be any address that
+        // does not exist in the saved destinations dropdown
+        value: defaultOrCurrent == 'Current' ? null : currentDestination,
         onChanged: (Destination? newDestination) {
-          if (type == 'From:') {
+          if (type == 'From' && defaultOrCurrent == 'Default') {
             provider.storeFromDestination(
                 newDestination!.name!, newDestination.address);
-          } else {
+            Navigator.pop(context);
+          } else if (type == 'From' && defaultOrCurrent == 'Current') {
+            provider.setCurrentFrom(newDestination!.name!);
+            Navigator.pop(context);
+          } else if (type == 'To' && defaultOrCurrent == 'Default') {
             provider.storeToDestination(
                 newDestination!.name!, newDestination.address);
+            Navigator.pop(context);
+          } else {
+            // To and Current
+            provider.setCurrentTo(newDestination!.name!);
+            Navigator.pop(context);
           }
         },
         items: savedDestinations.map((destination) {
@@ -561,8 +516,8 @@ class DestinationDropdown extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(destination.name!,
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(destination.address, style: TextStyle(fontSize: 12)),
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(destination.address, style: const TextStyle(fontSize: 12)),
               ],
             ),
           );
@@ -586,10 +541,10 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
           children: [
             const Text('Default From-Destination:',
                 style: TextStyle(fontSize: 12)),
-            DestinationDropdown(type: 'From:'),
+            DestinationDropdown(type: 'From', defaultOrCurrent: 'Default'),
             const Text('Default To-Destination:',
                 style: TextStyle(fontSize: 12)),
-            DestinationDropdown(type: 'To:'),
+            DestinationDropdown(type: 'To', defaultOrCurrent: 'Default'),
             const Text('Default TransportMode:',
                 style: TextStyle(fontSize: 12)),
             DropdownButton<TransportMode>(
@@ -611,9 +566,6 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                   case TransportMode.walking:
                     modetext = 'Walking';
                     break;
-                  case TransportMode.transit:
-                    modetext = 'Transit';
-                    break;
                   default:
                     modetext = 'Driving';
                     break;
@@ -625,7 +577,6 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 TransportMode.driving,
                 TransportMode.bicycling,
                 TransportMode.walking,
-                TransportMode.transit
               ].map<DropdownMenuItem<TransportMode>>((TransportMode mode) {
                 Icon icon;
                 String text;
@@ -641,10 +592,6 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                   case TransportMode.walking:
                     icon = Icon(Icons.directions_walk);
                     text = 'Walking';
-                    break;
-                  case TransportMode.transit:
-                    icon = Icon(Icons.directions_bus);
-                    text = 'Transit';
                     break;
                 }
                 return DropdownMenuItem<TransportMode>(
@@ -963,7 +910,7 @@ Future<Uint8List> getMapFromAPI(
 class GoogleMapWidget extends StatelessWidget {
   final Future<Uint8List> mapImage;
 
-  GoogleMapWidget({required this.mapImage});
+  const GoogleMapWidget({super.key, required this.mapImage});
 
   @override
   Widget build(BuildContext context) {
@@ -996,7 +943,7 @@ class GoogleMapWidget extends StatelessWidget {
 class MapInfoWidget extends StatelessWidget {
   final Future<Map<String, dynamic>> routeInfo;
 
-  MapInfoWidget({required this.routeInfo});
+  const MapInfoWidget({super.key, required this.routeInfo});
 
   @override
   Widget build(BuildContext context) {

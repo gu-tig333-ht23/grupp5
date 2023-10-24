@@ -85,7 +85,7 @@ class DailyTrafficPage extends StatelessWidget {
                                           padding: const EdgeInsets.only(
                                               left: 8.0, bottom: 2),
                                           child: DestinationItem(
-                                              currentFrom, 'From:'),
+                                              currentFrom, 'From'),
                                         ),
                                       ),
                                     ],
@@ -114,7 +114,7 @@ class DailyTrafficPage extends StatelessWidget {
                                           padding: const EdgeInsets.only(
                                               left: 8.0, bottom: 2),
                                           child:
-                                              DestinationItem(currentTo, 'To:'),
+                                              DestinationItem(currentTo, 'To'),
                                         ),
                                       ),
                                     ],
@@ -149,7 +149,6 @@ class DailyTrafficPage extends StatelessWidget {
                     CarIconButton(),
                     BikeIconButton(),
                     WalkIconButton(),
-                    TransitIconButton(),
                   ],
                 ),
               ),
