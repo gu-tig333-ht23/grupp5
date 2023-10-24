@@ -208,7 +208,6 @@ class FavoriteMoviesModel extends ChangeNotifier {
       ];
 
       _favoriteMovies.add(favoriteMovie);
-      print('addFavorite: $_favoriteMovies');
 
       saveWatchlist();
       notifyListeners();
@@ -217,10 +216,6 @@ class FavoriteMoviesModel extends ChangeNotifier {
   }
 
   final Map<String, List<Map<String, String>>> _streamInfoMap = {};
-
-  List<Map<String, String>> getStreamInfo(String movieTitle) {
-    return _streamInfoMap[movieTitle] ?? [];
-  }
 
   void removeMovie(int index) {
     final String movieTitle = _favoriteMovies[index][0];

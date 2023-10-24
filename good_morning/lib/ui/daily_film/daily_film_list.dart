@@ -50,25 +50,14 @@ class DailyFilmList extends StatelessWidget {
                       child: Text(movieDetails[1]),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 10),
                       child: Card(
                         color: Theme.of(context).cardColor,
                         child: FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
                           image: movieDetails[4],
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: buildSmallButton(
-                        context,
-                        'Remove from watchlist',
-                        () {
-                          context
-                              .read<FavoriteMoviesModel>()
-                              .removeMovie(index);
-                        },
                       ),
                     ),
                     Consumer<FavoriteMoviesModel>(
@@ -84,7 +73,7 @@ class DailyFilmList extends StatelessWidget {
                           String formattedStreamInfo = '';
                           for (var info in streamInfo) {
                             formattedStreamInfo +=
-                                '${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}\n';
+                                'Available on ${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}\n';
                           }
                           return ListTile(
                             title: const Text(
@@ -94,6 +83,18 @@ class DailyFilmList extends StatelessWidget {
                           );
                         }
                       },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: buildSmallButton(
+                        context,
+                        'Remove from watchlist',
+                        () {
+                          context
+                              .read<FavoriteMoviesModel>()
+                              .removeMovie(index);
+                        },
+                      ),
                     ),
                   ],
                 ),
