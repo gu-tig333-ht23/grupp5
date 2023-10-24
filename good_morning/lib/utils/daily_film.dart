@@ -202,7 +202,6 @@ class FavoriteMoviesModel extends ChangeNotifier {
         tmdbId,
         fetchDate,
       ];
-      print(streamInfo);
       if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
       }

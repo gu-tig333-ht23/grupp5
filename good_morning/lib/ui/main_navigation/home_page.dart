@@ -157,8 +157,7 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                Expanded(
-                    child: buildFullCard(
+                  buildFullCard(
                   context,
                   title: 'Traffic',
                   optionalWidget: MapInfoWidget(
@@ -174,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                     );
                     print('Navigating to Traffic Information Screen');
                   },
-                )),
+                ),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
@@ -220,8 +219,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               if (visibilityModel.showFilm)
-                Expanded(
-                  child: buildFullCardWithImage(
+buildFullCardWithImage(
                     context,
                     title: 'Film of the Day',
                     description: movieTitle,
@@ -236,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-                ),
+                
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(

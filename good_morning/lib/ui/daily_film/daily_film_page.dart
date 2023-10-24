@@ -188,7 +188,6 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
       final List<Map<String, String>> streamInfo =
           (storedData['streamInfo'] as List<dynamic>)
               .cast<Map<String, String>>();
-      print(storedData);
 
       Provider.of<MovieProvider>(context, listen: false).setMovie(
           storedData['movieTitle']!,
@@ -199,7 +198,6 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
           storedData['movieId']!,
           streamInfo,
           storedData['fetchDate']!);
-      print(streamInfo);
     }
   }
 }
