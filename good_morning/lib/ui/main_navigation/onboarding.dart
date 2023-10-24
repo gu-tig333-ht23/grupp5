@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'filter_model.dart';
+import '../../utils/filter_model.dart';
 import 'package:provider/provider.dart';
 
 class OnBoardingScreen extends StatefulWidget {
+  const OnBoardingScreen({super.key});
+
   @override
-  _OnBoardingScreenState createState() => _OnBoardingScreenState();
+  OnBoardingScreenState createState() => OnBoardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class OnBoardingScreenState extends State<OnBoardingScreen> {
+  bool _canSwipe = true;
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final TextEditingController _nameController = TextEditingController();
+  final _nameController = TextEditingController(text: 'developer');
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +36,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 onPageChanged: (pageIndex) {
                   setState(() {
                     _currentPage = pageIndex;
+                    if (pageIndex == 1) {
+                      _canSwipe = _nameController.text.trim().isNotEmpty;
+                    } else {
+                      _canSwipe = true;
+                    }
                   });
                 },
+                physics: _canSwipe
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
                 children: [
                   _buildIntroductionPage(),
                   _buildNameInputPage(),
@@ -107,10 +119,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               border: OutlineInputBorder(),
             ),
             onSubmitted: (value) {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
+              _saveNameAndNavigate();
             },
           ),
           const SizedBox(height: 20),
@@ -118,15 +127,41 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             context,
             'Continue',
             () {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
+              _saveNameAndNavigate();
             },
           ),
         ],
       ),
     );
+  }
+
+  void _saveNameAndNavigate() async {
+    if (_nameController.text.trim().isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please enter your name.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        _canSwipe = true;
+      });
+      await setUserName(_nameController.text.trim());
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    }
   }
 
   Widget _buildCardSelectionPage() {
@@ -137,39 +172,54 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         children: [
           const Text("Select Cards to Show",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20.0),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Weather'),
-              value: visibilityModel.showWeather,
+              subtitle: const Text('Displays daily weather updates for your preferred location.'),
+              value: filterModel.showWeather,
               onChanged: (bool? value) {
-                visibilityModel.toggleWeather();
+                filterModel.toggleWeather();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Today in History'),
-              value: visibilityModel.showHistory,
+              subtitle: const Text('Highlights significant events from the past on this day.'),
+              value: filterModel.showHistory,
               onChanged: (bool? value) {
-                visibilityModel.toggleHistory();
+                filterModel.toggleHistory();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Fact of the Day'),
-              value: visibilityModel.showFact,
+              subtitle: const Text('Your daily fun fact.'),
+              value: filterModel.showFact,
               onChanged: (bool? value) {
-                visibilityModel.toggleFact();
+                filterModel.toggleFact();
               },
             ),
           ),
           Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
+            builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Film of the Day'),
-              value: visibilityModel.showFilm,
+              subtitle: const Text('Learn about one film every day.'),
+              value: filterModel.showFilm,
               onChanged: (bool? value) {
-                visibilityModel.toggleFilm();
+                filterModel.toggleFilm();
+              },
+            ),
+          ),
+          Consumer<FilterModel>(
+            builder: (context, filterModel, child) => CheckboxListTile(
+              title: const Text('Show Traffic'),
+              subtitle: const Text('Shows your estimated daily commute time.'),
+              value: filterModel.showTraffic,
+              onChanged: (bool? value) {
+                filterModel.toggleTraffic();
               },
             ),
           ),
@@ -186,7 +236,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             context,
             'Finish Setup',
             () {
+              setOnboardingCompleted(true);
               Navigator.pop(context);
+              //Navigator.pushReplacement(
+              //context,
+              //MaterialPageRoute(builder: (context) => MainScreen()),
+              //); Byt pop till pushReplacement efter Stines home_page fix.
             },
           ),
         ],
@@ -226,5 +281,5 @@ final Gradient lightModeGradient = LinearGradient(
 final Gradient darkModeGradient = LinearGradient(
   begin: Alignment.topRight,
   end: Alignment.bottomLeft,
-  colors: [Colors.green[700]!, Colors.teal[700]!],
+  colors: [Colors.deepOrange[700]!, Colors.brown[600]!],
 );

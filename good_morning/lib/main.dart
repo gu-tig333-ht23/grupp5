@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/data_handling/user_preferences.dart';
+import 'package:good_morning/ui/daily_film/daily_film_settings.dart';
+import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/ui/main_navigation/onboarding.dart';
+import 'package:good_morning/utils/daily_fact/daily_fact_provider.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
@@ -6,7 +11,7 @@ import 'package:good_morning/utils/daily_traffic_provider.dart';
 import '/ui/main_navigation/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:good_morning/utils/daily_history.dart';
-import 'ui/main_navigation/filter_model.dart';
+import 'utils/filter_model.dart';
 
 void main() async {
   runApp(
@@ -47,7 +52,20 @@ class MyApp extends StatelessWidget {
       title: 'Good Morning',
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      home: HomePage(),
+      home: FutureBuilder<bool>(
+        future: isOnboardingCompleted(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == true) {
+              return HomePage(),
+            } else {
+              return const OnBoardingScreen();
+            }
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 }

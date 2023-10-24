@@ -1,3 +1,4 @@
+import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
@@ -9,7 +10,7 @@ import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
-import 'filter_model.dart';
+import '../../utils/filter_model.dart';
 import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Traffic of the Day'),
+                  title: const Text('Show Traffic'),
                   value: visibilityModel.showTraffic,
                   onChanged: (bool? value) {
                     visibilityModel.toggleTraffic();
@@ -108,7 +109,6 @@ class _HomePageState extends State<HomePage> {
         Provider.of<HistoryProvider>(context).selectedFilter;
     var month = Provider.of<HistoryProvider>(context).mmDate;
     var day = Provider.of<HistoryProvider>(context).ddDate;
-
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
@@ -119,7 +119,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Good Morning', style: titleTextStyle),
+        title: FutureBuilder<String>(
+          future:
+              getUserName(), // This fetches the name from shared preferences
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return const Text("Good Morning", style: titleTextStyle);
+              } else {
+                return Text("Good Morning, ${snapshot.data}",
+                    style: titleTextStyle);
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -186,7 +201,9 @@ class _HomePageState extends State<HomePage> {
                         child: DailyFactWidget(
                             factText: Provider.of<DailyFactProvider>(context)
                                 .factText),
-                      ),
+                    ),
+                ],
+              ),
                       IconButton(
                         icon: Icon(Icons.lightbulb, size: 40),
                         onPressed: () {},
@@ -227,18 +244,10 @@ class _HomePageState extends State<HomePage> {
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const OnBoardingScreen()),
                 );
               }),
-              const SizedBox(height: 16.0),
-              buildFloatingActionButton(
-                context,
-                Icons.add,
-                () {
-                  print("Floating Action Button Pressed!");
-                },
-                tooltip: 'Test',
-              ),
             ],
           ),
         ),
