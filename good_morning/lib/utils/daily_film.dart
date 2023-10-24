@@ -160,7 +160,6 @@ class FavoriteMoviesModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final watchlistJson = prefs.getString(_watchlistKey);
 
-  
     final List<dynamic> decodedData = jsonDecode(watchlistJson ?? '[]');
 
     final List<List<String>> watchlist = decodedData.map((movieData) {
@@ -194,6 +193,9 @@ class FavoriteMoviesModel extends ChangeNotifier {
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
       return 'Movie already in your watchlist';
     } else {
+      if (streamInfo.isNotEmpty) {
+        _streamInfoMap[movieTitle] = streamInfo;
+      }
       List<String> favoriteMovie = [
         movieTitle,
         movieDescription,
@@ -202,12 +204,11 @@ class FavoriteMoviesModel extends ChangeNotifier {
         moviePosterPath,
         tmdbId,
         fetchDate,
+        streamInfo.toString(),
       ];
-      if (streamInfo.isNotEmpty) {
-        _streamInfoMap[movieTitle] = streamInfo;
-      }
 
       _favoriteMovies.add(favoriteMovie);
+      print('addFavorite: $_favoriteMovies');
 
       saveWatchlist();
       notifyListeners();

@@ -20,12 +20,11 @@ class DailyFilmList extends StatelessWidget {
       body: ListView.builder(
         itemCount: favoriteMovies.length,
         itemBuilder: (context, index) {
-          if (favoriteMovies.isEmpty) {
+          if (favoriteMovies.length < 1) {
             return const Center(
               child: Text('Your watchlist is empty.'),
             );
           }
-
           if (index >= 0 && index < favoriteMovies.length) {
             List<String> movieDetails = favoriteMovies[index];
             // if (movieDetails.isEmpty) {
@@ -74,28 +73,24 @@ class DailyFilmList extends StatelessWidget {
                     ),
                     Consumer<FavoriteMoviesModel>(
                       builder: (context, favoriteMoviesModel, child) {
-                        String movieTitle = movieDetails[0];
-
                         List<Map<String, String>> streamInfo =
-                            favoriteMoviesModel.getStreamInfo(movieTitle);
+                            parseStringToList(movieDetails[7]);
 
                         if (streamInfo.isEmpty) {
                           return const Center(
                             child: Text('No streaming information available.'),
                           );
                         } else {
+                          String formattedStreamInfo = '';
+                          for (var info in streamInfo) {
+                            formattedStreamInfo +=
+                                '${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}\n';
+                          }
                           return ListTile(
                             title: const Text(
                               'Streaming information for Swedish providers',
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: streamInfo.map((info) {
-                                return Text(
-                                  '${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}',
-                                );
-                              }).toList(),
-                            ),
+                            subtitle: Text(formattedStreamInfo),
                           );
                         }
                       },
@@ -105,10 +100,35 @@ class DailyFilmList extends StatelessWidget {
               ),
             );
           } else {
-            return const SizedBox();
+            return const SizedBox(
+              child: Text('No movies found in your watchlist, go add some!'),
+            );
           }
         },
       ),
     );
   }
+}
+
+List<Map<String, String>> parseStringToList(String input) {
+  List<Map<String, String>> list = [];
+  final regex = RegExp(r'{(.*?)}');
+  final matches = regex.allMatches(input);
+
+  for (final match in matches) {
+    final matchString = match.group(1);
+    final keyValuePairs = matchString?.split(', ');
+    final map = Map<String, String>();
+
+    for (final pair in keyValuePairs!) {
+      final parts = pair.split(': ');
+      if (parts.length == 2) {
+        map[parts[0]] = parts[1];
+      }
+    }
+
+    list.add(map);
+  }
+
+  return list;
 }
