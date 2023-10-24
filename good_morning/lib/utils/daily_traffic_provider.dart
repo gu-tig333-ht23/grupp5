@@ -392,7 +392,12 @@ class DestinationItem extends StatelessWidget {
                     const SizedBox(height: 8),
                     const Text('Or choose from your saved destinations:'),
                     DestinationDropdown(
-                        type: type, defaultOrCurrent: 'Current'),
+                      type: type,
+                      defaultOrCurrent: 'Current',
+                      onInfoDialogClosed: () {
+                        // does nothing
+                      },
+                    ),
                   ],
                 ),
                 actions: [
@@ -468,16 +473,18 @@ class SavedDestinationItem extends StatelessWidget {
 class DestinationDropdown extends StatelessWidget {
   final String type;
   final String defaultOrCurrent;
+  final Function() onInfoDialogClosed;
 
   const DestinationDropdown({
     super.key,
     required this.type,
     required this.defaultOrCurrent,
+    required this.onInfoDialogClosed,
   });
 
   @override
   Widget build(BuildContext context) {
-    void showInfoDialog() {
+    void showInfoDialog(BuildContext context) {
       var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
       var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
       var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
@@ -513,6 +520,7 @@ class DestinationDropdown extends StatelessWidget {
                 child: const Text('Close'),
                 onPressed: () {
                   Navigator.pop(context);
+                  onInfoDialogClosed();
                 },
               ),
             ],
@@ -534,7 +542,7 @@ class DestinationDropdown extends StatelessWidget {
                 newDestination!.name!, newDestination.address);
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
-            showInfoDialog();
+            showInfoDialog(context);
             //Navigator.pop(context);
           } else if (type == 'From' && defaultOrCurrent == 'Current') {
             provider.setCurrentFrom(newDestination!.name!);
@@ -544,7 +552,7 @@ class DestinationDropdown extends StatelessWidget {
                 newDestination!.name!, newDestination.address);
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
-            showInfoDialog();
+            showInfoDialog(context);
             //Navigator.pop(context);
           } else {
             // To and Current
@@ -574,7 +582,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
   TransportMode mode =
       Provider.of<DailyTrafficProvider>(context, listen: false).defaultMode;
 
-  void showInfoDialog() {
+  void showInfoDialog(BuildContext context) {
     var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
     var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
     var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
@@ -631,11 +639,22 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
             const SizedBox(height: 5),
             const Text('Default From-Destination:',
                 style: TextStyle(fontSize: 12)),
-            const DestinationDropdown(
-                type: 'From', defaultOrCurrent: 'Default'),
+            DestinationDropdown(
+              type: 'From',
+              defaultOrCurrent: 'Default',
+              onInfoDialogClosed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             const Text('Default To-Destination:',
                 style: TextStyle(fontSize: 12)),
-            const DestinationDropdown(type: 'To', defaultOrCurrent: 'Default'),
+            DestinationDropdown(
+              type: 'To',
+              defaultOrCurrent: 'Default',
+              onInfoDialogClosed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             const Text('Default TransportMode:',
                 style: TextStyle(fontSize: 12)),
             DropdownButton<TransportMode>(
@@ -663,7 +682,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                     .storeMode(modetext);
                 await Provider.of<DailyTrafficProvider>(context, listen: false)
                     .fetchDefaultTrafficSettings(); // updates the value in dropdown menu
-                showInfoDialog();
+                showInfoDialog(context);
               },
               items: <TransportMode>[
                 TransportMode.driving,
