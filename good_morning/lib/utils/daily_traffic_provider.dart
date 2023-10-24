@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/ui/daily_traffic.ui.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,7 +10,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
-import 'package:url_launcher/url_launcher_string.dart';
 
 enum TransportMode { bicycling, walking, driving }
 
@@ -60,17 +60,23 @@ class DailyTrafficProvider extends ChangeNotifier {
     switch (defaultModeName) {
       case 'Driving':
         _defaultMode = TransportMode.driving;
+        toggleCarButton();
         break;
       case 'Bicycling':
         _defaultMode = TransportMode.bicycling;
+        toggleBikeButton();
         break;
       case 'Walking':
         _defaultMode = TransportMode.walking;
+        toggleWalkButton();
         break;
       default:
         _defaultMode = TransportMode.driving;
+        toggleCarButton();
         break;
     }
+    _selectedMode = _defaultMode;
+
     // default to-destination
     Map<String, String> defaultTo = await getStoredDefaultTo();
     String defaultToName = defaultTo['defaultToName'] ?? 'School';
@@ -129,7 +135,16 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 
   Future<void> addNewDestination(String name, String address) async {
-    await addDestination(name, address);
+    await addDestination(name, address); // uppdaterar lagringen
+    savedDestinations.add(
+        Destination(name: name, address: address)); // lokalt, UI uppdateras
+    notifyListeners();
+  }
+
+  Future<void> deleteDestination(Destination destination) async {
+    await removeDestination(
+        destination.name!, destination.address); // uppdaterar lagringen
+    savedDestinations.remove(destination); // lokalt, UI uppdateras
     notifyListeners();
   }
 
@@ -188,23 +203,19 @@ class DailyTrafficProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
+  /*
   Future<void> editDestinationName(
       Destination destination, String newName) async {
     destination.name = newName;
     notifyListeners();
-  }
+  }*/
 
+  /*
   Future<void> editDestinationAddress(
       Destination destination, String newAddress) async {
     destination.address = newAddress;
     notifyListeners();
-  }
-
-  Future<void> deleteDestination(Destination destination) async {
-    savedDestinations.remove(destination);
-    notifyListeners();
-  }
+  }*/
 
 // function that sets the address for existing destination by its name
   void setAddress(int index, String address) {
@@ -350,40 +361,48 @@ class DestinationItem extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(type),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                      controller: textInputController,
-                      decoration: const InputDecoration(
-                          labelText: 'Type your address:')),
-                  const SizedBox(height: 8),
-                  buildSmallButton(
-                    context,
-                    'Save',
-                    () {
-                      String destination = textInputController.text;
-                      if (type == 'From') {
-                        Provider.of<DailyTrafficProvider>(context,
-                                listen: false)
-                            .setCurrentFrom(destination);
-                        Navigator.pop(context);
-                      } else {
-                        // the type is "To"
-                        Provider.of<DailyTrafficProvider>(context,
-                                listen: false)
-                            .setCurrentTo(destination);
-                        Navigator.pop(context);
-                      }
+                title: Text(type),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                        controller: textInputController,
+                        decoration: const InputDecoration(
+                            labelText: 'Type your address:')),
+                    const SizedBox(height: 8),
+                    buildSmallButton(
+                      context,
+                      'Save',
+                      () {
+                        String destination = textInputController.text;
+                        if (type == 'From') {
+                          Provider.of<DailyTrafficProvider>(context,
+                                  listen: false)
+                              .setCurrentFrom(destination);
+                          Navigator.pop(context);
+                        } else {
+                          // the type is "To"
+                          Provider.of<DailyTrafficProvider>(context,
+                                  listen: false)
+                              .setCurrentTo(destination);
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('Or choose from your saved destinations:'),
+                    DestinationDropdown(
+                        type: type, defaultOrCurrent: 'Current'),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('Or choose from your saved destinations:'),
-                  DestinationDropdown(type: type, defaultOrCurrent: 'Current'),
-                ],
-              ),
-            );
+                  )
+                ]);
           });
     }
 
@@ -418,7 +437,7 @@ class SavedDestinationItem extends StatelessWidget {
               child: TextButton(
                 child: Text(destination.name!),
                 onPressed: () {
-                  editSavedName(context, destination);
+                  //editSavedName(context, destination);
                 },
               ),
             ),
@@ -427,7 +446,7 @@ class SavedDestinationItem extends StatelessWidget {
                 child: TextButton(
                   child: Text(destination.address),
                   onPressed: () {
-                    editSavedAddress(context, destination);
+                    // editSavedAddress(context, destination);
                   },
                 ),
               ),
@@ -450,58 +469,83 @@ class DestinationDropdown extends StatelessWidget {
   final String type;
   final String defaultOrCurrent;
 
-  const DestinationDropdown(
-      {super.key, required this.type, required this.defaultOrCurrent});
+  const DestinationDropdown({
+    super.key,
+    required this.type,
+    required this.defaultOrCurrent,
+  });
 
   @override
   Widget build(BuildContext context) {
+    void showInfoDialog() {
+      var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
+      var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
+      var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Your Default Settings Saved!'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Displays info about current saved default settings
+                Text('Default From-Destination:',
+                    style: TextStyle(color: Theme.of(context).primaryColor)),
+                Text(
+                  '${defaultFrom.name}, ${defaultFrom.address}',
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text('Default To-Destination:',
+                    style: TextStyle(color: Theme.of(context).primaryColor)),
+                Text('${defaultTo.name}, ${defaultTo.address}',
+                    style: TextStyle(fontSize: 14)),
+                Text('Default Transport Mode:',
+                    style: TextStyle(color: Theme.of(context).primaryColor)),
+                Text(defaultMode.name.toString(),
+                    style: TextStyle(fontSize: 14)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Consumer<DailyTrafficProvider>(builder: (context, provider, child) {
       List<Destination> savedDestinations = provider.savedDestinations;
-      Destination selectedDestination;
-      if (type == 'From' && defaultOrCurrent == 'Default') {
-        selectedDestination = provider.defaultFrom;
-      } else if (type == 'From' && defaultOrCurrent == 'Current') {
-        selectedDestination = provider.currentFrom;
-      } else if (type == 'To' && defaultOrCurrent == 'Default') {
-        selectedDestination = provider.defaultTo;
-      } else {
-        // To and Current
-        selectedDestination = provider.currentTo;
-      }
-      // find the destination among saved ones that corresponds to the default one
-      int index;
-      if (savedDestinations.isNotEmpty) {
-        index = savedDestinations
-            .indexWhere((element) => selectedDestination.name == element.name);
-      } else {
-        index = -1;
-      }
-
-      Destination currentDestination;
-      if (index != -1) {
-        // If the destination is found in savedDestinations, use it as the currentDefault
-        currentDestination = savedDestinations[index];
-      } else {
-        // If the destination is not found, set a default value
-        currentDestination = provider.currentFrom;
-      }
 
       return DropdownButton<Destination>(
         // no preselected value when editing current destinations since they can be any address that
         // does not exist in the saved destinations dropdown
-        value: defaultOrCurrent == 'Current' ? null : currentDestination,
-        onChanged: (Destination? newDestination) {
+        value: null,
+        onChanged: (Destination? newDestination) async {
           if (type == 'From' && defaultOrCurrent == 'Default') {
-            provider.storeFromDestination(
+            await provider.storeFromDestination(
                 newDestination!.name!, newDestination.address);
-            Navigator.pop(context);
+            await Provider.of<DailyTrafficProvider>(context, listen: false)
+                .fetchDefaultTrafficSettings();
+            showInfoDialog();
+            //Navigator.pop(context);
           } else if (type == 'From' && defaultOrCurrent == 'Current') {
             provider.setCurrentFrom(newDestination!.name!);
             Navigator.pop(context);
           } else if (type == 'To' && defaultOrCurrent == 'Default') {
-            provider.storeToDestination(
+            await provider.storeToDestination(
                 newDestination!.name!, newDestination.address);
-            Navigator.pop(context);
+            await Provider.of<DailyTrafficProvider>(context, listen: false)
+                .fetchDefaultTrafficSettings();
+            showInfoDialog();
+            //Navigator.pop(context);
           } else {
             // To and Current
             provider.setCurrentTo(newDestination!.name!);
@@ -527,7 +571,51 @@ class DestinationDropdown extends StatelessWidget {
 }
 
 Future<void> editDefaultSettingsDialog(BuildContext context) async {
-  TransportMode mode = context.read<DailyTrafficProvider>().defaultMode;
+  TransportMode mode =
+      Provider.of<DailyTrafficProvider>(context, listen: false).defaultMode;
+
+  void showInfoDialog() {
+    var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
+    var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
+    var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Your Default Settings Saved!'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Displays info about current saved default settings
+              Text('Default From-Destination:',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              Text(
+                '${defaultFrom.name}, ${defaultFrom.address}',
+                style: TextStyle(fontSize: 14),
+              ),
+              Text('Default To-Destination:',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              Text('${defaultTo.name}, ${defaultTo.address}',
+                  style: TextStyle(fontSize: 14)),
+              Text('Default Transport Mode:',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              Text(defaultMode.name.toString(), style: TextStyle(fontSize: 14)),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   showDialog(
     context: context,
@@ -538,12 +626,16 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Text('Pick from your saved destinations here!',
+                style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 5),
             const Text('Default From-Destination:',
                 style: TextStyle(fontSize: 12)),
-            DestinationDropdown(type: 'From', defaultOrCurrent: 'Default'),
+            const DestinationDropdown(
+                type: 'From', defaultOrCurrent: 'Default'),
             const Text('Default To-Destination:',
                 style: TextStyle(fontSize: 12)),
-            DestinationDropdown(type: 'To', defaultOrCurrent: 'Default'),
+            const DestinationDropdown(type: 'To', defaultOrCurrent: 'Default'),
             const Text('Default TransportMode:',
                 style: TextStyle(fontSize: 12)),
             DropdownButton<TransportMode>(
@@ -552,10 +644,8 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
               iconSize: 20,
               elevation: 16,
               onChanged: (newMode) async {
-                mode = newMode!;
-
                 String modetext;
-                switch (mode) {
+                switch (newMode) {
                   case TransportMode.driving:
                     modetext = 'Driving';
                     break;
@@ -571,6 +661,9 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 }
                 await Provider.of<DailyTrafficProvider>(context, listen: false)
                     .storeMode(modetext);
+                await Provider.of<DailyTrafficProvider>(context, listen: false)
+                    .fetchDefaultTrafficSettings(); // updates the value in dropdown menu
+                showInfoDialog();
               },
               items: <TransportMode>[
                 TransportMode.driving,
@@ -581,15 +674,15 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 String text;
                 switch (mode) {
                   case TransportMode.driving:
-                    icon = Icon(Icons.directions_car);
+                    icon = const Icon(Icons.directions_car);
                     text = 'Driving';
                     break;
                   case TransportMode.bicycling:
-                    icon = Icon(Icons.directions_bike);
+                    icon = const Icon(Icons.directions_bike);
                     text = 'Bicycling';
                     break;
                   case TransportMode.walking:
-                    icon = Icon(Icons.directions_walk);
+                    icon = const Icon(Icons.directions_walk);
                     text = 'Walking';
                     break;
                 }
@@ -617,12 +710,6 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
           TextButton(
             child: const Text('Cancel'),
             onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Save'),
-            onPressed: () async {
               Navigator.of(context).pop();
             },
           ),
@@ -751,8 +838,8 @@ Future<void> editSavedName(
             child: const Text('Save'),
             onPressed: () {
               String newName = nameController.text;
-              Provider.of<DailyTrafficProvider>(context, listen: false)
-                  .editDestinationName(destination, newName);
+              //Provider.of<DailyTrafficProvider>(context, listen: false)
+              //  .editDestinationName(destination, newName);
 
               Navigator.of(context).pop();
             },
@@ -788,8 +875,8 @@ Future<void> editSavedAddress(
             child: const Text('Save'),
             onPressed: () {
               String newAddress = addressController.text;
-              Provider.of<DailyTrafficProvider>(context, listen: false)
-                  .editDestinationAddress(destination, newAddress);
+              //Provider.of<DailyTrafficProvider>(context, listen: false)
+              //     .editDestinationAddress(destination, newAddress);
 
               Navigator.of(context).pop();
             },

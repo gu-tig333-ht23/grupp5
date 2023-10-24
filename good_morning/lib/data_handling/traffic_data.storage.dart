@@ -62,6 +62,18 @@ Future<void> addDestination(String name, String address) async {
   prefs.setStringList('savedDestinations', savedDestinations);
 }
 
+// adds new destination to the list with saved destinations
+Future<void> removeDestination(String name, String address) async {
+  List<String> savedDestinations = await getStoredDestinations();
+
+  savedDestinations.remove('$name:$address');
+  print('Removing destination $name,$address from storage list');
+
+  // Saves the updated list back to SharedPreferences
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setStringList('savedDestinations', savedDestinations);
+}
+
 // Getters
 Future<Map<String, String>> getStoredDefaultFrom() async {
   final prefs = await SharedPreferences.getInstance();
