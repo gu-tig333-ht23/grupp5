@@ -223,15 +223,6 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               },
             ),
           ),
-          Consumer<FilterModel>(
-            builder: (context, visibilityModel, child) => CheckboxListTile(
-              title: const Text('Show Traffic Information'),
-              value: visibilityModel.showTraffic,
-              onChanged: (bool? value) {
-                visibilityModel.toggleTraffic();
-              },
-            ),
-          ),
           buildBigButton(
             context,
             'Finish Setup',
