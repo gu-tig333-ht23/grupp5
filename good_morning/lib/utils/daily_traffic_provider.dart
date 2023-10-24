@@ -7,8 +7,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
-import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
+import 'package:url_launcher/url_launcher_string.dart';
 
 enum TransportMode { bicycling, walking, driving }
 
@@ -17,12 +18,10 @@ class DailyTrafficProvider extends ChangeNotifier {
   List<Destination> get savedDestinations => _savedDestinations;
 
   // Default route settings, to be updated from user preferences
-  Destination _defaultFrom =
-      Destination(name: 'Home', address: 'Parallellvägen 13E, 433 35 Partille');
+  Destination _defaultFrom = Destination(name: '', address: '');
   Destination get defaultFrom => _defaultFrom;
 
-  Destination _defaultTo = Destination(
-      name: 'School', address: 'Forskningsgången 6, 417 56 Göteborg');
+  Destination _defaultTo = Destination(name: '', address: '');
   Destination get defaultTo => _defaultTo;
 
   TransportMode _defaultMode =
@@ -914,6 +913,20 @@ class GoogleMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String fromDest = Provider.of<DailyTrafficProvider>(context, listen: false)
+        .currentTo
+        .address;
+    String toDest = Provider.of<DailyTrafficProvider>(context, listen: false)
+        .currentFrom
+        .address;
+    String mode = Provider.of<DailyTrafficProvider>(context, listen: false)
+        .mode
+        .name
+        .toString();
+
+    String mapLinkUrl =
+        'https://www.google.com/maps/dir/?api=1&origin=$fromDest&destination=$toDest&travelmode=$mode';
+
     return FutureBuilder<Uint8List>(
       future: mapImage,
       builder: (context, snapshot) {
@@ -924,11 +937,17 @@ class GoogleMapWidget extends StatelessWidget {
               'Error: ${snapshot.error}'); // Show error message if future completes with an error
         } else if (snapshot.hasData) {
           // If the future completes successfully, display the map image
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.memory(
-              snapshot.data!,
-              fit: BoxFit.cover,
+
+          return GestureDetector(
+            onTap: () {
+              _launchURL(mapLinkUrl);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.memory(
+                snapshot.data!,
+                fit: BoxFit.cover,
+              ),
             ),
           ); // Display the Uint8List image data
         } else {
@@ -937,6 +956,15 @@ class GoogleMapWidget extends StatelessWidget {
         }
       },
     );
+  }
+
+  _launchURL(String url) async {
+    Uri uriLink = Uri.parse(url);
+    if (await canLaunchUrl(uriLink)) {
+      await launchUrl(uriLink);
+    } else {
+      throw 'Could not launch url';
+    }
   }
 }
 
