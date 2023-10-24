@@ -2,7 +2,6 @@ import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
@@ -26,8 +25,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-
-    //context.read<HistoryProvider>().fetchHistoryItem3();
+    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -101,13 +99,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter =
         Provider.of<HistoryProvider>(context).selectedFilter;
     var month = Provider.of<HistoryProvider>(context).mmDate;
     var day = Provider.of<HistoryProvider>(context).ddDate;
-
+    
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
@@ -157,7 +155,6 @@ class _HomePageState extends State<HomePage> {
                             DailyTrafficPage(theme: Theme.of(context)),
                       ),
                     );
-
                     print('Navigating to Traffic Information Screen');
                   },
                 )),
