@@ -28,9 +28,9 @@ class DailyFilmList extends StatelessWidget {
 
           if (index >= 0 && index < favoriteMovies.length) {
             List<String> movieDetails = favoriteMovies[index];
-            if (movieDetails.isEmpty) {
-              return const SizedBox();
-            }
+            // if (movieDetails.isEmpty) {
+            //   return const SizedBox();
+            // }
 
             return Card(
               child: Padding(

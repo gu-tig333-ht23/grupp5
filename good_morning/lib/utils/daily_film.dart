@@ -154,13 +154,14 @@ class FavoriteMoviesModel extends ChangeNotifier {
   List<List<String>> _favoriteMovies = [];
 
   List<List<String>> get favoriteMovies => _favoriteMovies;
-  final String _watchlistKey = 'watchlist11';
+  final String _watchlistKey = 'watchlist13';
 
   Future<void> loadWatchlist() async {
     final prefs = await SharedPreferences.getInstance();
     final watchlistJson = prefs.getString(_watchlistKey);
 
-    final List<dynamic> decodedData = jsonDecode(watchlistJson!);
+  
+    final List<dynamic> decodedData = jsonDecode(watchlistJson ?? '[]');
 
     final List<List<String>> watchlist = decodedData.map((movieData) {
       if (movieData is List) {
