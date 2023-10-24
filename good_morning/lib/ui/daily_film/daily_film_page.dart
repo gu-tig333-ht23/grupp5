@@ -75,13 +75,15 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
+
                   child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
                       image: posterPath,
                       imageScale: 1,
                       placeholderScale: 1),
+
                 ),
-              ),
+              //),
               Card(
                 color: Theme.of(context).cardColor,
                 child: Padding(

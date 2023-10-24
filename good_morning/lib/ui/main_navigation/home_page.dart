@@ -1,4 +1,6 @@
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,7 @@ import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 class HomePage extends StatefulWidget {
-  final String factText;
-
-  HomePage({required this.factText, super.key});
+  HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,6 +27,8 @@ class _HomePageState extends State<HomePage> {
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
     //context.read<HistoryProvider>().fetchHistoryItem3();
+    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
+
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -106,8 +108,13 @@ class _HomePageState extends State<HomePage> {
         Provider.of<HistoryProvider>(context).selectedFilter;
     var month = Provider.of<HistoryProvider>(context).mmDate;
     var day = Provider.of<HistoryProvider>(context).ddDate;
+
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+
+    var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
+    var currentTo = context.watch<DailyTrafficProvider>().currentTo;
+    var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
       appBar: AppBar(
@@ -136,18 +143,24 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                buildFullCard(context,
-                    title: 'Traffic',
-                    description:
-                        'Little traffic, approximately 51 mins to work by bicycle.',
-                    onTapAction: () {
-                  Navigator.push(
+                Expanded(
+                    child: buildFullCard(
+                  context,
+                  title: 'Traffic',
+                  optionalWidget: MapInfoWidget(
+                      routeInfo: getRouteInfoFromAPI(currentTo.address,
+                          currentFrom.address, transportMode.name.toString())),
+                  onTapAction: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyTrafficPage()));
-                  print('Navigating to Traffic Information Screen');
-                }),
+                        builder: (BuildContext context) =>
+                            DailyTrafficPage(theme: Theme.of(context)),
+                      ),
+                    );
+                    print('Navigating to Traffic Information Screen');
+                  },
+                )),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
@@ -163,47 +176,53 @@ class _HomePageState extends State<HomePage> {
                   );
                   print('Navigating to Today in History Screen');
                 }),
-              Row(
-                children: [
-                  if (visibilityModel.showFact)
-                    Expanded(
-                      child: buildFullCard(context,
-                          title: 'Fact of the Day',
-                          description: widget.factText, onTapAction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                DailyFactPage(factText: widget.factText),
-                          ),
-                        );
-                        print('Navigating to Fact of the Day Screen');
-                      }),
-                    ),
-                  if (visibilityModel.showFilm)
-                    Expanded(
-                      child: buildFullCardWithImage(
-                        context,
-                        title: 'Film of the Day',
-                        description: movieTitle,
-                        imageUrl: posterPath,
-                        onTapAction: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DailyFilmPage(theme: Theme.of(context)),
-                            ),
-                          );
-                        },
+              if (visibilityModel.showFact)
+                buildFullCard(
+                  context,
+                  title: 'Fact of the Day',
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: DailyFactWidget(
+                            factText: Provider.of<DailyFactProvider>(context)
+                                .factText),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              buildSmallButton(context, "Small Button Test", () {
-                print("Small Button Pressed!");
-              }),
+                      IconButton(
+                        icon: Icon(Icons.lightbulb, size: 40),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context),
+                        ),
+                      ),
+                    );
+                    print('Navigating to Fact of the Day Screen');
+                  },
+                ),
+              if (visibilityModel.showFilm)
+                Expanded(
+                  child: buildFullCardWithImage(
+                    context,
+                    title: 'Film of the Day',
+                    description: movieTitle,
+                    imageUrl: posterPath,
+                    onTapAction: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DailyFilmPage(theme: Theme.of(context)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(
