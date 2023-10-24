@@ -203,7 +203,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
         fetchDate,
       ];
       print(streamInfo);
-      if (streamInfo != null && streamInfo.isNotEmpty) {
+      if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
       }
 
