@@ -1,3 +1,4 @@
+import 'package:good_morning/data_handling/history_data_storage.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
@@ -15,7 +16,7 @@ import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,8 +28,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
-    //context.read<HistoryProvider>().fetchHistoryItem3();
-    Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem();
+    //Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem();
+    context.read<HistoryProvider>().getStoredHistoryData();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -102,12 +103,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String text = Provider.of<HistoryProvider>(context).historyItem.historyText;
-    String thumbnail = Provider.of<HistoryProvider>(context).historyItem.historyThumbnail;
+    String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+    String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
     String selectedFilter =
         Provider.of<HistoryProvider>(context).selectedFilter;
-    var month = Provider.of<HistoryProvider>(context).mmDate;
-    var day = Provider.of<HistoryProvider>(context).ddDate;
+    var date = Provider.of<HistoryProvider>(context).date;
+    
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 

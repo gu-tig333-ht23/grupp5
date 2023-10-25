@@ -60,14 +60,14 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             children: [
               buildFullCard(
                 context,
-                title: historyProvider.historyItem.historyText,
-                description: historyProvider.historyItem.historyExtract,
+                title: historyProvider.storedHistoryItem.historyText,
+                description: historyProvider.storedHistoryItem.historyExtract,
               ),
               Card(
                 color: Theme.of(context).cardColor,
                 child: FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
-                  image: historyProvider.historyItem.historyThumbnail,
+                  image: historyProvider.storedHistoryItem.historyThumbnail,
                 ),
               ),
             ],
