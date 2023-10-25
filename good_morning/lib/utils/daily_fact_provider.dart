@@ -24,8 +24,8 @@ class DailyFactProvider extends ChangeNotifier {
     await storeFactText(text);
   }
 
-  getStoredText() async {
-    var _factText = await getStoredFactData();
+  Future<String> getStoredText() async {
+    String _factText = await getStoredFactData();
     return _factText;
   }
 
@@ -67,8 +67,7 @@ class DailyFactProvider extends ChangeNotifier {
       }
     } else {
       // fetch the stored fact text
-      Map<String, String> storedData = await getStoredFactData();
-      String factText = storedData['factText'] ?? '';
+      String factText = await getStoredFactData();
       _factText = Future.value(factText);
       print('Retrieved factText from storage: $factText');
     }
