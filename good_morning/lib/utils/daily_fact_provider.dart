@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,8 +13,25 @@ class DailyFactProvider extends ChangeNotifier {
 
   Future<String> get factText => _factText;
 
+  DateTime _lastFetchedDate =
+      DateTime.now(); // default, to be updated when retrieving factText
+
+  DateTime get lastFetchedDate => _lastFetchedDate;
+
   DailyFactProvider() {
     getFactText();
+
+    // Schedules a timer to check for a new day and fetch a new factText
+    const Duration checkInterval = Duration(minutes: 1); // checks every hour
+    Timer.periodic(checkInterval, (timer) {
+      DateTime now = DateTime.now();
+      if (now.isAfter(lastFetchedDate.add(Duration(minutes: 2)))) {
+        //if (isDifferentDay(lastFetchedDate, now)) {
+        // checks against provider`s variable lastFetchedDate from the last fetch
+        // New day has started, fetch a new factText
+        fetchAndUpdateFact();
+      }
+    });
   }
 
   Future<void> getFactText() async {
@@ -47,9 +66,12 @@ class DailyFactProvider extends ChangeNotifier {
 
   Future<void> fetchAndUpdateFact() async {
     DateTime storedDate = await getDateFromStorage();
+    _lastFetchedDate = storedDate;
     print('Date for last fetching: $storedDate');
     DateTime currentDate = DateTime.now();
-    if (isDifferentDay(storedDate, currentDate)) {
+
+    //if (isDifferentDay(storedDate, currentDate)) {
+    if (storedDate.isBefore(currentDate.subtract(Duration(minutes: 2)))) {
       // last text fetched more than one day ago
       try {
         String factData = await fetchDailyFact(); // fetches new fact
@@ -61,6 +83,7 @@ class DailyFactProvider extends ChangeNotifier {
         print('Facttext stored: $factText');
 
         storeFetchedDate(currentDate);
+        notifyListeners();
         print('Storing date for fetching: $currentDate');
       } catch (error) {
         throw Exception('Failed to fetch and update fact text: $error');
