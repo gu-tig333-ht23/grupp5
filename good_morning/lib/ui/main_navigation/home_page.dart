@@ -169,6 +169,7 @@ class _HomePageState extends State<HomePage> {
                                 currentFrom.address,
                                 transportMode.name.toString())),
                       ),
+                      SizedBox(width: 5),
                       Expanded(
                         child: GoogleMapWidget(
                             isClickable: false,

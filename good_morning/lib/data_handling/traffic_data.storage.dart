@@ -62,7 +62,7 @@ Future<void> addDestination(String name, String address) async {
   prefs.setStringList('savedDestinations', savedDestinations);
 }
 
-// adds new destination to the list with saved destinations
+// removes destination from the list with saved destinations
 Future<void> removeDestination(String name, String address) async {
   List<String> savedDestinations = await getStoredDestinations();
 

@@ -405,7 +405,7 @@ class DestinationItem extends StatelessWidget {
                 ),
                 actions: [
                   TextButton(
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -506,15 +506,15 @@ class DestinationDropdown extends StatelessWidget {
                     style: TextStyle(color: Theme.of(context).primaryColor)),
                 Text(
                   '${defaultFrom.name}, ${defaultFrom.address}',
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
                 Text('Default To-Destination:',
                     style: TextStyle(color: Theme.of(context).primaryColor)),
                 Text('${defaultTo.name}, ${defaultTo.address}',
-                    style: TextStyle(fontSize: 14)),
+                    style: const TextStyle(fontSize: 14)),
                 Text('Default Transport Mode:',
                     style: TextStyle(color: Theme.of(context).primaryColor)),
-                Text(modeCapitalized, style: TextStyle(fontSize: 14)),
+                Text(modeCapitalized, style: const TextStyle(fontSize: 14)),
               ],
             ),
             actions: [
@@ -608,15 +608,15 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               Text(
                 '${defaultFrom.name}, ${defaultFrom.address}',
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
               Text('Default To-Destination:',
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               Text('${defaultTo.name}, ${defaultTo.address}',
-                  style: TextStyle(fontSize: 14)),
+                  style: const TextStyle(fontSize: 14)),
               Text('Default Transport Mode:',
                   style: TextStyle(color: Theme.of(context).primaryColor)),
-              Text(modeCapitalized, style: TextStyle(fontSize: 14)),
+              Text(modeCapitalized, style: const TextStyle(fontSize: 14)),
             ],
           ),
           actions: [
@@ -809,6 +809,13 @@ Future<void> addDestinationDialog(BuildContext context) async {
   TextEditingController nameController = TextEditingController(text: '');
   TextEditingController addressController = TextEditingController(text: '');
 
+  // makes a list with all current destination names saved
+  var savedDestinations =
+      context.read<DailyTrafficProvider>().savedDestinations;
+  List<String> destinationNames = savedDestinations
+      .map((destination) => destination.name!.toLowerCase())
+      .toList();
+
   showDialog(
     context: context,
     builder: (context) {
@@ -843,10 +850,40 @@ Future<void> addDestinationDialog(BuildContext context) async {
               String newName = nameController.text;
               String newAddress = addressController.text;
 
-              Provider.of<DailyTrafficProvider>(context, listen: false)
-                  .addNewDestination(newName, newAddress);
-
-              Navigator.of(context).pop();
+              if (!destinationNames.contains(newName.toLowerCase())) {
+                // the name does not already exist
+                Provider.of<DailyTrafficProvider>(context, listen: false)
+                    .addNewDestination(newName, newAddress);
+                Navigator.of(context).pop();
+              } else {
+                // the name already exists in saved destinations
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Oops!'),
+                      content: const SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'There is already a saved destination with this name!'),
+                            Text('Try another name for this address.'),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             },
           ),
         ],
@@ -1059,7 +1096,7 @@ class MapInfoWidget extends StatelessWidget {
                 : currentTo.address;
 
             String routeInfoText =
-                'Right now it is approximately $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
+                'Right now it is around $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
 
             return Text(routeInfoText);
           } else {
