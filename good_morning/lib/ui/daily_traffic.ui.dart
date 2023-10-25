@@ -145,6 +145,7 @@ class DailyTrafficPage extends StatelessWidget {
                           ),
                           Column(
                             children: [
+                              SizedBox(height: 30),
                               IconButton(
                                 icon: const Icon(Icons.swap_vert, size: 40),
                                 onPressed: () {
