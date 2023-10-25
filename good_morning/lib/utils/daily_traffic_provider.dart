@@ -32,11 +32,9 @@ class DailyTrafficProvider extends ChangeNotifier {
   TransportMode get defaultMode => _defaultMode;
 
   // default if none given yet
-  Destination _currentFrom =
-      Destination(name: 'Home', address: 'Parallellvägen 13E, 433 35 Partille');
+  Destination _currentFrom = Destination(name: '', address: '');
   // default if none given yet
-  Destination _currentTo = Destination(
-      name: 'School', address: 'Forskningsgången 6, 417 56 Göteborg');
+  Destination _currentTo = Destination(name: '', address: '');
 
   Destination get currentFrom => _currentFrom;
   Destination get currentTo => _currentTo;
@@ -88,9 +86,8 @@ class DailyTrafficProvider extends ChangeNotifier {
 
     // default to-destination
     Map<String, String> defaultTo = await getStoredDefaultTo();
-    String defaultToName = defaultTo['defaultToName'] ?? 'School';
-    String defaultToAddress =
-        defaultTo['defaultToAddress'] ?? 'Forskningsgången 6, 417 56 Göteborg';
+    String defaultToName = defaultTo['defaultToName'] ?? '';
+    String defaultToAddress = defaultTo['defaultToAddress'] ?? '';
     print(
         'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
     _defaultTo = Destination(name: defaultToName, address: defaultToAddress);
@@ -98,16 +95,20 @@ class DailyTrafficProvider extends ChangeNotifier {
 
     // default from-destination
     Map<String, String> defaultFrom = await getStoredDefaultFrom();
-    String defaultFromName = defaultFrom['defaultFromName'] ?? 'Home';
-    String defaultFromAddress = defaultFrom['defaultFromAddress'] ??
-        'Parallellvägen 13E, 433 35 Partille';
-    print(
-        'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
-    _defaultFrom =
-        Destination(name: defaultFromName, address: defaultFromAddress);
-    setCurrentFrom(defaultFromName, defaultFromAddress);
+    String defaultFromName = defaultFrom['defaultFromName'] ?? '';
+    String defaultFromAddress = defaultFrom['defaultFromAddress'] ?? '';
+    if (defaultFromName == 'MyPosition') {
+      await setMyPosition(); // uses geoLocator to set defaultFrom with user`s position
+      _defaultFrom = Destination(name: 'My', address: 'Position');
+    } else {
+      print(
+          'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
+      _defaultFrom =
+          Destination(name: defaultFromName, address: defaultFromAddress);
+      setCurrentFrom(defaultFromName, defaultFromAddress);
 
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
   Future<void> fetchSavedDestinations() async {
@@ -144,6 +145,12 @@ class DailyTrafficProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDefaultFromAsUserPosition() {
+    storeFromDestination('MyPosition', 'MyPosition');
+    print('Stored default from-destination as MyPosition');
+    notifyListeners();
+  }
+
   // Retrieves the user`s position
   Future<void> setMyPosition() async {
     // get position using GeoLocator
@@ -171,36 +178,41 @@ class DailyTrafficProvider extends ChangeNotifier {
     }
   }
 
+  // Stores default mode
   Future<void> storeMode(String mode) async {
     await storeDefaultTransportMode(mode);
     notifyListeners();
   }
 
+  // Adds new destinations to the storage list of saved destinations
   Future<void> addNewDestination(String name, String address) async {
-    await addDestination(name, address); // uppdaterar lagringen
-    savedDestinations.add(
-        Destination(name: name, address: address)); // lokalt, UI uppdateras
+    await addDestination(name, address); // adds to storage
+    savedDestinations.add(// adds to provider`s list, UI updates
+        Destination(name: name, address: address));
     notifyListeners();
   }
 
+  // Removes destination from the storage list
   Future<void> deleteDestination(Destination destination) async {
     await removeDestination(
-        destination.name!, destination.address); // uppdaterar lagringen
-    savedDestinations.remove(destination); // lokalt, UI uppdateras
+        destination.name!, destination.address); // updates storage list
+    savedDestinations.remove(destination); // provider`s list, UI updates
     notifyListeners();
   }
 
+  // Stores the given destination as default From-destination
   Future<void> storeFromDestination(String name, String address) async {
     await storeDefaultFrom(name, address);
     notifyListeners();
   }
 
+  // Stores the given destination as default To-destination
   Future<void> storeToDestination(String name, String address) async {
     await storeDefaultTo(name, address);
     notifyListeners();
   }
 
-  // function that sets currentFrom
+  // function that sets currentFrom for the API calls
   void setCurrentFrom(String? name, String address) {
     if (name != null) {
       int index = savedDestinations.indexWhere((destination) =>
@@ -222,7 +234,7 @@ class DailyTrafficProvider extends ChangeNotifier {
     }
   }
 
-  // function that sets currentTo
+  // Function that sets currentTo for the API calls
   void setCurrentTo(String? name, String address) {
     if (name != null) {
       int index = savedDestinations.indexWhere((destination) =>
@@ -244,29 +256,6 @@ class DailyTrafficProvider extends ChangeNotifier {
     }
   }
 
-  // function that saves destinations
-  Future<void> saveDestination(String name, String address) async {
-    int index =
-        savedDestinations.indexWhere((destination) => destination.name == name);
-    if (index != -1) {
-      // the destination name exists
-      setAddress(index, address);
-    } else {
-      // save a new destination
-      final newDestination = Destination(name: name, address: address);
-      savedDestinations.add(newDestination);
-
-      notifyListeners();
-    }
-  }
-
-// function that sets the address for existing destination by its name
-  void setAddress(int index, String address) {
-    Destination destination = savedDestinations.elementAt(index);
-    destination.address = address;
-    notifyListeners();
-  }
-
   // function that swaps the to/from destinations
   void swapDestinations(
       Destination currentFromDest, Destination currentToDest) {
@@ -275,7 +264,6 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 
   // For the transportation mode buttons
-
   bool _carIsSelected = true; // default transportation mode
   bool get carIsSelected => _carIsSelected;
 
@@ -307,6 +295,7 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 }
 
+// Widgets for the transport mode buttons
 class CarIconButton extends StatelessWidget {
   const CarIconButton({super.key});
 
@@ -418,13 +407,13 @@ class DestinationItem extends StatelessWidget {
                       'Save',
                       () {
                         String destination = textInputController.text;
-                        if (type == 'From') {
+                        if (type == 'From:') {
                           Provider.of<DailyTrafficProvider>(context,
                                   listen: false)
                               .setCurrentFrom(null, destination);
                           Navigator.pop(context);
                         } else {
-                          // the type is "To"
+                          // the type is "To:"
                           Provider.of<DailyTrafficProvider>(context,
                                   listen: false)
                               .setCurrentTo(null, destination);
@@ -579,24 +568,24 @@ class DestinationDropdown extends StatelessWidget {
         // does not exist in the saved destinations dropdown
         value: null,
         onChanged: (Destination? newDestination) async {
-          if (type == 'From' && defaultOrCurrent == 'Default') {
+          if (type == 'From:' && defaultOrCurrent == 'Default') {
             await provider.storeFromDestination(
                 newDestination!.name!, newDestination.address);
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
             showInfoDialog(context);
-          } else if (type == 'From' && defaultOrCurrent == 'Current') {
+          } else if (type == 'From:' && defaultOrCurrent == 'Current') {
             provider.setCurrentFrom(
                 newDestination!.name!, newDestination.address);
             Navigator.pop(context);
-          } else if (type == 'To' && defaultOrCurrent == 'Default') {
+          } else if (type == 'To:' && defaultOrCurrent == 'Default') {
             await provider.storeToDestination(
                 newDestination!.name!, newDestination.address);
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
             showInfoDialog(context);
           } else {
-            // To and Current
+            // To: and Current
             provider.setCurrentTo(
                 newDestination!.name!, newDestination.address);
             Navigator.pop(context);
@@ -687,24 +676,41 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
             const Text('Pick from your saved destinations here!',
                 style: TextStyle(fontSize: 14)),
             const SizedBox(height: 5),
+            Row(
+              children: [
+                TextButton(
+                  child: Text('Use my position as default'),
+                  onPressed: () {
+                    Provider.of<DailyTrafficProvider>(context, listen: false)
+                        .setDefaultFromAsUserPosition();
+                    showInfoDialog(context);
+                  },
+                ),
+                Icon(Icons.my_location,
+                    size: 12, color: Theme.of(context).primaryColor),
+              ],
+            ),
             Text(
                 // shows current default destinations above the dropdown
-                'Default From-Destination: ${defaultFrom.name}, ${defaultFrom.address}',
+                'Default From-Destination:',
                 style: TextStyle(
                     fontSize: 12, color: Theme.of(context).primaryColor)),
+            Text('(${defaultFrom.name}, ${defaultFrom.address})',
+                style: TextStyle(fontSize: 11)),
             DestinationDropdown(
-              type: 'From',
+              type: 'From:',
               defaultOrCurrent: 'Default',
               onInfoDialogClosed: () {
                 Navigator.of(context).pop();
               },
             ),
-            Text(
-                'Default To-Destination:  ${defaultTo.name}, ${defaultTo.address}',
+            Text('Default To-Destination:',
                 style: TextStyle(
                     fontSize: 12, color: Theme.of(context).primaryColor)),
+            Text('(${defaultTo.name}, ${defaultTo.address})',
+                style: TextStyle(fontSize: 11)),
             DestinationDropdown(
-              type: 'To',
+              type: 'To:',
               defaultOrCurrent: 'Default',
               onInfoDialogClosed: () {
                 Navigator.of(context).pop();

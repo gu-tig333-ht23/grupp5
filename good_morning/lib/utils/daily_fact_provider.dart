@@ -22,7 +22,7 @@ class DailyFactProvider extends ChangeNotifier {
     getFactText();
 
     // Schedules a timer to check for a new day and fetch a new factText
-    const Duration checkInterval = Duration(minutes: 1); // checks every hour
+    const Duration checkInterval = Duration(minutes: 30); // checks every hour
     Timer.periodic(checkInterval, (timer) {
       DateTime now = DateTime.now();
       if (now.isAfter(lastFetchedDate.add(Duration(minutes: 2)))) {
