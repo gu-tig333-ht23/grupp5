@@ -22,11 +22,12 @@ class DailyFactProvider extends ChangeNotifier {
     getFactText();
 
     // Schedules a timer to check for a new day and fetch a new factText
-    const Duration checkInterval = Duration(minutes: 30); // checks every hour
+    const Duration checkInterval =
+        Duration(minutes: 5); // checks every 5 minutes
     Timer.periodic(checkInterval, (timer) {
       DateTime now = DateTime.now();
-      if (now.isAfter(lastFetchedDate.add(Duration(minutes: 2)))) {
-        //if (isDifferentDay(lastFetchedDate, now)) {
+      //if (now.isAfter(lastFetchedDate.add(Duration(minutes: 2)))) {
+      if (isDifferentDay(lastFetchedDate, now)) {
         // checks against provider`s variable lastFetchedDate from the last fetch
         // New day has started, fetch a new factText
         fetchAndUpdateFact();
@@ -70,8 +71,8 @@ class DailyFactProvider extends ChangeNotifier {
     print('Date for last fetching: $storedDate');
     DateTime currentDate = DateTime.now();
 
-    //if (isDifferentDay(storedDate, currentDate)) {
-    if (storedDate.isBefore(currentDate.subtract(Duration(minutes: 2)))) {
+    if (isDifferentDay(storedDate, currentDate)) {
+      //if (storedDate.isBefore(currentDate.subtract(Duration(minutes: 2)))) {
       // last text fetched more than one day ago
       try {
         String factData = await fetchDailyFact(); // fetches new fact

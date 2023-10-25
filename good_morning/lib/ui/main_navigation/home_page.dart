@@ -219,8 +219,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Image.asset(
                         'lib/images/bookImage.png',
-                        width: 75,
-                        height: 75,
+                        width: 85,
+                        height: 85,
                       ),
                     ],
                   ),

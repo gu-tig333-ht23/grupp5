@@ -17,10 +17,9 @@ Widget buildFullCard(BuildContext context,
             Text(title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
                 )),
-          if (description != null)
-            Text(description,
-                style: TextStyle(color: Theme.of(context).primaryColor)),
+          if (description != null) Text(description),
           if (optionalWidget != null) optionalWidget,
         ],
       ),
@@ -50,15 +49,11 @@ Widget buildFullCardWithImage(BuildContext context,
                 title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
                 ),
               )
             : null,
-        subtitle: description != null
-            ? Text(
-                description,
-                style: TextStyle(color: Theme.of(context).primaryColor),
-              )
-            : null,
+        subtitle: description != null ? Text(description) : null,
         trailing: optionalWidget,
         onTap: () {
           onTapAction?.call();
