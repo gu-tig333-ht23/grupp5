@@ -11,7 +11,6 @@ class DailyTrafficPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
-
     var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
@@ -70,11 +69,32 @@ class DailyTrafficPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(
+                                      Padding(
+                                        padding: const EdgeInsets.only(
                                             left: 8.0, bottom: 2),
-                                        child: Text('From:',
-                                            style: TextStyle(fontSize: 15)),
+                                        child: Row(
+                                          children: [
+                                            const Text('From:',
+                                                style: TextStyle(fontSize: 15)),
+                                            const SizedBox(width: 100),
+                                            TextButton(
+                                              child:
+                                                  const Text('Use my position'),
+                                              onPressed: () {
+                                                Provider.of<DailyTrafficProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .toggleUseMyPosition();
+                                              },
+                                            ),
+                                            Icon(
+                                              Icons.my_location,
+                                              size: 15,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Container(
                                         decoration: BoxDecoration(

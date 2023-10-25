@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/ui/daily_traffic.ui.dart';
+
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
 enum TransportMode { bicycling, walking, driving }
@@ -44,6 +45,12 @@ class DailyTrafficProvider extends ChangeNotifier {
   // driving by car as default
 
   TransportMode get mode => _selectedMode;
+
+  // Variables for user`s position
+  String _myLatitude = '';
+  String _myLongitude = '';
+  String get myLatitude => _myLatitude;
+  String get myLongitude => _myLongitude;
 
   // gets user preferences from Daily Traffic persistent storage
   DailyTrafficProvider() {
@@ -129,6 +136,39 @@ class DailyTrafficProvider extends ChangeNotifier {
   void setMode(TransportMode mode) {
     _selectedMode = mode;
     notifyListeners();
+  }
+
+  // function that activates geolocation
+  void toggleUseMyPosition() async {
+    await setMyPosition();
+    notifyListeners();
+  }
+
+  // Retrieves the user`s position
+  Future<void> setMyPosition() async {
+    // get position using GeoLocator
+    Map<String, String> positionMap = await determinePosition();
+
+    String latitude = positionMap['latitude']!;
+    String longitude = positionMap['longitude']!;
+
+    _myLatitude = latitude;
+    _myLongitude = longitude;
+    // transforms into readable address
+    String? address = await getAddressFromLatLng(latitude, longitude);
+    if (address != null) {
+      // transform went well
+      setCurrentFrom(null, address);
+      notifyListeners();
+      print('Setting the current from-destination to $address');
+    } else {
+      // no address was returned, using lat/lng
+      setCurrentFrom(null,
+          '$latitude,$longitude'); // using position as current from-destination
+      notifyListeners();
+      print(
+          'Setting the current from-destination to latitude $latitude and longitude $longitude');
+    }
   }
 
   Future<void> storeMode(String mode) async {
@@ -920,10 +960,52 @@ Future<void> processDeleteDestination(
   );
 }
 
-// API code here
+Future<Map<String, String>> determinePosition() async {
+  Map<String, String> positionMap = {
+    'latitude': 'N/A',
+    'longitude': 'N/A',
+  };
+  try {
+    // Get current position (latitude and longitude)
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    positionMap['latitude'] = position.latitude.toString();
+    positionMap['longitude'] = position.longitude.toString();
+  } catch (error) {
+    print('Error getting location: $error');
+  }
+  return positionMap;
+}
+
+// API call code here
+const String mapApiKey = config.mapApiKey;
+
+// Google Maps Geocoding API
+Future<String?> getAddressFromLatLng(String latitude, String longitude) async {
+  const String geoCodingURL =
+      'https://maps.googleapis.com/maps/api/geocode/json';
+
+  final response = await http.get(
+      Uri.parse('$geoCodingURL?latlng=$latitude,$longitude&key=$mapApiKey'));
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> data = json.decode(response.body);
+    if (data['status'] == 'OK') {
+      // Extract the formatted address from the response
+      return data['results'][0]['formatted_address'];
+    } else {
+      // Handle API error if necessary
+      print('Error: ${data['status']} - ${data['error_message']}');
+      return null;
+    }
+  } else {
+    // Handle HTTP error if necessary
+    print('Error: ${response.statusCode}');
+    return null;
+  }
+}
 
 // Google Maps Directions API
-const String mapApiKey = config.mapApiKey;
 
 Future<Map<String, dynamic>> getRouteInfoFromAPI(
     String toAddress, String fromAddress, String mode) async {
