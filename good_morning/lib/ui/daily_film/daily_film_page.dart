@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
@@ -21,6 +23,14 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
     Movie movie = context.watch<MovieProvider>().movie;
+
+    bool isMovieInFavorites(Movie movie) {
+      final movieTitle = movie.title;
+      return context
+          .read<FavoriteMoviesModel>()
+          .favoriteMovies
+          .any((movie) => movie[0] == movieTitle);
+    }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -121,14 +131,14 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               onPressed: () async {
-                var outputText = await context
+                var snackBarText = await context
                     .read<FavoriteMoviesModel>()
                     .addFavorite(movie);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(outputText),
+                    content: Text(snackBarText[0]),
                     action: SnackBarAction(
-                        label: 'Undo',
+                        label: snackBarText[1],
                         onPressed: () {
                           context.read<FavoriteMoviesModel>().removeMovie(
                               context

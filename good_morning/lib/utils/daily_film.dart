@@ -80,7 +80,7 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
     } else {
       List se = streamingInfo['se'];
 
-      Set<String> uniqueItems = Set();
+      Set<String> uniqueItems = {};
 
       for (Map<String, dynamic> serviceInfo in se) {
         String service = serviceInfo['service'];
@@ -173,7 +173,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
     await prefs.setString(_watchlistKey, watchlistJson);
   }
 
-  Future<String> addFavorite(movie) async {
+  Future<List> addFavorite(movie) async {
     final String movieTitle = movie.title;
     final String movieDescription = movie.description;
     final String movieDate = movie.releaseYear;
@@ -183,8 +183,10 @@ class FavoriteMoviesModel extends ChangeNotifier {
     final List<Map<String, String>> streamInfo = movie.streamInfo;
     final String fetchDate = movie.fetchDate;
 
+    List output = [];
+
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      return 'Movie already in your watchlist';
+      return output = ['The movie is already in your watchlist', 'Remove'];
     } else {
       if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
@@ -204,7 +206,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
 
       saveWatchlist();
       notifyListeners();
-      return 'Movie added to your watchlist';
+      return output = ['Movie added to your watchlist', 'Undo'];
     }
   }
 
