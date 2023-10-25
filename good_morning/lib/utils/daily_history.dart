@@ -31,7 +31,14 @@ class HistoryProvider extends ChangeNotifier {
   final DateTime _now = DateTime.now();
   DateTime get now => _now;
 
-  get date => _now.day + _now.month;
+  //Testing
+  //DatumTest
+  int get day2 => now.day +1;
+  int get month2 => now.day +1;
+  get date2 => day2+month2;
+//
+
+  get date => now.day + now.month;
 
 // Filter
   String _selectedFilter = 'events';
@@ -68,42 +75,51 @@ class HistoryProvider extends ChangeNotifier {
 
   //get HistoryItem from SharedPreferences
   getStoredHistoryData() async {
-    print('i BÖRJAN get stored history data i daily_history i dart');
-    var storedHistoryItem = await getHistoryData();
-    // ignore: unnecessary_null_comparison
-    if (storedHistoryItem != null) {
-      _storedHistoryItem = HistoryItem.fromJson(storedHistoryItem);
-    } else {
-      await fetchHistoryItem(); //
-    }
+  print('i BÖRJAN get stored history data i daily_history i dart');
+  var storedHistoryData = await getHistoryData();
 
-    print('KLAR stored history data i daily_history i dart');
-    notifyListeners();
+  // ignore: unnecessary_null_comparison
+  if (storedHistoryData != null) {
+    final storedHistoryItem = HistoryItem.fromJson(storedHistoryData);
+    
+    if (storedHistoryItem.historyDate == date) {
+      _storedHistoryItem = storedHistoryItem;
+      print('i datumväljandet');
+      print(storedHistoryItem.historyDate);
+      print(date);
+    } else {
+      await fetchHistoryItem();
+    }
+  } else {
+    await fetchHistoryItem();
   }
 
+  print('KLAR stored history data i daily_history i dart');
+  notifyListeners();
+}
   //Get historyitem from API-function
   fetchHistoryItem() async {
     print('i BÖRJAN fetch history data i daily_history i dart');
     var historyItemApi =
         await fetchHistoryItemWiki(selectedFilter, now.month, now.day);
     _historyItem = HistoryItem.fromJson(historyItemApi);
-    //Store HistoryItem
+    
     print('i Fetch Innan Store');
     print(_historyItem.historyText);
     print(historyItem.historyThumbnail);
     print(historyItem.historyExtract);
     print(historyItem.historyDate);
-
+    //Store HistoryItem
     storeHistoryData(
         historyText: _historyItem.historyText,
         historyThumbnail: _historyItem.historyThumbnail,
         historyExtract: _historyItem.historyExtract,
-        historyDate: _historyItem.historyDate);
+        historyDate: historyItem.historyDate);
     print('i SLUTET fetch, STORE GJORD, i daily_history i dart');
     notifyListeners();
     getStoredHistoryData();
   }
-  // Save data
+
 
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
