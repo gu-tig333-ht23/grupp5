@@ -3,13 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Fil för att radera lagrad data
 
 // OBS! denna funktion raderar all lagrad data i hela appen
-// För att radera specifik data, använd relevand funktion nedan 
+// För att radera specifik data, använd relevant funktion nedan
 Future<void> clearAllData() async {
   await clearUserPreferences();
   await clearMovieData();
   await clearFactData();
   await clearHistoryData();
   await clearWeatherData();
+  await clearTrafficData();
 }
 
 // Funktion för att radera data kopplad till user preferences
@@ -29,7 +30,7 @@ Future<void> clearMovieData() async {
   prefs.remove('movieRating');
   prefs.remove('moviePoster');
   prefs.remove('movieId');
-  prefs.remove('streamingOptions'); 
+  prefs.remove('streamingOptions');
 }
 
 // Funktion för att radera data kopplad till daily fact
@@ -39,7 +40,7 @@ Future<void> clearFactData() async {
   prefs.remove('storedDate');
 }
 
-// fanktion för att radera data kopplad till daily history
+// Funktion för att radera data kopplad till daily history
 Future<void> clearHistoryData() async {
   final prefs = await SharedPreferences.getInstance();
   prefs.remove('historyText');
@@ -54,4 +55,13 @@ Future<void> clearWeatherData() async {
   prefs.remove('weatherString');
 }
 
-
+// funktion för att radera data kopplad till daily traffic
+Future<void> clearTrafficData() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('defaultFromName');
+  prefs.remove('defaultFromAddress');
+  prefs.remove('defaultToName');
+  prefs.remove('defaultToAddress');
+  prefs.remove('defaultMode');
+  prefs.remove('savedDestinations');
+}
