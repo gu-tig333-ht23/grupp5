@@ -126,7 +126,7 @@ class DailyTrafficPage extends StatelessWidget {
                           Column(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.swap_vert, size: 40),
+                                icon: const Icon(Icons.swap_vert, size: 40),
                                 onPressed: () {
                                   Provider.of<DailyTrafficProvider>(context,
                                           listen: false)
@@ -141,9 +141,9 @@ class DailyTrafficPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 8),
+              const SizedBox(height: 15),
+              const Padding(
+                padding: EdgeInsets.only(left: 8, top: 8),
                 child: Row(
                   children: [
                     CarIconButton(),
@@ -160,11 +160,12 @@ class DailyTrafficPage extends StatelessWidget {
                   child: Column(
                     children: [
                       GoogleMapWidget(
+                          isClickable: true,
                           mapImage: getMapFromAPI(
                               currentTo.address,
                               currentFrom.address,
                               transportMode.name.toString())),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       MapInfoWidget(
                         routeInfo: getRouteInfoFromAPI(currentTo.address,
                             currentFrom.address, transportMode.name.toString()),

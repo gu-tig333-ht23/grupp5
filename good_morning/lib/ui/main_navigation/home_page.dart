@@ -157,12 +157,28 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                  buildFullCard(
+                buildFullCard(
                   context,
                   title: 'Traffic',
-                  optionalWidget: MapInfoWidget(
-                      routeInfo: getRouteInfoFromAPI(currentTo.address,
-                          currentFrom.address, transportMode.name.toString())),
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: MapInfoWidget(
+                            routeInfo: getRouteInfoFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                      Expanded(
+                        child: GoogleMapWidget(
+                            isClickable: false,
+                            mapImage: getMapFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                    ],
+                  ),
                   onTapAction: () {
                     Navigator.push(
                       context,
@@ -201,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                                 .factText),
                       ),
                       IconButton(
-                        icon: Icon(Icons.lightbulb, size: 40),
+                        icon: const Icon(Icons.lightbulb, size: 40),
                         onPressed: () {},
                       ),
                     ],
@@ -219,22 +235,21 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               if (visibilityModel.showFilm)
-buildFullCardWithImage(
-                    context,
-                    title: 'Film of the Day',
-                    description: movieTitle,
-                    imageUrl: posterPath,
-                    onTapAction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyFilmPage(theme: Theme.of(context)),
-                        ),
-                      );
-                    },
-                  ),
-                
+                buildFullCardWithImage(
+                  context,
+                  title: 'Film of the Day',
+                  description: movieTitle,
+                  imageUrl: posterPath,
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DailyFilmPage(theme: Theme.of(context)),
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(

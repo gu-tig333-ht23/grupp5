@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
@@ -85,7 +87,7 @@ class DailyTrafficProvider extends ChangeNotifier {
     print(
         'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
     _defaultTo = Destination(name: defaultToName, address: defaultToAddress);
-    setCurrentTo(defaultToAddress);
+    setCurrentTo(defaultToName, defaultToAddress);
 
     // default from-destination
     Map<String, String> defaultFrom = await getStoredDefaultFrom();
@@ -96,7 +98,7 @@ class DailyTrafficProvider extends ChangeNotifier {
         'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
     _defaultFrom =
         Destination(name: defaultFromName, address: defaultFromAddress);
-    setCurrentFrom(defaultFromAddress);
+    setCurrentFrom(defaultFromName, defaultFromAddress);
 
     notifyListeners();
   }
@@ -159,31 +161,45 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 
   // function that sets currentFrom
-  void setCurrentFrom(String name) {
-    int index = savedDestinations.indexWhere((destination) =>
-        destination.name == name || destination.name!.toLowerCase() == name);
-    if (index != -1) {
-      _currentFrom = savedDestinations.elementAt(index);
-      notifyListeners();
-    } // if not a saved destination
+  void setCurrentFrom(String? name, String address) {
+    if (name != null) {
+      int index = savedDestinations.indexWhere((destination) =>
+          destination.name == name || destination.name!.toLowerCase() == name);
+      if (index != -1) {
+        _currentFrom = savedDestinations.elementAt(index);
+        notifyListeners();
+      } else {
+        // name is not null, but does not exist in savedDestinations
+        Destination newDestination = Destination(name: name, address: address);
+        _currentFrom = newDestination;
+        notifyListeners();
+      }
+    } // if just address is provided
     else {
-      Destination newFromDestination = Destination(address: name);
+      Destination newFromDestination = Destination(address: address);
       _currentFrom = newFromDestination;
       notifyListeners();
     }
   }
 
   // function that sets currentTo
-  void setCurrentTo(String name) {
-    int index = savedDestinations.indexWhere((destination) =>
-        destination.name == name || destination.name!.toLowerCase() == name);
-    if (index != -1) {
-      _currentTo = savedDestinations.elementAt(index);
-      notifyListeners();
-    } // if not a saved destination
+  void setCurrentTo(String? name, String address) {
+    if (name != null) {
+      int index = savedDestinations.indexWhere((destination) =>
+          destination.name == name || destination.name!.toLowerCase() == name);
+      if (index != -1) {
+        _currentTo = savedDestinations.elementAt(index);
+        notifyListeners();
+      } else {
+        // name is not null, but does not exist in savedDestinations
+        Destination newDestination = Destination(name: name, address: address);
+        _currentTo = newDestination;
+        notifyListeners();
+      }
+    } // if just address is provided
     else {
-      Destination newToDestination = Destination(address: name);
-      _currentTo = newToDestination;
+      Destination newFromDestination = Destination(address: address);
+      _currentTo = newFromDestination;
       notifyListeners();
     }
   }
@@ -203,19 +219,6 @@ class DailyTrafficProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  /*
-  Future<void> editDestinationName(
-      Destination destination, String newName) async {
-    destination.name = newName;
-    notifyListeners();
-  }*/
-
-  /*
-  Future<void> editDestinationAddress(
-      Destination destination, String newAddress) async {
-    destination.address = newAddress;
-    notifyListeners();
-  }*/
 
 // function that sets the address for existing destination by its name
   void setAddress(int index, String address) {
@@ -227,8 +230,8 @@ class DailyTrafficProvider extends ChangeNotifier {
   // function that swaps the to/from destinations
   void swapDestinations(
       Destination currentFromDest, Destination currentToDest) {
-    setCurrentFrom(currentToDest.name ?? currentToDest.address);
-    setCurrentTo(currentFromDest.name ?? currentFromDest.address);
+    setCurrentFrom(currentToDest.name, currentToDest.address);
+    setCurrentTo(currentFromDest.name, currentFromDest.address);
   }
 
   // For the transportation mode buttons
@@ -378,13 +381,13 @@ class DestinationItem extends StatelessWidget {
                         if (type == 'From') {
                           Provider.of<DailyTrafficProvider>(context,
                                   listen: false)
-                              .setCurrentFrom(destination);
+                              .setCurrentFrom(null, destination);
                           Navigator.pop(context);
                         } else {
                           // the type is "To"
                           Provider.of<DailyTrafficProvider>(context,
                                   listen: false)
-                              .setCurrentTo(destination);
+                              .setCurrentTo(null, destination);
                           Navigator.pop(context);
                         }
                       },
@@ -395,7 +398,7 @@ class DestinationItem extends StatelessWidget {
                       type: type,
                       defaultOrCurrent: 'Current',
                       onInfoDialogClosed: () {
-                        // does nothing
+                        // does nothing, back to full screen
                       },
                     ),
                   ],
@@ -430,7 +433,7 @@ class DestinationItem extends StatelessWidget {
 // for showing saved destination in list
 class SavedDestinationItem extends StatelessWidget {
   final Destination destination;
-  const SavedDestinationItem(this.destination, {super.key});
+  const SavedDestinationItem(this.destination, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -441,18 +444,14 @@ class SavedDestinationItem extends StatelessWidget {
             ClipRect(
               child: TextButton(
                 child: Text(destination.name!),
-                onPressed: () {
-                  //editSavedName(context, destination);
-                },
+                onPressed: () {},
               ),
             ),
             Expanded(
               child: ClipRect(
                 child: TextButton(
                   child: Text(destination.address),
-                  onPressed: () {
-                    // editSavedAddress(context, destination);
-                  },
+                  onPressed: () {},
                 ),
               ),
             ),
@@ -489,6 +488,10 @@ class DestinationDropdown extends StatelessWidget {
       var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
       var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
 
+      // capitalizes the first letter in mode
+      String mode = defaultMode.name.toString();
+      String modeCapitalized = mode[0].toUpperCase() + mode.substring(1);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -511,8 +514,7 @@ class DestinationDropdown extends StatelessWidget {
                     style: TextStyle(fontSize: 14)),
                 Text('Default Transport Mode:',
                     style: TextStyle(color: Theme.of(context).primaryColor)),
-                Text(defaultMode.name.toString(),
-                    style: TextStyle(fontSize: 14)),
+                Text(modeCapitalized, style: TextStyle(fontSize: 14)),
               ],
             ),
             actions: [
@@ -543,9 +545,9 @@ class DestinationDropdown extends StatelessWidget {
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
             showInfoDialog(context);
-            //Navigator.pop(context);
           } else if (type == 'From' && defaultOrCurrent == 'Current') {
-            provider.setCurrentFrom(newDestination!.name!);
+            provider.setCurrentFrom(
+                newDestination!.name!, newDestination.address);
             Navigator.pop(context);
           } else if (type == 'To' && defaultOrCurrent == 'Default') {
             await provider.storeToDestination(
@@ -553,10 +555,10 @@ class DestinationDropdown extends StatelessWidget {
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
             showInfoDialog(context);
-            //Navigator.pop(context);
           } else {
             // To and Current
-            provider.setCurrentTo(newDestination!.name!);
+            provider.setCurrentTo(
+                newDestination!.name!, newDestination.address);
             Navigator.pop(context);
           }
         },
@@ -582,10 +584,15 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
   TransportMode mode =
       Provider.of<DailyTrafficProvider>(context, listen: false).defaultMode;
 
+  // shows current default settings
   void showInfoDialog(BuildContext context) {
     var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
     var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
     var defaultMode = context.read<DailyTrafficProvider>().defaultMode;
+
+    // capitalizes the first letter in mode
+    String mode = defaultMode.name.toString();
+    String modeCapitalized = mode[0].toUpperCase() + mode.substring(1);
 
     showDialog(
       context: context,
@@ -597,7 +604,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Displays info about current saved default settings
-              Text('Default From-Destination:',
+              Text('Default From-Destination:', //
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               Text(
                 '${defaultFrom.name}, ${defaultFrom.address}',
@@ -609,7 +616,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                   style: TextStyle(fontSize: 14)),
               Text('Default Transport Mode:',
                   style: TextStyle(color: Theme.of(context).primaryColor)),
-              Text(defaultMode.name.toString(), style: TextStyle(fontSize: 14)),
+              Text(modeCapitalized, style: TextStyle(fontSize: 14)),
             ],
           ),
           actions: [
@@ -628,6 +635,9 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      var defaultFrom = context.read<DailyTrafficProvider>().defaultFrom;
+      var defaultTo = context.read<DailyTrafficProvider>().defaultTo;
+
       return AlertDialog(
         title: const Text('Your Route Settings'),
         content: Column(
@@ -637,8 +647,11 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
             const Text('Pick from your saved destinations here!',
                 style: TextStyle(fontSize: 14)),
             const SizedBox(height: 5),
-            const Text('Default From-Destination:',
-                style: TextStyle(fontSize: 12)),
+            Text(
+                // shows current default destinations above the dropdown
+                'Default From-Destination: ${defaultFrom.name}, ${defaultFrom.address}',
+                style: TextStyle(
+                    fontSize: 12, color: Theme.of(context).primaryColor)),
             DestinationDropdown(
               type: 'From',
               defaultOrCurrent: 'Default',
@@ -646,8 +659,10 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 Navigator.of(context).pop();
               },
             ),
-            const Text('Default To-Destination:',
-                style: TextStyle(fontSize: 12)),
+            Text(
+                'Default To-Destination:  ${defaultTo.name}, ${defaultTo.address}',
+                style: TextStyle(
+                    fontSize: 12, color: Theme.of(context).primaryColor)),
             DestinationDropdown(
               type: 'To',
               defaultOrCurrent: 'Default',
@@ -748,11 +763,19 @@ Future<void> showSavedDestinations(BuildContext context) async {
 
           return AlertDialog(
             title: const Text('Saved Destinations'),
-            content: SingleChildScrollView(
-              child: Column(
-                children: savedDestinations.map((destination) {
-                  return SavedDestinationItem(destination);
-                }).toList(),
+            content: Container(
+              width: double.maxFinite,
+              height: 300,
+              child: ListView.builder(
+                itemCount: savedDestinations.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: <Widget>[
+                      SavedDestinationItem(savedDestinations[index]),
+                      if (index < savedDestinations.length - 1) const Divider(),
+                    ],
+                  );
+                },
               ),
             ),
             actions: <Widget>[
@@ -822,80 +845,6 @@ Future<void> addDestinationDialog(BuildContext context) async {
 
               Provider.of<DailyTrafficProvider>(context, listen: false)
                   .addNewDestination(newName, newAddress);
-
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<void> editSavedName(
-    BuildContext context, Destination destination) async {
-  TextEditingController nameController =
-      TextEditingController(text: destination.name);
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Edit Destination Name'),
-        content: TextField(
-          controller: nameController,
-          decoration: const InputDecoration(labelText: 'Destination Name'),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Save'),
-            onPressed: () {
-              String newName = nameController.text;
-              //Provider.of<DailyTrafficProvider>(context, listen: false)
-              //  .editDestinationName(destination, newName);
-
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<void> editSavedAddress(
-    BuildContext context, Destination destination) async {
-  TextEditingController addressController =
-      TextEditingController(text: destination.address);
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Edit Destination Address'),
-        content: TextField(
-          controller: addressController,
-          decoration: const InputDecoration(labelText: 'Destination Address'),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Save'),
-            onPressed: () {
-              String newAddress = addressController.text;
-              //Provider.of<DailyTrafficProvider>(context, listen: false)
-              //     .editDestinationAddress(destination, newAddress);
 
               Navigator.of(context).pop();
             },
@@ -1013,9 +962,11 @@ Future<Uint8List> getMapFromAPI(
 }
 
 class GoogleMapWidget extends StatelessWidget {
+  final bool isClickable;
   final Future<Uint8List> mapImage;
 
-  const GoogleMapWidget({super.key, required this.mapImage});
+  const GoogleMapWidget(
+      {super.key, required this.mapImage, required this.isClickable});
 
   @override
   Widget build(BuildContext context) {
@@ -1046,7 +997,9 @@ class GoogleMapWidget extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              _launchURL(mapLinkUrl);
+              if (isClickable) {
+                _launchURL(mapLinkUrl);
+              }
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
