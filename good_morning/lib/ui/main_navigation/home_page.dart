@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
-    //context.read<HistoryProvider>().fetchHistoryItem3();
+
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
 
@@ -217,9 +217,10 @@ class _HomePageState extends State<HomePage> {
                             factText: Provider.of<DailyFactProvider>(context)
                                 .factText),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.lightbulb, size: 40),
-                        onPressed: () {},
+                      Image.asset(
+                        'lib/images/bookImage.png',
+                        width: 75,
+                        height: 75,
                       ),
                     ],
                   ),

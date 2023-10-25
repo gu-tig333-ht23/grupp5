@@ -16,8 +16,8 @@ Widget buildFullCard(BuildContext context,
           if (title != null)
             Text(title,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor)),
+                  fontWeight: FontWeight.bold,
+                )),
           if (description != null)
             Text(description,
                 style: TextStyle(color: Theme.of(context).primaryColor)),
@@ -49,7 +49,6 @@ Widget buildFullCardWithImage(BuildContext context,
             ? Text(
                 title,
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               )
