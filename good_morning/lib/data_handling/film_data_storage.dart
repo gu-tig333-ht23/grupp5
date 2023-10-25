@@ -1,28 +1,20 @@
 import 'dart:convert';
 
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //Lagring för daily film
 
-Future<void> storeMovieData({
-  required String movieTitle,
-  required String movieDescription,
-  required String movieDate,
-  required String movieRating,
-  required String moviePoster,
-  required String movieId,
-  required List<Map<String, String>> streamInfo,
-  required String fetchDate,
-}) async {
+Future<void> storeMovieData(Movie movie) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('movieTitle', movieTitle);
-  prefs.setString('movieDescription', movieDescription);
-  prefs.setString('movieDate', movieDate);
-  prefs.setString('movieRating', movieRating);
-  prefs.setString('moviePoster', moviePoster);
-  prefs.setString('movieId', movieId);
-  prefs.setString('streamInfo', jsonEncode(streamInfo));
-  prefs.setString('fetchDate', fetchDate);
+  prefs.setString('movieTitle', movie.title);
+  prefs.setString('movieDescription', movie.description);
+  prefs.setString('movieDate', movie.releaseYear);
+  prefs.setString('movieRating', movie.rating);
+  prefs.setString('moviePoster', movie.posterPath);
+  prefs.setString('movieId', movie.tmdbId);
+  prefs.setString('streamInfo', jsonEncode(movie.streamInfo));
+  prefs.setString('fetchDate', movie.fetchDate);
 }
 
 Future<Map<String, dynamic>> getMovieData() async {

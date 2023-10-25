@@ -20,7 +20,7 @@ class DailyFilmList extends StatelessWidget {
       body: ListView.builder(
         itemCount: favoriteMovies.length,
         itemBuilder: (context, index) {
-          if (favoriteMovies.length < 1) {
+          if (favoriteMovies.isEmpty) {
             return const Center(
               child: Text('Your watchlist is empty.'),
             );
@@ -60,7 +60,7 @@ class DailyFilmList extends StatelessWidget {
                     Consumer<FavoriteMoviesModel>(
                       builder: (context, favoriteMoviesModel, child) {
                         List<Map<String, String>> streamInfo =
-                            formatMovieStreamInfo(movieDetails[7]);
+                            formatMovieStreamInfo(movieDetails[6]);
 
                         if (streamInfo.isEmpty) {
                           return const Center(
@@ -82,7 +82,7 @@ class DailyFilmList extends StatelessWidget {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       child: buildSmallButton(
                         context,
                         'Remove from watchlist',
@@ -116,7 +116,7 @@ List<Map<String, String>> formatMovieStreamInfo(String input) {
   for (final match in matches) {
     final matchString = match.group(1);
     final keyValuePairs = matchString?.split(', ');
-    final map = Map<String, String>();
+    final map = <String, String>{};
 
     for (final pair in keyValuePairs!) {
       final parts = pair.split(': ');

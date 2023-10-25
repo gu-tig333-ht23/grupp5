@@ -104,12 +104,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter =
-        Provider.of<HistoryProvider>(context).selectedFilter;
-    var month = Provider.of<HistoryProvider>(context).mmDate;
-    var day = Provider.of<HistoryProvider>(context).ddDate;
-    final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
-    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+    var movie = context.watch<MovieProvider>().movie;
 
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
@@ -157,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                  buildFullCard(
+                buildFullCard(
                   context,
                   title: 'Traffic',
                   optionalWidget: MapInfoWidget(
@@ -219,22 +214,21 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               if (visibilityModel.showFilm)
-buildFullCardWithImage(
-                    context,
-                    title: 'Film of the Day',
-                    description: movieTitle,
-                    imageUrl: posterPath,
-                    onTapAction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyFilmPage(theme: Theme.of(context)),
-                        ),
-                      );
-                    },
-                  ),
-                
+                buildFullCardWithImage(
+                  context,
+                  title: 'Film of the Day',
+                  description: movie.title,
+                  imageUrl: movie.posterPath,
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DailyFilmPage(theme: Theme.of(context)),
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(

@@ -20,16 +20,7 @@ class DailyFilmPage extends StatefulWidget {
 class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
-    final movieProvider = Provider.of<MovieProvider>(context);
-
-    final title = movieProvider.movieTitle;
-    final description = movieProvider.movieDescription;
-    final date = movieProvider.movieDate;
-    final rating = movieProvider.movieRating;
-    final posterPath = movieProvider.moviePosterPath;
-    final tmdbId = movieProvider.movieId;
-    final movieStreamInfo = movieProvider.streamInfo;
-    final fetchDate = movieProvider.fetchDate;
+    Movie movie = context.watch<MovieProvider>().movie;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -62,12 +53,12 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 16.0),
                       title: Text(
-                        title,
+                        movie.title,
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                          'Released in $date with a score of $rating\n\n$description'),
+                          'Released in ${movie.releaseYear} with a score of ${movie.rating}\n\n${movie.description}'),
                       onTap: () {}),
                 ),
               ),
@@ -75,13 +66,11 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                 color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
-
                   child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
-                      image: posterPath,
+                      image: movie.posterPath,
                       imageScale: 1,
                       placeholderScale: 1),
-
                 ),
               ),
               Card(
@@ -90,8 +79,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                   padding: const EdgeInsets.all(4.0),
                   child: Consumer<MovieProvider>(
                     builder: (context, movieProvider, child) {
-                      List<Map<String, String>> streamInfo =
-                          movieProvider.streamInfo;
+                      List<Map<String, String>> streamInfo = movie.streamInfo;
 
                       if (streamInfo.isEmpty) {
                         return const Center(
@@ -135,8 +123,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
               onPressed: () async {
                 var outputText = await context
                     .read<FavoriteMoviesModel>()
-                    .addFavorite(title, description, date, rating, posterPath,
-                        tmdbId, movieStreamInfo, fetchDate);
+                    .addFavorite(movie);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(outputText),
@@ -168,17 +155,9 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
 
   if (shouldFetch) {
     try {
-      Map<String, dynamic> movieData = await filmApi.fetchMovie();
+      final Movie movie = await filmApi.fetchMovie();
 
-      Provider.of<MovieProvider>(context, listen: false).setMovie(
-          movieData['title'],
-          movieData['description'],
-          movieData['release_year'],
-          movieData['vote_average'],
-          movieData['poster_path'],
-          movieData['tmdb_id'],
-          movieData['streamingInfo'],
-          movieData['fetchDate']);
+      Provider.of<MovieProvider>(context, listen: false).setMovie(movie);
     } catch (e) {
       print('Error fetching movie: $e');
     }
@@ -189,15 +168,18 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
           (storedData['streamInfo'] as List<dynamic>)
               .cast<Map<String, String>>();
 
-      Provider.of<MovieProvider>(context, listen: false).setMovie(
-          storedData['movieTitle']!,
-          storedData['movieDescription']!,
-          storedData['movieDate']!,
-          storedData['movieRating']!,
-          storedData['moviePoster']!,
-          storedData['movieId']!,
-          streamInfo,
-          storedData['fetchDate']!);
+      final Movie movie = Movie(
+        title: storedData['movieTitle']!,
+        description: storedData['movieDescription']!,
+        releaseYear: storedData['movieDate']!,
+        rating: storedData['movieRating']!,
+        posterPath: storedData['moviePoster']!,
+        tmdbId: storedData['movieId']!,
+        streamInfo: streamInfo,
+        fetchDate: storedData['fetchDate']!,
+      );
+
+      Provider.of<MovieProvider>(context, listen: false).setMovie(movie);
     }
   }
 }
