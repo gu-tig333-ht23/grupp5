@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
     //Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem();
-    context.read<HistoryProvider>().getStoredHistoryData();
+    context.read<HistoryProvider>().bootHistory();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -105,9 +105,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
     String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
-    String selectedFilter =
-        Provider.of<HistoryProvider>(context).selectedFilter;
-    var date = Provider.of<HistoryProvider>(context).date;
     
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;

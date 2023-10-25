@@ -9,12 +9,15 @@ class HistoryItem {
   String historyThumbnail;
   String historyExtract;
   int historyDate;
+  String historyFilter;
 
   HistoryItem(
       {required this.historyText,
       required this.historyThumbnail,
       required this.historyExtract,
-      required this.historyDate});
+      required this.historyDate,
+      required this.historyFilter}
+      );
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
@@ -22,10 +25,22 @@ class HistoryItem {
       historyThumbnail: json['historyThumbnail'] as String,
       historyExtract: json['historyExtract'] as String,
       historyDate: json['historyDate']as int,
+      historyFilter: json['historyFilter'] as String,
     );
   }
 }
+/*
+class HistoryFilter {
+  String selectedFilter;
+  HistoryFilter({required this.selectedFilter});
 
+  factory HistoryFilter.fromJson(Map<String, String> json) {
+    return HistoryFilter(
+      selectedFilter: json['storedFilter'] as String
+    );
+  }
+}
+*/
 class HistoryProvider extends ChangeNotifier {
 // Date
   final DateTime _now = DateTime.now();
@@ -42,11 +57,30 @@ class HistoryProvider extends ChangeNotifier {
 
 // Filter
   String _selectedFilter = 'events';
-  String get selectedFilter => _selectedFilter;
+  String get historyFilter => _selectedFilter;
 
-// Random number
-  var randomNumber = Random().nextInt(20);
+  //Nytt filter
+  get selectedfilter  => _selectedFilter;
+  getSelectedFilter(newFilter) {
+    _selectedFilter = newFilter;
+    print(_selectedFilter);
+    
+    notifyListeners();
+    fetchHistoryItem();
+  }
 
+/*
+String _storedFilter = '';
+String get storedFilter => _storedFilter;
+getStoredFilter() async{
+  var storedFilter = await getStoredHistoryFilter();
+  
+  _storedFilter = HistoryFilter.fromJson(storedFilter)as String;
+  notifyListeners();
+}
+*/
+
+/*
   void setFilter(filter) {
     _selectedFilter = filter;
     notifyListeners();
@@ -55,13 +89,14 @@ class HistoryProvider extends ChangeNotifier {
   void storeHistory(selectedFilter) {
     storeHistorySetting(selectedFilter);
   }
-
+*/
 //Empty history item
   var _historyItem = HistoryItem(
     historyText: '',
     historyThumbnail: '',
     historyExtract: '',
     historyDate: 0,
+    historyFilter: '',
   );
   HistoryItem get historyItem => _historyItem;
 
@@ -70,11 +105,12 @@ class HistoryProvider extends ChangeNotifier {
     historyThumbnail: '',
     historyExtract: '',
     historyDate: 0,
+    historyFilter: '',
   );
   HistoryItem get storedHistoryItem => _storedHistoryItem;
 
   //get HistoryItem from SharedPreferences
-  getStoredHistoryData() async {
+  bootHistory() async {
   print('i BÖRJAN get stored history data i daily_history i dart');
   var storedHistoryData = await getHistoryData();
 
@@ -101,7 +137,7 @@ class HistoryProvider extends ChangeNotifier {
   fetchHistoryItem() async {
     print('i BÖRJAN fetch history data i daily_history i dart');
     var historyItemApi =
-        await fetchHistoryItemWiki(selectedFilter, now.month, now.day);
+        await fetchHistoryItemWiki(historyFilter, now.month, now.day);
     _historyItem = HistoryItem.fromJson(historyItemApi);
     
     print('i Fetch Innan Store');
@@ -114,31 +150,32 @@ class HistoryProvider extends ChangeNotifier {
         historyText: _historyItem.historyText,
         historyThumbnail: _historyItem.historyThumbnail,
         historyExtract: _historyItem.historyExtract,
-        historyDate: historyItem.historyDate);
+        historyDate: historyItem.historyDate,
+        historyFilter: historyItem.historyFilter);
     print('i SLUTET fetch, STORE GJORD, i daily_history i dart');
     notifyListeners();
-    getStoredHistoryData();
+    bootHistory();
   }
 
 
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
-      selectedFilter, month, day) async {
+      historyFilter, month, day) async {
     final apiHeaderWiki = {
       'ContentType': 'application/json',
       'accept': 'application/json',
     };
 
-//https://cors-anywhere.herokuapp.com/
+//for WEB: https://cors-anywhere.herokuapp.com/
     final response = await http.get(
       Uri.parse(
-          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
+          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$historyFilter/$month/$day'),
       headers: apiHeaderWiki,
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      final events = data['$selectedFilter'] as List;
+      final events = data['$historyFilter'] as List;
       if (events.isEmpty) {
         print('No items');
         return {
@@ -177,13 +214,14 @@ class HistoryProvider extends ChangeNotifier {
         }
 
         nextRandomNumber++;
-      } while (historyThumbnail.isEmpty && nextRandomNumber != randomNumber);
+      } while (historyThumbnail.isEmpty);
 
       return {
         'historyText': historyText,
         'historyThumbnail': historyThumbnail,
         'historyExtract': historyExtract,
         'historyDate': month+day,
+        'historyFilter': historyFilter,
       };
     } else {
       throw Exception('Failed to load data from the API');

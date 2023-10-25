@@ -24,34 +24,53 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
 
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
+    String historyFilter = historyProvider.storedHistoryItem.historyFilter;
+    
+    print('i UIN');
+    print(historyFilter);
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text('Today in History:  $historyFilter'),
+        
         actions: [
-          DropdownButton<String>(
-            value: historyProvider.selectedFilter,
-            onChanged: (newValue) {
+          PopupMenuButton<String>(
+            initialValue: historyFilter,
+            tooltip: 'Choolse filter',
+            
+            // Callback that sets the selected popup menu item.
+            onSelected: (String item) {
               setState(() {
-                historyProvider.setFilter(newValue);
-                historyProvider.fetchHistoryItem();
+                historyProvider.getSelectedFilter(item);
+                print(item);
+                
               });
             },
-            items: ['selected', 'births', 'deaths', 'events', 'holidays']
-                .map((filter) {
-              return DropdownMenuItem<String>(
-                value: filter,
-                child: Text(filter),
-              );
-            }).toList(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              historyProvider.fetchHistoryItem(); // Refresh data
-            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'selected',
+                child: Text('Selected'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'births',
+                child: Text('Births'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'deaths',
+                child: Text('Deaths'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'events',
+                child: Text('Events'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'holidays',
+                child: Text('Holidays'),
+              ),
+            ],
           ),
         ],
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Today in History'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -61,7 +80,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
               buildFullCard(
                 context,
                 title: historyProvider.storedHistoryItem.historyText,
-                description: historyProvider.storedHistoryItem.historyExtract,
+
               ),
               Card(
                 color: Theme.of(context).cardColor,
@@ -70,9 +89,20 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   image: historyProvider.storedHistoryItem.historyThumbnail,
                 ),
               ),
+              buildFullCard(context,description: historyProvider.storedHistoryItem.historyExtract)
             ],
+              
+            
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            historyProvider.fetchHistoryItem();
+          });
+        },
+        child: const Icon(Icons.refresh_outlined),
       ),
     );
   }
