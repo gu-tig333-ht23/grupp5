@@ -147,7 +147,8 @@ class DailyFactWidget extends StatelessWidget {
           } else if (snapshot.hasData) {
             var factText = snapshot.data!;
 
-            return Text(factText);
+            return Text(factText,
+                style: TextStyle(color: Theme.of(context).primaryColor));
           } else {
             return Text('No data');
           }

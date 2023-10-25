@@ -29,7 +29,8 @@ class DailyFactPage extends StatelessWidget {
                             Provider.of<DailyFactProvider>(context).factText),
                   ),
                   IconButton(
-                    icon: Icon(Icons.lightbulb, size: 50),
+                    icon: Icon(Icons.lightbulb,
+                        size: 50, color: Theme.of(context).primaryColor),
                     onPressed: () {},
                   ),
                 ],
