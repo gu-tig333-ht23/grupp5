@@ -48,7 +48,7 @@ Future<Map<String, dynamic>> getHistoryData() async {
     'historyFilter': filter ?? '',
   };
 }
-
+/*
 Future<void> storeHistoryFilter(
   String selectedFilter,
 ) async {
@@ -69,4 +69,4 @@ Future<Map<String, String>> getStoredHistoryFilter() async {
     
   };
 }
-
+*/

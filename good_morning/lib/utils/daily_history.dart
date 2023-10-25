@@ -29,18 +29,7 @@ class HistoryItem {
     );
   }
 }
-/*
-class HistoryFilter {
-  String selectedFilter;
-  HistoryFilter({required this.selectedFilter});
 
-  factory HistoryFilter.fromJson(Map<String, String> json) {
-    return HistoryFilter(
-      selectedFilter: json['storedFilter'] as String
-    );
-  }
-}
-*/
 class HistoryProvider extends ChangeNotifier {
 // Date
   final DateTime _now = DateTime.now();
@@ -69,27 +58,7 @@ class HistoryProvider extends ChangeNotifier {
     fetchHistoryItem();
   }
 
-/*
-String _storedFilter = '';
-String get storedFilter => _storedFilter;
-getStoredFilter() async{
-  var storedFilter = await getStoredHistoryFilter();
-  
-  _storedFilter = HistoryFilter.fromJson(storedFilter)as String;
-  notifyListeners();
-}
-*/
 
-/*
-  void setFilter(filter) {
-    _selectedFilter = filter;
-    notifyListeners();
-  }
-
-  void storeHistory(selectedFilter) {
-    storeHistorySetting(selectedFilter);
-  }
-*/
 //Empty history item
   var _historyItem = HistoryItem(
     historyText: '',
@@ -123,6 +92,7 @@ getStoredFilter() async{
       print('i datumväljandet');
       print(storedHistoryItem.historyDate);
       print(date);
+      print(storedHistoryItem.historyFilter);
     } else {
       await fetchHistoryItem();
     }
@@ -156,7 +126,6 @@ getStoredFilter() async{
     notifyListeners();
     bootHistory();
   }
-
 
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
@@ -192,7 +161,6 @@ getStoredFilter() async{
       String historyThumbnail;
       String historyExtract;
       
-
       do {
         if (nextRandomNumber >= events.length) {
           nextRandomNumber = 0; // Wrap around to the beginning of the list

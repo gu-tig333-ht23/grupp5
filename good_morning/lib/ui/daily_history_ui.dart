@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
+import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_history.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -25,6 +26,12 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     String historyFilter = historyProvider.storedHistoryItem.historyFilter;
+    var day = historyProvider.now.day;
+    var month = historyProvider.now.month;
+    var year = historyProvider.now.year;
+    var historyText = historyProvider.storedHistoryItem.historyText;
+
+    
     
     print('i UIN');
     print(historyFilter);
@@ -32,19 +39,20 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('Today in History:  $historyFilter'),
+        title: 
+        Text('Today: $year-$month-$day: $historyFilter'),
         
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,
-            tooltip: 'Choolse filter',
+            tooltip: 'Choose filter',
             
             // Callback that sets the selected popup menu item.
             onSelected: (String item) {
               setState(() {
                 historyProvider.getSelectedFilter(item);
                 print(item);
-                
+                historyProvider.fetchHistoryItem();
               });
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -79,7 +87,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             children: [
               buildFullCard(
                 context,
-                title: historyProvider.storedHistoryItem.historyText,
+                title: historyText,
+              
 
               ),
               Card(
@@ -99,7 +108,9 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
+            historyProvider.getSelectedFilter(historyFilter);
             historyProvider.fetchHistoryItem();
+           
           });
         },
         child: const Icon(Icons.refresh_outlined),
