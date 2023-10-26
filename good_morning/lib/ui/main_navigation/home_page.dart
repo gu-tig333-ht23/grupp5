@@ -102,13 +102,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
-    String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
+    String text =
+        Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+    String thumbnail = Provider.of<HistoryProvider>(context)
+        .storedHistoryItem
+        .historyThumbnail;
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
     Movie movie = context.watch<MovieProvider>().movie;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -164,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                                 currentFrom.address,
                                 transportMode.name.toString())),
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Expanded(
                         child: GoogleMapWidget(
                             isClickable: false,
@@ -237,7 +239,6 @@ class _HomePageState extends State<HomePage> {
                   title: 'Film of the Day',
                   description: movie.title,
                   imageUrl: movie.posterPath,
-
                   onTapAction: () {
                     Navigator.push(
                       context,

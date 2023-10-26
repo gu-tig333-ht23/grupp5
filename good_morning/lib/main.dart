@@ -34,7 +34,7 @@ void main() async {
         ),
       ],
       // sends the fact for the day as parameter to myApp
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
