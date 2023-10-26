@@ -20,16 +20,13 @@ class DailyFilmList extends StatelessWidget {
       body: ListView.builder(
         itemCount: favoriteMovies.length,
         itemBuilder: (context, index) {
-          if (favoriteMovies.length < 1) {
+          if (favoriteMovies.isEmpty) {
             return const Center(
               child: Text('Your watchlist is empty.'),
             );
           }
           if (index >= 0 && index < favoriteMovies.length) {
             List<String> movieDetails = favoriteMovies[index];
-            // if (movieDetails.isEmpty) {
-            //   return const SizedBox();
-            // }
 
             return Card(
               child: Padding(
@@ -63,7 +60,7 @@ class DailyFilmList extends StatelessWidget {
                     Consumer<FavoriteMoviesModel>(
                       builder: (context, favoriteMoviesModel, child) {
                         List<Map<String, String>> streamInfo =
-                            parseStringToList(movieDetails[7]);
+                            formatMovieStreamInfo(movieDetails[6]);
 
                         if (streamInfo.isEmpty) {
                           return const Center(
@@ -85,7 +82,7 @@ class DailyFilmList extends StatelessWidget {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       child: buildSmallButton(
                         context,
                         'Remove from watchlist',
@@ -111,7 +108,7 @@ class DailyFilmList extends StatelessWidget {
   }
 }
 
-List<Map<String, String>> parseStringToList(String input) {
+List<Map<String, String>> formatMovieStreamInfo(String input) {
   List<Map<String, String>> list = [];
   final regex = RegExp(r'{(.*?)}');
   final matches = regex.allMatches(input);
@@ -119,7 +116,7 @@ List<Map<String, String>> parseStringToList(String input) {
   for (final match in matches) {
     final matchString = match.group(1);
     final keyValuePairs = matchString?.split(', ');
-    final map = Map<String, String>();
+    final map = <String, String>{};
 
     for (final pair in keyValuePairs!) {
       final parts = pair.split(': ');

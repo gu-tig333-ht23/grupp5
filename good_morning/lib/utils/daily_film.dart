@@ -27,7 +27,7 @@ class FilmApi {
 //Skickar man in en sökning för page 0 får man error
   String pageNumber = '&page=${Random().nextInt(9) + 1}';
 
-  Future<Map<String, dynamic>> fetchMovie() async {
+  Future<Movie> fetchMovie() async {
     dio.options.headers['Authorization'] = 'Bearer $bearerKey';
     dio.options.headers['Accept'] = 'application/json';
     final date = DateTime.now();
@@ -39,29 +39,20 @@ class FilmApi {
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
 
-    Map<String, dynamic> movieData = {
-      'title': randomMovie['title'],
-      'description': randomMovie['overview'],
-      'release_year': randomMovie['release_date'].toString().substring(0, 4),
-      'vote_average': randomMovie['vote_average'].toString(),
-      'poster_path':
+    final Movie movie = Movie(
+      title: randomMovie['title'],
+      description: randomMovie['overview'],
+      releaseYear: randomMovie['release_date'].toString().substring(0, 4),
+      rating: randomMovie['vote_average'].toString(),
+      posterPath:
           'https://image.tmdb.org/t/p/w600_and_h900_bestv2${randomMovie['poster_path']}',
-      'tmdb_id': randomMovie['id'].toString(),
-      //'streamingInfo': '',
-      'streamingInfo': await fetchStreamInfo(randomMovie['id'].toString()),
-      'fetchDate': date.toString(),
-    };
+      tmdbId: randomMovie['id'].toString(),
+      streamInfo: await fetchStreamInfo(randomMovie['id'].toString()),
+      fetchDate: date.toString(),
+    );
 
-    storeMovieData(
-        movieTitle: movieData['title'],
-        movieDescription: movieData['description'],
-        movieDate: movieData['release_year'],
-        movieRating: movieData['vote_average'],
-        moviePoster: movieData['poster_path'],
-        movieId: movieData['tmdb_id'],
-        streamInfo: movieData['streamingInfo'],
-        fetchDate: movieData['fetchDate']);
-    return movieData;
+    storeMovieData(movie);
+    return movie;
   }
 }
 
@@ -89,7 +80,7 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
     } else {
       List se = streamingInfo['se'];
 
-      Set<String> uniqueItems = Set();
+      Set<String> uniqueItems = {};
 
       for (Map<String, dynamic> serviceInfo in se) {
         String service = serviceInfo['service'];
@@ -110,42 +101,44 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
   return result;
 }
 
+class Movie {
+  final String title;
+  final String description;
+  final String releaseYear;
+  final String rating;
+  final String posterPath;
+  final String tmdbId;
+  final List<Map<String, String>> streamInfo;
+  final String fetchDate;
+
+  Movie({
+    required this.title,
+    required this.description,
+    required this.releaseYear,
+    required this.rating,
+    required this.posterPath,
+    required this.tmdbId,
+    required this.streamInfo,
+    required this.fetchDate,
+  });
+}
+
 class MovieProvider with ChangeNotifier {
-  String _movieTitle = '';
-  String _movieDescription = '';
-  String _movieDate = '';
-  String _movieRating = '';
-  String _moviePosterPath = '';
-  String _movieId = '';
-  List<Map<String, String>> _streamInfo = [];
-  String _fetchDate = '';
+  Movie _movie = Movie(
+    title: 'No movie found',
+    description: '',
+    releaseYear: '',
+    rating: '',
+    posterPath: '',
+    tmdbId: '',
+    streamInfo: [],
+    fetchDate: '',
+  );
 
-  String get movieTitle => _movieTitle;
-  String get movieDescription => _movieDescription;
-  String get movieDate => _movieDate;
-  String get movieRating => _movieRating;
-  String get moviePosterPath => _moviePosterPath;
-  String get movieId => _movieId;
-  List<Map<String, String>> get streamInfo => _streamInfo;
-  String get fetchDate => _fetchDate;
+  Movie get movie => _movie;
 
-  void setMovie(
-      String title,
-      String description,
-      String date,
-      String rating,
-      String posterPath,
-      String id,
-      List<Map<String, String>> streamInfo,
-      String fetchDate) {
-    _movieTitle = title;
-    _movieDescription = description;
-    _movieDate = date;
-    _movieRating = rating;
-    _moviePosterPath = posterPath;
-    _movieId = id;
-    _streamInfo = streamInfo;
-    _fetchDate = fetchDate;
+  void setMovie(Movie movie) {
+    _movie = movie;
     notifyListeners();
   }
 }
@@ -154,7 +147,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
   List<List<String>> _favoriteMovies = [];
 
   List<List<String>> get favoriteMovies => _favoriteMovies;
-  final String _watchlistKey = 'watchlist13';
+  final String _watchlistKey = 'watchlist34';
 
   Future<void> loadWatchlist() async {
     final prefs = await SharedPreferences.getInstance();
@@ -180,18 +173,20 @@ class FavoriteMoviesModel extends ChangeNotifier {
     await prefs.setString(_watchlistKey, watchlistJson);
   }
 
-  Future<String> addFavorite(
-    String movieTitle,
-    String movieDescription,
-    String movieDate,
-    String movieRating,
-    String moviePosterPath,
-    String tmdbId,
-    List<Map<String, String>> streamInfo,
-    String fetchDate,
-  ) async {
+  Future<List> addFavorite(movie) async {
+    final String movieTitle = movie.title;
+    final String movieDescription = movie.description;
+    final String movieDate = movie.releaseYear;
+    final String movieRating = movie.rating;
+    final String moviePosterPath = movie.posterPath;
+    final String tmdbId = movie.tmdbId;
+    final List<Map<String, String>> streamInfo = movie.streamInfo;
+    final String fetchDate = movie.fetchDate;
+
+    List output = [];
+
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      return 'Movie already in your watchlist';
+      return output = ['The movie is already in your watchlist', 'Remove'];
     } else {
       if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
@@ -203,15 +198,15 @@ class FavoriteMoviesModel extends ChangeNotifier {
         movieRating,
         moviePosterPath,
         tmdbId,
-        fetchDate,
         streamInfo.toString(),
+        fetchDate,
       ];
 
       _favoriteMovies.add(favoriteMovie);
 
       saveWatchlist();
       notifyListeners();
-      return 'Movie added to your watchlist';
+      return output = ['Movie added to your watchlist', 'Undo'];
     }
   }
 
