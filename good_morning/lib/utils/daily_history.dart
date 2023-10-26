@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 import 'package:good_morning/data_handling/history_data_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class HistoryItem {
   String historyText;
@@ -123,10 +124,22 @@ class HistoryProvider extends ChangeNotifier {
       'accept': 'application/json',
     };
 
+    String wikiUrl;
+    if (kIsWeb) {
+    // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+    wikiUrl =
+        'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+
+  } else {
+    // for running in emulators, without proxy
+    wikiUrl = 'https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+    
+  }
+
 //for WEB: https://cors-anywhere.herokuapp.com/
     final response = await http.get(
       Uri.parse(
-          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$historyFilter/$month/$day'),
+          '$wikiUrl/$historyFilter/$month/$day'),
       headers: apiHeaderWiki,
     );
 
