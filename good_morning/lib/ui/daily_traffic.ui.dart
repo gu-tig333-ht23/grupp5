@@ -186,6 +186,7 @@ class DailyTrafficPage extends StatelessWidget {
                               currentTo.address,
                               currentFrom.address,
                               transportMode.name.toString())),
+                      Text('For directions, tap the map'),
                       const SizedBox(height: 15),
                       MapInfoWidget(
                         routeInfo: getRouteInfoFromAPI(currentTo.address,
