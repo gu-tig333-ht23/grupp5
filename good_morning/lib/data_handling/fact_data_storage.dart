@@ -41,7 +41,6 @@ Future<DateTime> getStoredDate() async {
     }
   }
   print('No stored date yet, returns yesterday`s date');
-  return DateTime.now().subtract(Duration(
-      minutes:
-          3)); //(Duration(days: 1))); // yesterday`s date, if no date is stored yet
+  return DateTime.now().subtract(
+      Duration(days: 1)); // yesterday`s date, if no date is stored yet
 }
