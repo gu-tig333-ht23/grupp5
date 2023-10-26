@@ -120,6 +120,7 @@ class _WeatherPageState extends State<WeatherPage> {
                       child: Column(
                         children: [
                           SizedBox(height: 8),
+                          Text('Current weather'),
                           Text(
                             '$currentTemp°C',
                             style: TextStyle(fontSize: 72),
