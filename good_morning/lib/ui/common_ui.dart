@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 Widget buildFullCard(BuildContext context,
     {String? title,
@@ -11,11 +10,18 @@ Widget buildFullCard(BuildContext context,
     child: ListTile(
       contentPadding:
           const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-      title: title != null
-          ? Text(title, style: const TextStyle(fontWeight: FontWeight.bold))
-          : null,
-      subtitle: description != null ? Text(description) : null,
-      trailing: optionalWidget,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null)
+            Text(
+              title,
+              style: titleTextStyle,
+            ),
+          if (description != null) Text(description, style: subtitleTextStyle),
+          if (optionalWidget != null) optionalWidget,
+        ],
+      ),
       onTap: () {
         onTapAction?.call();
       },
@@ -29,37 +35,17 @@ Widget buildFullCardWithImage(BuildContext context,
     Widget? optionalWidget,
     String? imageUrl,
     void Function()? onTapAction}) {
+  final decoration = imageUrl != null ? decorateImage(imageUrl) : null;
+
   return Card(
     color: Colors.transparent,
     child: Container(
-      decoration: imageUrl != null
-          ? BoxDecoration(
-              image: DecorationImage(
-                image: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: imageUrl, imageScale: 1, placeholderScale: 1
-                ).image,
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            )
-          : null,
+      decoration: decoration,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
-        title: title != null
-            ? Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            : null,
+        title: title != null ? Text(title, style: titleTextStyle) : null,
         subtitle: description != null
-            ? Text(
-                description,
-                style: const TextStyle(color: Colors.white),
-              )
+            ? Text(description, style: subtitleTextStyle)
             : null,
         trailing: optionalWidget,
         onTap: () {
@@ -68,6 +54,20 @@ Widget buildFullCardWithImage(BuildContext context,
       ),
     ),
   );
+}
+
+Decoration? decorateImage(String imageUrl) {
+  if (Uri.parse(imageUrl).isAbsolute) {
+    return BoxDecoration(
+      image: DecorationImage(
+        image: Image.network(imageUrl).image,
+        fit: BoxFit.cover,
+      ),
+      borderRadius: BorderRadius.circular(8),
+    );
+  } else {
+    return null;
+  }
 }
 
 Widget buildSmallButton(

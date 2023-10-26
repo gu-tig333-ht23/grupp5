@@ -1,22 +1,22 @@
+import 'package:good_morning/data_handling/user_preferences.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
-import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
+import 'package:good_morning/ui/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
-import 'filter_model.dart';
+import '../../utils/filter_model.dart';
 import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
 import 'package:good_morning/utils/weather.dart';
 
 class HomePage extends StatefulWidget {
-  final String factText;
-
-  HomePage({required this.factText, super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +27,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    //context.read<HistoryProvider>().fetchHistoryItem3();
+    context.read<FavoriteMoviesModel>().loadWatchlist();
+    context.read<HistoryProvider>().bootHistory();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Traffic of the Day'),
+                  title: const Text('Show Traffic'),
                   value: visibilityModel.showTraffic,
                   onChanged: (bool? value) {
                     visibilityModel.toggleTraffic();
@@ -101,19 +102,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String text = Provider.of<HistoryProvider>(context).item.text;
-    String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter =
-        Provider.of<HistoryProvider>(context).selectedFilter;
-    var month = Provider.of<HistoryProvider>(context).mmDate;
-    var day = Provider.of<HistoryProvider>(context).ddDate;
-    final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
-    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
+    String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+    String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
+    var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
+    var currentTo = context.watch<DailyTrafficProvider>().currentTo;
+    var transportMode = context.watch<DailyTrafficProvider>().mode;
+    Movie movie = context.watch<MovieProvider>().movie;
+
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Good Morning', style: titleTextStyle),
+        title: FutureBuilder<String>(
+          future:
+              getUserName(), // This fetches the name from shared preferences
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return const Text("Good Morning", style: titleTextStyle);
+              } else {
+                return Text("Good Morning, ${snapshot.data}",
+                    style: titleTextStyle);
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -137,18 +152,40 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                buildFullCard(context,
-                    title: 'Traffic',
-                    description:
-                        'Little traffic, approximately 51 mins to work by bicycle.',
-                    onTapAction: () {
-                  Navigator.push(
+                buildFullCard(
+                  context,
+                  title: 'Traffic',
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: MapInfoWidget(
+                            routeInfo: getRouteInfoFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: GoogleMapWidget(
+                            isClickable: false,
+                            mapImage: getMapFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                    ],
+                  ),
+                  onTapAction: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyTrafficPage()));
-                  print('Navigating to Traffic Information Screen');
-                }),
+                        builder: (BuildContext context) =>
+                            DailyTrafficPage(theme: Theme.of(context)),
+                      ),
+                    );
+                    print('Navigating to Traffic Information Screen');
+                  },
+                ),
               if (visibilityModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
@@ -164,63 +201,61 @@ class _HomePageState extends State<HomePage> {
                   );
                   print('Navigating to Today in History Screen');
                 }),
-              Row(
-                children: [
-                  if (visibilityModel.showFact)
-                    Expanded(
-                      child: buildFullCard(context,
-                          title: 'Fact of the Day',
-                          description: widget.factText, onTapAction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                DailyFactPage(factText: widget.factText),
-                          ),
-                        );
-                        print('Navigating to Fact of the Day Screen');
-                      }),
-                    ),
-                  if (visibilityModel.showFilm)
-                    Expanded(
-                      child: buildFullCardWithImage(
-                        context,
-                        title: 'Film of the Day',
-                        description: movieTitle,
-                        imageUrl: posterPath,
-                        onTapAction: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DailyFilmPage(theme: Theme.of(context)),
-                            ),
-                          );
-                        },
+              if (visibilityModel.showFact)
+                buildFullCard(
+                  context,
+                  title: 'Fact of the Day',
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: DailyFactWidget(
+                            factText: Provider.of<DailyFactProvider>(context)
+                                .factText),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              buildSmallButton(context, "Small Button Test", () {
-                print("Small Button Pressed!");
-              }),
+                      Image.asset(
+                        'lib/images/bookImage.png',
+                        width: 85,
+                        height: 85,
+                      ),
+                    ],
+                  ),
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => DailyFactPage(
+                          theme: Theme.of(context),
+                        ),
+                      ),
+                    );
+                    print('Navigating to Fact of the Day Screen');
+                  },
+                ),
+              if (visibilityModel.showFilm)
+                buildFullCardWithImage(
+                  context,
+                  title: 'Film of the Day',
+                  description: movie.title,
+                  imageUrl: movie.posterPath,
+
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DailyFilmPage(theme: Theme.of(context)),
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const OnBoardingScreen()),
                 );
               }),
-              const SizedBox(height: 16.0),
-              buildFloatingActionButton(
-                context,
-                Icons.add,
-                () {
-                  print("Floating Action Button Pressed!");
-                },
-                tooltip: 'Test',
-              ),
             ],
           ),
         ),

@@ -20,53 +20,87 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch data when the widget is initialized
-    
   }
 
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
+    String historyFilter = historyProvider.storedHistoryItem.historyFilter;
+    var day = historyProvider.now.day;
+    var month = historyProvider.now.month;
+    var year = historyProvider.now.year;
+    var historyText = historyProvider.storedHistoryItem.historyText;
+
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            DropdownButton<String>(
-                value: historyProvider.selectedFilter,
-                onChanged: (newValue) {
-                  setState(() {
-                    historyProvider.setFilter(newValue);
-                  });
-                },
-                items: ['highlighted', 'births', 'deaths', 'events', 'holidays']
-                    .map((filter) {
-                  return DropdownMenuItem<String>(
-                    value: (filter),
-                    child: Text(filter),
-                  );
-                }).toList()),
-          ],
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text('Today in History'),
-        ),
-        body: SingleChildScrollView(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text('Today: $year-$month-$day: $historyFilter'),
+        actions: [
+          PopupMenuButton<String>(
+            initialValue: historyFilter,
+            tooltip: 'Choose category',
+            onSelected: (String item) {
+              setState(() {
+                historyProvider.getSelectedFilter(item);
+                print(item);
+                historyProvider.fetchHistoryItem();
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'selected',
+                child: Text('Selected'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'births',
+                child: Text('Births'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'deaths',
+                child: Text('Deaths'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'events',
+                child: Text('Events'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'holidays',
+                child: Text('Holidays'),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               buildFullCard(
                 context,
-                title: historyProvider.item.text,
-                description: historyProvider.item.extract,
+                title: historyText,
               ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Card(
-                  color: Theme.of(context).cardColor,
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: historyProvider.item.thumbnail, imageScale: 1, placeholderScale: 1,
-                  ),
+              Card(
+                color: Theme.of(context).cardColor,
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: historyProvider.storedHistoryItem.historyThumbnail,
                 ),
               ),
+              buildFullCard(context,
+                  description: historyProvider.storedHistoryItem.historyExtract)
             ],
           ),
-        ));
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            historyProvider.getSelectedFilter(historyFilter);
+            historyProvider.fetchHistoryItem();
+          });
+        },
+        child: const Icon(Icons.refresh_outlined),
+      ),
+    );
   }
 }

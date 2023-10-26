@@ -4,115 +4,180 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:good_morning/data_handling/history_data_storage.dart';
 
-
-
 class HistoryItem {
-  String text;
-  String thumbnail;
-  String extract;
+  String historyText;
+  String historyThumbnail;
+  String historyExtract;
+  String historyDate;
+  String historyFilter;
 
   HistoryItem(
-      {required this.text, required this.thumbnail, required this.extract});
+      {required this.historyText,
+      required this.historyThumbnail,
+      required this.historyExtract,
+      required this.historyDate,
+      required this.historyFilter}
+      );
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
-      text: json['text'] as String,
-      thumbnail: json['thumbnail'] as String,
-      extract: json['extract'] as String,
+      historyText: json['historyText'] as String,
+      historyThumbnail: json['historyThumbnail'] as String,
+      historyExtract: json['historyExtract'] as String,
+      historyDate: json['historyDate']as String,
+      historyFilter: json['historyFilter'] as String,
     );
   }
-
-  Map<String, dynamic> json = {
-  'text': 'Sample text',
-  'thumbnail': 'sample_thumbnail_url',
-  'extract': 'Sample extract',
-};
-
 }
 
 class HistoryProvider extends ChangeNotifier {
 // Date
   final DateTime _now = DateTime.now();
   DateTime get now => _now;
-  
-  get ddDate => _now.day;
-  get mmDate => _now.month;
-
-// Random number
-  var randomNumber = Random().nextInt(20);
+/////
+  //Testing
+  //DatumTest
+  get date2 => now.month.toString() + now.day.toString() + 1.toString();
+////
+//Datum
+  get date => now.month.toString() + now.day.toString();
 
 // Filter
-  String _selectedFilter = 'births';
-  String get selectedFilter => _selectedFilter;
+  String _selectedFilter = 'events';
+  String get historyFilter => _selectedFilter;
 
-  void setFilter(filter) {
-    _selectedFilter = filter;
+  //Nytt filter
+  getSelectedFilter(newFilter) {
+    _selectedFilter = newFilter;
     notifyListeners();
+    fetchHistoryItem();
   }
 
-void storeHistory(selectedFilter) {
-  storeHistorySetting(selectedFilter);
-}
 
-//Empty history item
-  var _item = HistoryItem(
-    text: 'asd',
-    extract: 'asd',
-    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/320px-Mother_Teresa_1.jpg',
+//Empty history items
+  var _historyItem = HistoryItem(
+    historyText: '',
+    historyThumbnail: '',
+    historyExtract: '',
+    historyDate: '',
+    historyFilter: '',
   );
-  HistoryItem get item => _item;
+  HistoryItem get historyItem => _historyItem;
 
-//Get historyitem from API-function
-  fetchHistoryItem3() async {
-    var historyitem = await fetchHistoryItemWiki(
-        randomNumber, selectedFilter, now.month, now.day);
-    _item = HistoryItem.fromJson(historyitem);
+  var _storedHistoryItem = HistoryItem(
+    historyText: '',
+    historyThumbnail: '',
+    historyExtract: '',
+    historyDate: '',
+    historyFilter: '',
+  );
+  HistoryItem get storedHistoryItem => _storedHistoryItem;
+
+  //get HistoryItem from SharedPreferences
+  bootHistory() async {
+    //print('BOOT');
+  
+  var storedHistoryData = await getHistoryData();
+
+  // ignore: unnecessary_null_comparison
+  if (storedHistoryData != null) {
+    final storedHistoryItem = HistoryItem.fromJson(storedHistoryData);
     
-    storeHistoryData(_item.text, _item.thumbnail, item.extract);
-        
+    if (storedHistoryItem.historyDate == date) {
+      _storedHistoryItem = storedHistoryItem;
+     // print('samma datum = load');
+    } else {
+      await fetchHistoryItem();
+    }
+    //print('nytt datum = ny fetch');
+  } else {
+    //print('fanns inget i minnet = ny fetch');
+    await fetchHistoryItem();
+  }
+  notifyListeners();
+}
+  //Get historyitem from API-function
+  fetchHistoryItem() async {
+    //print('FETCH');
+    var historyItemApi =
+        await fetchHistoryItemWiki(historyFilter, now.month, now.day);
+    _historyItem = HistoryItem.fromJson(historyItemApi);
+    //Store HistoryItem
+    storeHistoryData(
+        historyText: _historyItem.historyText,
+        historyThumbnail: _historyItem.historyThumbnail,
+        historyExtract: _historyItem.historyExtract,
+        historyDate: historyItem.historyDate,
+        historyFilter: historyItem.historyFilter);
+    //print('FETCH KLAR');
     notifyListeners();
+    bootHistory();
+    return;
   }
 
-  getStoredHistoryData() async {
-    var _storedData = await getHistoryData();
-    return _storedData;
-  }
-
-// API function
+  // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
-      randomNumber, selectedFilter, month, day) async {
+      historyFilter, month, day) async {
     final apiHeaderWiki = {
       'ContentType': 'application/json',
       'accept': 'application/json',
     };
 
+//for WEB: https://cors-anywhere.herokuapp.com/
     final response = await http.get(
       Uri.parse(
-          'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday/$selectedFilter/$month/$day'),
+          'https://en.wikipedia.org/api/rest_v1/feed/onthisday/$historyFilter/$month/$day'),
       headers: apiHeaderWiki,
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      final events = data['$selectedFilter'] as List;
+      final events = data['$historyFilter'] as List;
       if (events.isEmpty) {
+        print('No items');
         return {
-          'text': '',
-          'thumbnail': '',
-          'extract': '',
+          'historyText': '',
+          'historyThumbnail': '',
+          'historyExtract': '',
+          'historyDate': 0,
         };
       }
 
-      final item = events[randomNumber] as Map<String, dynamic>;
-      final text = item['text'] as String;
-      final pages = item['pages'] as List;
-      String thumbnail = pages[0]['thumbnail']['source'] as String;
-      final extract = pages[0]['extract'] as String;
+      var nextRandomNumber = Random().nextInt(events.length);
+      Map<String, dynamic> item;
+      String historyText;
+      String historyThumbnail;
+      String historyExtract;
+      
+      do {
+        if (nextRandomNumber >= events.length) {
+          nextRandomNumber = 0; // Wrap around to the beginning of the list
+        }
+        item = events[nextRandomNumber] as Map<String, dynamic>;
+        historyText = item['text'] as String;
+        final pages = item['pages'] as List;
+        if (pages.isNotEmpty) {
+          final thumbnailData = pages[0]['thumbnail'];
+          if (thumbnailData != null && thumbnailData['source'] != null) {
+            historyThumbnail = thumbnailData['source'] as String;
+          } else {
+            historyThumbnail = '';
+          }
+          historyExtract = pages[0]['extract'] as String;
+        } else {
+          historyThumbnail = '';
+          historyExtract = '';
+        }
+
+        nextRandomNumber++;
+      } while (historyThumbnail.isEmpty);
 
       return {
-        'text': text,
-        'thumbnail': thumbnail,
-        'extract': extract,
+        'historyText': historyText,
+        'historyThumbnail': historyThumbnail,
+        'historyExtract': historyExtract,
+        'historyDate': month.toString()+day.toString(),
+        'historyFilter': historyFilter,
       };
     } else {
       throw Exception('Failed to load data from the API');
