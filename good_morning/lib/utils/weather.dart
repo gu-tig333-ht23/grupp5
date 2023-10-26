@@ -1,5 +1,10 @@
+import 'dart:js';
+
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 Future<Map<String, dynamic>> fetchCurrentWeather() async {
   try {
@@ -8,12 +13,47 @@ Future<Map<String, dynamic>> fetchCurrentWeather() async {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       Map<String, dynamic> currentWeather = jsonData['current'];
+      Provider.of<WeatherProvider>(context as BuildContext, listen: false)
+          .setWeather(currentWeather as WeatherHP);
       return currentWeather;
     } else {
       throw Exception('Failed to load current weather data');
     }
   } catch (error) {
     throw Exception('Error: $error');
+  }
+}
+
+class WeatherHP {
+  final Map<String, dynamic> weatherHP;
+  WeatherHP({required this.weatherHP});
+}
+
+class WeatherProvider with ChangeNotifier {
+  WeatherHP _weatherHP = WeatherHP(weatherHP: {
+    'time': '',
+    'interval': '',
+    'temperature_2m': '',
+    'rain': '',
+    'snowfall': ''
+  });
+
+  WeatherHP get weatherHP => _weatherHP;
+
+  // Constructor to initialize WeatherProvider with an empty WeatherHP object
+  WeatherProvider() {
+    _weatherHP = WeatherHP(weatherHP: {
+      'time': '',
+      'interval': '',
+      'temperature_2m': '',
+      'rain': '',
+      'snowfall': ''
+    });
+  }
+
+  void setWeather(WeatherHP weatherHP) {
+    _weatherHP = weatherHP;
+    notifyListeners();
   }
 }
 

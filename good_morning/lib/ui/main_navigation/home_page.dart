@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
     context.read<HistoryProvider>().bootHistory();
+    fetchCurrentWeather();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -102,13 +103,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
-    String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
+    String text =
+        Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+    String thumbnail = Provider.of<HistoryProvider>(context)
+        .storedHistoryItem
+        .historyThumbnail;
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
     Movie movie = context.watch<MovieProvider>().movie;
-
+    WeatherHP weatherHP = context.watch<WeatherHP>().weatherHP as WeatherHP;
+    String temperature = weatherHP.weatherHP['temperature_2m'].toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -143,7 +148,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               if (visibilityModel.showWeather)
                 buildFullCard(context,
-                    title: 'Weather',
+                    title: temperature,
                     description: 'Show the weather', onTapAction: () {
                   Navigator.push(
                       context,
@@ -237,7 +242,6 @@ class _HomePageState extends State<HomePage> {
                   title: 'Film of the Day',
                   description: movie.title,
                   imageUrl: movie.posterPath,
-
                   onTapAction: () {
                     Navigator.push(
                       context,
