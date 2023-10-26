@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 Widget buildFullCard(BuildContext context,
     {String? title,
     String? description,
@@ -15,8 +14,11 @@ Widget buildFullCard(BuildContext context,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null)
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          if (description != null) Text(description),
+            Text(
+              title,
+              style: titleTextStyle,
+            ),
+          if (description != null) Text(description, style: subtitleTextStyle),
           if (optionalWidget != null) optionalWidget,
         ],
       ),
@@ -39,23 +41,11 @@ Widget buildFullCardWithImage(BuildContext context,
     color: Colors.transparent,
     child: Container(
       decoration: decoration,
-
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
-        title: title != null
-            ? Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            : null,
+        title: title != null ? Text(title, style: titleTextStyle) : null,
         subtitle: description != null
-            ? Text(
-                description,
-                style: const TextStyle(color: Colors.white),
-              )
+            ? Text(description, style: subtitleTextStyle)
             : null,
         trailing: optionalWidget,
         onTap: () {

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
-import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
+import 'package:good_morning/ui/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
@@ -28,7 +28,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
-    //Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem();
     context.read<HistoryProvider>().bootHistory();
   }
 
@@ -109,6 +108,7 @@ class _HomePageState extends State<HomePage> {
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
+
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
@@ -155,12 +155,29 @@ class _HomePageState extends State<HomePage> {
                   print('Navigating to Weather Screen');
                 }),
               if (visibilityModel.showTraffic)
-                  buildFullCard(
+                buildFullCard(
                   context,
                   title: 'Traffic',
-                  optionalWidget: MapInfoWidget(
-                      routeInfo: getRouteInfoFromAPI(currentTo.address,
-                          currentFrom.address, transportMode.name.toString())),
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: MapInfoWidget(
+                            routeInfo: getRouteInfoFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: GoogleMapWidget(
+                            isClickable: false,
+                            mapImage: getMapFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                    ],
+                  ),
                   onTapAction: () {
                     Navigator.push(
                       context,
@@ -198,9 +215,10 @@ class _HomePageState extends State<HomePage> {
                             factText: Provider.of<DailyFactProvider>(context)
                                 .factText),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.lightbulb, size: 40),
-                        onPressed: () {},
+                      Image.asset(
+                        'lib/images/bookImage.png',
+                        width: 85,
+                        height: 85,
                       ),
                     ],
                   ),
@@ -217,22 +235,22 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               if (visibilityModel.showFilm)
-buildFullCardWithImage(
-                    context,
-                    title: 'Film of the Day',
-                    description: movieTitle,
-                    imageUrl: posterPath,
-                    onTapAction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DailyFilmPage(theme: Theme.of(context)),
-                        ),
-                      );
-                    },
-                  ),
-                
+                buildFullCardWithImage(
+                  context,
+                  title: 'Film of the Day',
+                  description: movie.title,
+                  imageUrl: movie.posterPath,
+
+                  onTapAction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DailyFilmPage(theme: Theme.of(context)),
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(height: 16.0),
               buildBigButton(context, "Open onboarding", () {
                 Navigator.push(

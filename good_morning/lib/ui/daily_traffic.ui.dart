@@ -11,7 +11,6 @@ class DailyTrafficPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
-
     var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
@@ -70,11 +69,32 @@ class DailyTrafficPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(
+                                      Padding(
+                                        padding: const EdgeInsets.only(
                                             left: 8.0, bottom: 2),
-                                        child: Text('From:',
-                                            style: TextStyle(fontSize: 15)),
+                                        child: Row(
+                                          children: [
+                                            const Text('From:',
+                                                style: TextStyle(fontSize: 15)),
+                                            const SizedBox(width: 100),
+                                            TextButton(
+                                              child:
+                                                  const Text('Use my position'),
+                                              onPressed: () {
+                                                Provider.of<DailyTrafficProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .toggleUseMyPosition();
+                                              },
+                                            ),
+                                            Icon(
+                                              Icons.my_location,
+                                              size: 15,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
@@ -125,8 +145,9 @@ class DailyTrafficPage extends StatelessWidget {
                           ),
                           Column(
                             children: [
+                              SizedBox(height: 30),
                               IconButton(
-                                icon: Icon(Icons.swap_vert, size: 40),
+                                icon: const Icon(Icons.swap_vert, size: 40),
                                 onPressed: () {
                                   Provider.of<DailyTrafficProvider>(context,
                                           listen: false)
@@ -141,15 +162,14 @@ class DailyTrafficPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 8),
+              const SizedBox(height: 15),
+              const Padding(
+                padding: EdgeInsets.only(left: 8, top: 8),
                 child: Row(
                   children: [
                     CarIconButton(),
                     BikeIconButton(),
                     WalkIconButton(),
-                    TransitIconButton(),
                   ],
                 ),
               ),
@@ -161,11 +181,13 @@ class DailyTrafficPage extends StatelessWidget {
                   child: Column(
                     children: [
                       GoogleMapWidget(
+                          isClickable: true,
                           mapImage: getMapFromAPI(
                               currentTo.address,
                               currentFrom.address,
                               transportMode.name.toString())),
-                      SizedBox(height: 15),
+                      Text('For directions, tap the map'),
+                      const SizedBox(height: 15),
                       MapInfoWidget(
                         routeInfo: getRouteInfoFromAPI(currentTo.address,
                             currentFrom.address, transportMode.name.toString()),
