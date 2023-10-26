@@ -1,20 +1,37 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:good_morning/data_handling/secrets.dart';
 
-Future<Map<String, dynamic>> fetchCurrentWeather() async {
+import 'package:provider/provider.dart';
+
+Future<Map<String, dynamic>> fetchCurrentWeather(BuildContext context) async {
   try {
     final response = await http.get(Uri.parse(weatherAPICurrent));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       Map<String, dynamic> currentWeather = jsonData['current'];
+      
+      Provider.of<WeatherProvider>(context, listen: false)
+          .setWeather(currentWeather);
       return currentWeather;
     } else {
       throw Exception('Failed to load current weather data');
     }
   } catch (error) {
     throw Exception('Error: $error');
+  }
+}
+
+class WeatherProvider with ChangeNotifier {
+  Map<String, dynamic> _currentWeather = {};
+
+  Map<String, dynamic> get currentWeather => _currentWeather;
+
+  void setWeather(Map<String, dynamic> weatherData) {
+    _currentWeather = weatherData;
+    notifyListeners();
   }
 }
 
