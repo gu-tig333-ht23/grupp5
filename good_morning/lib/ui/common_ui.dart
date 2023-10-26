@@ -18,7 +18,7 @@ Widget buildFullCard(BuildContext context,
               title,
               style: titleTextStyle,
             ),
-          if (description != null) Text(description, style: subtitleTextStyle),
+          if (description != null) Text(description, style: bodyTextStyle),
           if (optionalWidget != null) optionalWidget,
         ],
       ),
@@ -43,9 +43,9 @@ Widget buildFullCardWithImage(BuildContext context,
       decoration: decoration,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
-        title: title != null ? Text(title, style: titleTextStyle) : null,
+        title: title != null ? Text(title, style: titleImageTextStyle) : null,
         subtitle: description != null
-            ? Text(description, style: subtitleTextStyle)
+            ? Text(description, style: bodyImageTextStyle)
             : null,
         trailing: optionalWidget,
         onTap: () {
@@ -59,9 +59,19 @@ Widget buildFullCardWithImage(BuildContext context,
 Decoration? decorateImage(String imageUrl) {
   if (Uri.parse(imageUrl).isAbsolute) {
     return BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.transparent,
+          Colors.black.withOpacity(1.0),
+        ],
+      ),
       image: DecorationImage(
         image: Image.network(imageUrl).image,
         fit: BoxFit.cover,
+        colorFilter:
+            ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.darken),
       ),
       borderRadius: BorderRadius.circular(8),
     );
@@ -127,4 +137,27 @@ const TextStyle subtitleTextStyle = TextStyle(
 
 const TextStyle bodyTextStyle = TextStyle(
   fontSize: 16.0,
+);
+
+const TextStyle titleImageTextStyle = TextStyle(
+  fontSize: 24.0,
+  fontWeight: FontWeight.bold,
+  color: Colors.white,
+  shadows: [
+    Shadow(
+      offset: Offset(1.0, 1.0),
+      blurRadius: 5.0,
+    ),
+  ],
+);
+
+const TextStyle bodyImageTextStyle = TextStyle(
+  fontSize: 16.0,
+  color: Colors.white,
+  shadows: [
+    Shadow(
+      offset: Offset(0.0, 0.0),
+      blurRadius: 5.0,
+    ),
+  ],
 );
