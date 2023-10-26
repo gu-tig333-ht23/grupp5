@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/weather.dart';
+import 'package:intl/intl.dart';
+
 
 //Weather card
 class WeatherCard extends StatelessWidget {
@@ -17,13 +20,13 @@ class WeatherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 1,
       margin: EdgeInsets.all(8),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(time, style: TextStyle(fontSize: 10)),
+            Text(time, style: subtitleTextStyle),
             SizedBox(height: 8),
             Text('$temperature°C', style: TextStyle(fontSize: 32)),
             Row(
@@ -53,6 +56,8 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
+  DateTime now = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController weatherLocationController =
@@ -113,14 +118,14 @@ class _WeatherPageState extends State<WeatherPage> {
                   double currentRain = currentWeather['rain'] ?? 0.0;
                   double currentSnow = currentWeather['snowfall'] ?? 0.0;
                   return Card(
-                    elevation: 4,
+                    elevation: 6,
                     margin: EdgeInsets.all(8),
                     child: Padding(
                       padding: EdgeInsets.all(16),
                       child: Column(
                         children: [
                           SizedBox(height: 8),
-                          Text('Current weather'),
+                          Text('Current local weather', style: subtitleTextStyle,),
                           Text(
                             '$currentTemp°C',
                             style: TextStyle(fontSize: 72),
@@ -160,16 +165,26 @@ class _WeatherPageState extends State<WeatherPage> {
                   List<Map<String, dynamic>> hourlyForecast =
                       snapshot.data ?? [];
 
-                  return ListView.builder(
-                    itemCount: hourlyForecast.length,
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> hourData = hourlyForecast[index];
-                      return WeatherCard(
-                        time: hourData['time'],
-                        temperature: hourData['temperature_2m'],
-                        rain: hourData['rain'],
-                        snowfall: hourData['snowfall'],
-                      );
+return ListView.builder(
+  itemCount: hourlyForecast.length,
+  itemBuilder: (context, index) {
+    Map<String, dynamic> hourData = hourlyForecast[index];
+    final hourTimeString = hourData['time'];
+    final currentTime = DateTime.now();
+
+    final hourTime = DateFormat("yyyy-MM-dd'T'HH:mm").parse(hourTimeString);
+
+    if (hourTime.isAfter(currentTime)) {
+
+      return WeatherCard(
+        time: DateFormat.Hm().format(hourTime),
+        temperature: hourData['temperature_2m'],
+        rain: hourData['rain'],
+        snowfall: hourData['snowfall'],
+      );
+    } else {
+      return Container();
+    }
                     },
                   );
                 }
