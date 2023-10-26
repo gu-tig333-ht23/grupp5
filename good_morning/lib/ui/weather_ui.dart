@@ -101,7 +101,7 @@ class _WeatherPageState extends State<WeatherPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FutureBuilder<Map<String, dynamic>>(
-              future: fetchCurrentWeather(),
+              future: fetchCurrentWeather(context),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();

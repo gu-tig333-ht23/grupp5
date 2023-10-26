@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
     context.read<HistoryProvider>().bootHistory();
-    fetchCurrentWeather();
+    fetchCurrentWeather(context);
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -112,8 +112,10 @@ class _HomePageState extends State<HomePage> {
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
     Movie movie = context.watch<MovieProvider>().movie;
-    WeatherHP weatherHP = context.watch<WeatherHP>().weatherHP as WeatherHP;
-    String temperature = weatherHP.weatherHP['temperature_2m'].toString();
+    final weatherProvider = Provider.of<WeatherProvider>(context);
+    Map<String, dynamic> currentWeather = weatherProvider.currentWeather;
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -148,7 +150,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               if (visibilityModel.showWeather)
                 buildFullCard(context,
-                    title: temperature,
+                    title: currentWeather.toString(),
                     description: 'Show the weather', onTapAction: () {
                   Navigator.push(
                       context,
