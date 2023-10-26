@@ -13,6 +13,7 @@ import 'package:good_morning/ui/daily_traffic.ui.dart';
 import '../../utils/filter_model.dart';
 import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/weather.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Weather'),
+                  title: const Text('Weather'),
                   value: visibilityModel.showWeather,
                   onChanged: (bool? value) {
                     visibilityModel.toggleWeather();
@@ -107,6 +108,7 @@ class _HomePageState extends State<HomePage> {
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
     Movie movie = context.watch<MovieProvider>().movie;
+
 
     return Scaffold(
       appBar: AppBar(
