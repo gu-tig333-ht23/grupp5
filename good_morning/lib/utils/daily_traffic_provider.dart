@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
@@ -50,7 +48,7 @@ class DailyTrafficProvider extends ChangeNotifier {
   String get myLatitude => _myLatitude;
   String get myLongitude => _myLongitude;
 
-  // gets user preferences from Daily Traffic persistent storage
+  // gets user preferences from Daily Traffic persistent storage when starting
   DailyTrafficProvider() {
     loadDefaultTrafficSettings();
   }
@@ -84,16 +82,16 @@ class DailyTrafficProvider extends ChangeNotifier {
     }
     _selectedMode = _defaultMode;
 
-    // default to-destination
+    // gets default to-destination
     Map<String, String> defaultTo = await getStoredDefaultTo();
     String defaultToName = defaultTo['defaultToName'] ?? '';
     String defaultToAddress = defaultTo['defaultToAddress'] ?? '';
-    print(
-        'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
+    // print(
+    //   'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
     _defaultTo = Destination(name: defaultToName, address: defaultToAddress);
     setCurrentTo(defaultToName, defaultToAddress);
 
-    // default from-destination
+    // gets default from-destination
     Map<String, String> defaultFrom = await getStoredDefaultFrom();
     String defaultFromName = defaultFrom['defaultFromName'] ?? '';
     String defaultFromAddress = defaultFrom['defaultFromAddress'] ?? '';
@@ -101,8 +99,8 @@ class DailyTrafficProvider extends ChangeNotifier {
       await setMyPosition(); // uses geoLocator to set defaultFrom with user`s position
       _defaultFrom = Destination(name: 'My', address: 'Position');
     } else {
-      print(
-          'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
+      //print(
+      //   'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
       _defaultFrom =
           Destination(name: defaultFromName, address: defaultFromAddress);
       setCurrentFrom(defaultFromName, defaultFromAddress);
@@ -111,9 +109,10 @@ class DailyTrafficProvider extends ChangeNotifier {
     }
   }
 
+  // gets the string list with saved destinations from storage
   Future<void> fetchSavedDestinations() async {
     List<String> savedDestinations = await getStoredDestinations();
-    print('Retrieved stored destinations: $savedDestinations');
+    //print('Retrieved stored destinations: $savedDestinations');
     await storedDestinationsToItemList(savedDestinations);
 
     notifyListeners();
@@ -147,7 +146,7 @@ class DailyTrafficProvider extends ChangeNotifier {
 
   void setDefaultFromAsUserPosition() {
     storeFromDestination('MyPosition', 'MyPosition');
-    print('Stored default from-destination as MyPosition');
+    //print('Stored default from-destination as MyPosition');
     notifyListeners();
   }
 
@@ -167,14 +166,14 @@ class DailyTrafficProvider extends ChangeNotifier {
       // transform went well
       setCurrentFrom(null, address);
       notifyListeners();
-      print('Setting the current from-destination to $address');
+      //print('Setting the current from-destination to $address');
     } else {
       // no address was returned, using lat/lng
       setCurrentFrom(null,
           '$latitude,$longitude'); // using position as current from-destination
       notifyListeners();
-      print(
-          'Setting the current from-destination to latitude $latitude and longitude $longitude');
+      //print(
+      //  'Setting the current from-destination to latitude $latitude and longitude $longitude');
     }
   }
 
