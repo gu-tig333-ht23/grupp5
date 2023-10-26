@@ -149,15 +149,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context, visibilityModel, child) => ListView(
             children: [
               if (visibilityModel.showWeather)
-                buildFullCard(context,
-                    title: currentWeather.toString(),
-                    description: 'Show the weather', onTapAction: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => WeatherPage()));
-                  print('Navigating to Weather Screen');
-                }),
+                buildWeatherCard(context ,currentWeather),
               if (visibilityModel.showTraffic)
                 buildFullCard(
                   context,
@@ -269,3 +261,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+

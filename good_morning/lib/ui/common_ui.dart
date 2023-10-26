@@ -128,3 +128,46 @@ const TextStyle subtitleTextStyle = TextStyle(
 const TextStyle bodyTextStyle = TextStyle(
   fontSize: 16.0,
 );
+
+
+Widget buildWeatherCard(BuildContext context, Map<String, dynamic> currentWeather,
+    ) {
+
+  final currentTemp = currentWeather['temperature_2m'];
+  final currentRain = currentWeather['rain'];
+  final currentSnow = currentWeather['snowfall'];
+
+
+  return Card(
+    color: Theme.of(context).cardColor,
+    margin: const EdgeInsets.all(8),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          const Text('Current weather', style: subtitleTextStyle,),
+          Text(
+            '$currentTemp°C',
+            style: const TextStyle(fontSize: 72),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$currentRain mm',
+                  style: const TextStyle(fontSize: 24)),
+              const Icon(Icons.water_drop)
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$currentSnow cm',
+                  style: const TextStyle(fontSize: 24)),
+              const Icon(Icons.ac_unit)
+            ],
+          ),
+        ],
+      ),
+    ),
+  );}
