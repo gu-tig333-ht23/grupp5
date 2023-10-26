@@ -104,14 +104,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     String text = Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
     String thumbnail = Provider.of<HistoryProvider>(context).storedHistoryItem.historyThumbnail;
-    
-    final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
-    final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
-
-
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
+    Movie movie = context.watch<MovieProvider>().movie;
 
     return Scaffold(
       appBar: AppBar(
