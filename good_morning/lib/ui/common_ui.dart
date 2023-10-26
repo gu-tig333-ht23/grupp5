@@ -130,8 +130,7 @@ const TextStyle bodyTextStyle = TextStyle(
 );
 
 
-Widget buildWeatherCard(BuildContext context, Map<String, dynamic> currentWeather,
-    ) {
+Widget buildWeatherCard(BuildContext context, {required Map<String, dynamic> currentWeather, void Function()? onTapAction}) {
 
   final currentTemp = currentWeather['temperature_2m'];
   final currentRain = currentWeather['rain'];
@@ -140,34 +139,35 @@ Widget buildWeatherCard(BuildContext context, Map<String, dynamic> currentWeathe
 
   return Card(
     color: Theme.of(context).cardColor,
-    margin: const EdgeInsets.all(8),
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      child: ListTile(
+        title: Column(
         children: [
           const SizedBox(height: 8),
-          const Text('Current weather', style: subtitleTextStyle,),
+          const Text('Current local weather', style: subtitleTextStyle,),
           Text(
             '$currentTemp°C',
-            style: const TextStyle(fontSize: 72),
+            style: titleTextStyle,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('$currentRain mm',
-                  style: const TextStyle(fontSize: 24)),
+              Text('$currentRain mm ',
+                  style: subtitleTextStyle),
               const Icon(Icons.water_drop)
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('$currentSnow cm',
-                  style: const TextStyle(fontSize: 24)),
+              Text('$currentSnow cm ',
+                  style: subtitleTextStyle),
               const Icon(Icons.ac_unit)
             ],
           ),
         ],
       ),
-    ),
-  );}
+      onTap: (){onTapAction?.call();
+      },
+      ),
+  );
+  }
