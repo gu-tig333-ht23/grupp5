@@ -1186,8 +1186,9 @@ class MapInfoWidget extends StatelessWidget {
             String routeInfoText =
                 'Right now it is around $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
 
-            return Text(routeInfoText,
-                style: TextStyle(color: Theme.of(context).primaryColor));
+            return Text(
+              routeInfoText,
+            );
           } else {
             return const Text('No data');
           }
