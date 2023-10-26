@@ -1,4 +1,3 @@
-import 'package:good_morning/data_handling/history_data_storage.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
