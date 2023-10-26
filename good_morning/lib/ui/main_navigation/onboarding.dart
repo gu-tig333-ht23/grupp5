@@ -16,7 +16,7 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
   bool _canSwipe = true;
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final _nameController = TextEditingController(text: 'developer');
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
