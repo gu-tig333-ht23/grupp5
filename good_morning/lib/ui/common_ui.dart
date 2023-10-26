@@ -14,12 +14,11 @@ Widget buildFullCard(BuildContext context,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null)
-            Text(title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                )),
-          if (description != null) Text(description),
+            Text(
+              title,
+              style: titleTextStyle,
+            ),
+          if (description != null) Text(description, style: subtitleTextStyle),
           if (optionalWidget != null) optionalWidget,
         ],
       ),
@@ -44,16 +43,10 @@ Widget buildFullCardWithImage(BuildContext context,
       decoration: decoration,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
-        title: title != null
-            ? Text(
-                title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
-              )
+        title: title != null ? Text(title, style: titleTextStyle) : null,
+        subtitle: description != null
+            ? Text(description, style: subtitleTextStyle)
             : null,
-        subtitle: description != null ? Text(description) : null,
         trailing: optionalWidget,
         onTap: () {
           onTapAction?.call();
