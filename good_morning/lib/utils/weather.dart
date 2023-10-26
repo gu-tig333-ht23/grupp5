@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:good_morning/data_handling/secrets.dart';
 
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ Future<List<Map<String, dynamic>>> fetchHourlyForecast() async {
 
 // Funktion för att extrahera longitud och latitud för inmatad location
 Future<String> geocodeLocation(String location) async {
-  final apiKey = 'API_KEY'; // Ersätt med riktig API nyckel
+  final apiKey = mapApiKey; // Use the API key from secrets.dart
   final query = Uri.encodeComponent(location);
   final url =
       'https://maps.googleapis.com/maps/api/geocode/json?address=$query&key=$apiKey';
@@ -111,3 +112,4 @@ Future<void> updateWeatherUrls(String location) async {
     print('Error: $error');
   }
 }
+
