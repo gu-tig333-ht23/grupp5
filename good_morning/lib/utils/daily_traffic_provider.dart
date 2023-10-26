@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 
 enum TransportMode { bicycling, walking, driving }
@@ -966,11 +967,49 @@ Future<void> processDeleteDestination(
   );
 }
 
+void locationPermissionDeniedDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Permission Denied'),
+        content: Text(
+            'Can not find your location. The application needs permission to use your location for that.'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 Future<Map<String, String>> determinePosition() async {
   Map<String, String> positionMap = {
     'latitude': 'N/A',
     'longitude': 'N/A',
   };
+  // checks if the application has permission to use location
+  if (!(await Permission.location.isGranted)) {
+    var status = await Permission.location.request();
+    if (status != PermissionStatus.granted) {
+      // User denies the permission
+      print('Location permission denied');
+      //locationPermissionDeniedDialog();
+
+      // pop up showdialog?
+      Map<String, String> defaultPos = {
+        'latitude': '57.7065580',
+        'longitude': '11.9366386',
+      };
+      return defaultPos;
+    }
+  }
+
   try {
     // Get current position (latitude and longitude)
     Position position = await Geolocator.getCurrentPosition(

@@ -45,6 +45,7 @@ dependencies:
   dio: any
   transparent_image: ^2.0.1
   geolocator: ^10.1.0
+  permission_handler: any
 
 dev_dependencies:
   flutter_test:
