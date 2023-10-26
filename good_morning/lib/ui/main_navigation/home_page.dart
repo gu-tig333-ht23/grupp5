@@ -11,6 +11,7 @@ import 'package:good_morning/ui/daily_traffic.ui.dart';
 import 'filter_model.dart';
 import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/weather.dart';
 
 class HomePage extends StatefulWidget {
   final String factText;
@@ -22,9 +23,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
     //context.read<HistoryProvider>().fetchHistoryItem3();
@@ -41,7 +41,7 @@ void initState() {
             children: [
               Consumer<FilterModel>(
                 builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Weather'),
+                  title: const Text('Weather'),
                   value: visibilityModel.showWeather,
                   onChanged: (bool? value) {
                     visibilityModel.toggleWeather();
@@ -101,12 +101,12 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-   
     String text = Provider.of<HistoryProvider>(context).item.text;
     String thumbnail = Provider.of<HistoryProvider>(context).item.thumbnail;
-    String selectedFilter = Provider.of<HistoryProvider>(context).selectedFilter;
-        var month = Provider.of<HistoryProvider>(context).mmDate;
-        var day = Provider.of<HistoryProvider>(context).ddDate;
+    String selectedFilter =
+        Provider.of<HistoryProvider>(context).selectedFilter;
+    var month = Provider.of<HistoryProvider>(context).mmDate;
+    var day = Provider.of<HistoryProvider>(context).ddDate;
     final movieTitle = Provider.of<MovieProvider>(context).movieTitle;
     final posterPath = Provider.of<MovieProvider>(context).moviePosterPath;
 
@@ -153,13 +153,13 @@ void initState() {
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
-                    imageUrl: thumbnail,
-                    onTapAction: () {
+                    imageUrl: thumbnail, onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          DailyHistoryPage(theme: Theme.of(context),),
+                      builder: (BuildContext context) => DailyHistoryPage(
+                        theme: Theme.of(context),
+                      ),
                     ),
                   );
                   print('Navigating to Today in History Screen');
