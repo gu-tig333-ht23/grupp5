@@ -162,46 +162,65 @@ const TextStyle bodyImageTextStyle = TextStyle(
   ],
 );
 
-
-Widget buildWeatherCard(BuildContext context, {required Map<String, dynamic> currentWeather, void Function()? onTapAction}) {
-
+Widget buildWeatherCard(BuildContext context,
+    {required Map<String, dynamic> currentWeather,
+    void Function()? onTapAction}) {
   final currentTemp = currentWeather['temperature_2m'];
   final currentRain = currentWeather['rain'];
   final currentSnow = currentWeather['snowfall'];
 
-
   return Card(
     color: Theme.of(context).cardColor,
-      child: ListTile(
-        title: Column(
-        children: [
-          const SizedBox(height: 8),
-          const Text('Current local weather', style: subtitleTextStyle,),
-          Text(
-            '$currentTemp°C',
-            style: titleTextStyle,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('$currentRain mm ',
-                  style: subtitleTextStyle),
-              const Icon(Icons.water_drop)
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('$currentSnow cm ',
-                  style: subtitleTextStyle),
-              const Icon(Icons.ac_unit)
-            ],
-          ),
-        ],
+    child: ListTile(
+      title: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                const Text(
+                  'Current Local Weather',
+                  style: titleTextStyle,
+                  textAlign: TextAlign.left,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.water_drop),
+                    Text(
+                      '$currentRain mm ',
+                      style: subtitleTextStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.ac_unit),
+                    Text('$currentSnow cm ', style: subtitleTextStyle),
+                  ],
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Text(
+                  '$currentTemp°C',
+                  style: titleTextStyle,
+                  textScaleFactor: 2,
+                ),
+              ],
+            )
+          ],
+        ),
       ),
-      onTap: (){onTapAction?.call();
+      onTap: () {
+        onTapAction?.call();
       },
-      ),
+    ),
   );
-  }
-
+}
