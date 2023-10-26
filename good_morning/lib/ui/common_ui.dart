@@ -161,3 +161,47 @@ const TextStyle bodyImageTextStyle = TextStyle(
     ),
   ],
 );
+
+
+Widget buildWeatherCard(BuildContext context, {required Map<String, dynamic> currentWeather, void Function()? onTapAction}) {
+
+  final currentTemp = currentWeather['temperature_2m'];
+  final currentRain = currentWeather['rain'];
+  final currentSnow = currentWeather['snowfall'];
+
+
+  return Card(
+    color: Theme.of(context).cardColor,
+      child: ListTile(
+        title: Column(
+        children: [
+          const SizedBox(height: 8),
+          const Text('Current local weather', style: subtitleTextStyle,),
+          Text(
+            '$currentTemp°C',
+            style: titleTextStyle,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$currentRain mm ',
+                  style: subtitleTextStyle),
+              const Icon(Icons.water_drop)
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$currentSnow cm ',
+                  style: subtitleTextStyle),
+              const Icon(Icons.ac_unit)
+            ],
+          ),
+        ],
+      ),
+      onTap: (){onTapAction?.call();
+      },
+      ),
+  );
+  }
+

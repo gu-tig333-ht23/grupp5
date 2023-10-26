@@ -33,16 +33,15 @@ class DailyFactPage extends StatelessWidget {
                 children: [
                   const Text('Did you know that...?',
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  Expanded(
-                    child: DailyFactWidget(
-                        factText:
-                            Provider.of<DailyFactProvider>(context).factText),
-                  ),
+                  DailyFactWidget(
+                      factText:
+                          Provider.of<DailyFactProvider>(context).factText),
+                  SizedBox(height: 20),
                   const Text('Want more facts?',
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(
-                      'A new random and fun fact will be retrieved by midnight and be ready for you to see first thing in the morning!',
-                      style: TextStyle(color: Theme.of(context).primaryColor))
+                  const Text(
+                    'A new random and fun fact will be retrieved by midnight and be ready for you to see first thing in the morning!',
+                  )
                 ],
               ),
             ),
