@@ -20,20 +20,11 @@ Future<void> storeFetchedDate(DateTime date) async {
   prefs.setString('storedDate', dateString);
 }
 
-Future<Map<String, String>> getStoredFactData() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final factText = prefs.getString('factText');
+Future<String> getStoredFactData() async {
+  final prefs = await SharedPreferences.getInstance();
+  final factText = prefs.getString('factText');
 
-    return {
-      'factText': factText ?? '',
-    };
-  } catch (error) {
-    print('Error retrieving factText: $error');
-    return {
-      'factText': '',
-    };
-  }
+  return factText ?? '';
 }
 
 Future<DateTime> getStoredDate() async {
@@ -50,6 +41,7 @@ Future<DateTime> getStoredDate() async {
     }
   }
   print('No stored date yet, returns yesterday`s date');
-  return DateTime.now().subtract(
-      (Duration(days: 1))); // yesterday`s date, if no date is stored yet
+  return DateTime.now().subtract(Duration(
+      minutes:
+          3)); //(Duration(days: 1))); // yesterday`s date, if no date is stored yet
 }

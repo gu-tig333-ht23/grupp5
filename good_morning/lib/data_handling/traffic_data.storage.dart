@@ -43,6 +43,7 @@ Future<void> storeSavedDestinations(List<String> savedDestinations) async {
     if (savedDestinations.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
       prefs.setStringList('savedDestinations', savedDestinations);
+      print('Saved destinations: $savedDestinations');
     }
   } catch (error) {
     print('Error storing saved destinations: $error');
@@ -61,58 +62,66 @@ Future<void> addDestination(String name, String address) async {
   prefs.setStringList('savedDestinations', savedDestinations);
 }
 
+// removes destination from the list with saved destinations
+Future<void> removeDestination(String name, String address) async {
+  List<String> savedDestinations = await getStoredDestinations();
+
+  savedDestinations.remove('$name:$address');
+  print('Removing destination $name,$address from storage list');
+
+  // Saves the updated list back to SharedPreferences
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setStringList('savedDestinations', savedDestinations);
+}
+
 // Getters
 Future<Map<String, String>> getStoredDefaultFrom() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final defaultFromName = prefs.getString('defaultFromName');
-    final defaultFromAddress = prefs.getString('defaultFromAddress');
-    print('Retrieving defaultFrom: $defaultFromName, $defaultFromAddress');
+  final prefs = await SharedPreferences.getInstance();
+  final defaultFromName = prefs.getString('defaultFromName');
+  final defaultFromAddress = prefs.getString('defaultFromAddress');
 
+  if (defaultFromAddress == null || defaultFromAddress.isEmpty) {
+    print('Not stored yet, retrieving standard defaultFrom');
     return {
-      'defaultFromName': defaultFromName ?? '',
-      'defaultFromAddress': defaultFromAddress ?? '',
+      'defaultFromName': 'Home',
+      'defaultFromAddress': 'Parallellvägen 13E, 433 35 Partille',
     };
-  } catch (error) {
-    print('Error retrieving defaultFrom: $error');
-    return {
-      'defaultFromName': '',
-      'defaultFromAddress': '',
-    };
-  }
+  } // else, user have stored defaultFrom
+  print('Retrieving stored defaultFrom: $defaultFromName, $defaultFromAddress');
+  return {
+    'defaultFromName': defaultFromName ?? '',
+    'defaultFromAddress': defaultFromAddress,
+  };
 }
 
 Future<Map<String, String>> getStoredDefaultTo() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final defaultToName = prefs.getString('defaultToName');
-    final defaultToAddress = prefs.getString('defaultToAddress');
-    print('Retrieving defaultTo: $defaultToName, $defaultToAddress');
+  final prefs = await SharedPreferences.getInstance();
+  final defaultToName = prefs.getString('defaultToName');
+  final defaultToAddress = prefs.getString('defaultToAddress');
 
+  if (defaultToAddress == null || defaultToAddress.isEmpty) {
+    print('Not stored yet, retrieving standard defaultTo');
     return {
-      'defaultToName': defaultToName ?? '',
-      'defaultToAddress': defaultToAddress ?? '',
+      'defaultToName': 'School',
+      'defaultToAddress': 'Forskningsgången 6, 417 56 Göteborg',
     };
-  } catch (error) {
-    print('Error retrieving defaultTo: $error');
-    return {
-      'defaultToName': '',
-      'defaultToAddress': '',
-    };
-  }
+  } // else, user have stored defaultTo
+  print('Retrieving stored defaultTo: $defaultToName, $defaultToAddress');
+  return {
+    'defaultToName': defaultToName ?? '',
+    'defaultToAddress': defaultToAddress,
+  };
 }
 
 Future<String> getStoredDefaultMode() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final defaultMode = prefs.getString('defaultMode');
-    print('Retrieving defaultMode: $defaultMode');
-
-    return defaultMode ?? '';
-  } catch (error) {
-    print('Error retrieving defaultMode: $error');
-    return '';
+  final prefs = await SharedPreferences.getInstance();
+  final defaultMode = prefs.getString('defaultMode');
+  if (defaultMode == null || defaultMode.isEmpty) {
+    print('No default mode stored yet, returns standard mode');
+    return 'Driving'; // default mode
   }
+  print('Retrieving stored defaultMode: $defaultMode');
+  return defaultMode;
 }
 
 Future<List<String>> getStoredDestinations() async {

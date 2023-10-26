@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_history_ui.dart';
-import 'package:good_morning/ui/daily_fact/daily_fact_ui.dart';
+import 'package:good_morning/ui/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic.ui.dart';
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getMovie(context, FilmApi(dio));
     context.read<FavoriteMoviesModel>().loadWatchlist();
-    //context.read<HistoryProvider>().fetchHistoryItem3();
+
     Provider.of<HistoryProvider>(context, listen: false).fetchHistoryItem3();
   }
 
@@ -155,9 +155,26 @@ class _HomePageState extends State<HomePage> {
                 buildFullCard(
                   context,
                   title: 'Traffic',
-                  optionalWidget: MapInfoWidget(
-                      routeInfo: getRouteInfoFromAPI(currentTo.address,
-                          currentFrom.address, transportMode.name.toString())),
+                  optionalWidget: Row(
+                    children: [
+                      Expanded(
+                        child: MapInfoWidget(
+                            routeInfo: getRouteInfoFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: GoogleMapWidget(
+                            isClickable: false,
+                            mapImage: getMapFromAPI(
+                                currentTo.address,
+                                currentFrom.address,
+                                transportMode.name.toString())),
+                      ),
+                    ],
+                  ),
                   onTapAction: () {
                     Navigator.push(
                       context,
@@ -195,9 +212,10 @@ class _HomePageState extends State<HomePage> {
                             factText: Provider.of<DailyFactProvider>(context)
                                 .factText),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.lightbulb, size: 40),
-                        onPressed: () {},
+                      Image.asset(
+                        'lib/images/bookImage.png',
+                        width: 85,
+                        height: 85,
                       ),
                     ],
                   ),
@@ -219,6 +237,7 @@ class _HomePageState extends State<HomePage> {
                   title: 'Film of the Day',
                   description: movie.title,
                   imageUrl: movie.posterPath,
+
                   onTapAction: () {
                     Navigator.push(
                       context,
