@@ -35,9 +35,9 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (pageIndex) {
-                    if (_currentPage == 1 && pageIndex != 1) {
-    FocusScope.of(context).unfocus();
-  }
+                  if (_currentPage == 1 && pageIndex != 1) {
+                    FocusScope.of(context).unfocus();
+                  }
                   setState(() {
                     _currentPage = pageIndex;
                     if (pageIndex == 1) {
@@ -177,11 +177,12 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
         children: [
           const Text("Select Cards to Show",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           Consumer<FilterModel>(
             builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Weather'),
-              subtitle: const Text('Displays daily weather updates for your preferred location.'),
+              subtitle: const Text(
+                  'Displays daily weather updates for your preferred location.'),
               value: filterModel.showWeather,
               onChanged: (bool? value) {
                 filterModel.toggleWeather();
@@ -191,7 +192,8 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
           Consumer<FilterModel>(
             builder: (context, filterModel, child) => CheckboxListTile(
               title: const Text('Show Today in History'),
-              subtitle: const Text('Highlights significant events from the past on this day.'),
+              subtitle: const Text(
+                  'Highlights significant events from the past on this day.'),
               value: filterModel.showHistory,
               onChanged: (bool? value) {
                 filterModel.toggleHistory();
@@ -233,9 +235,11 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
             'Finish Setup',
             () {
               setOnboardingCompleted(true);
-              Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()));
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+                (Route<dynamic> route) => false,
+              );
             },
           ),
         ],
