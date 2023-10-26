@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_history.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -31,23 +30,14 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     var year = historyProvider.now.year;
     var historyText = historyProvider.storedHistoryItem.historyText;
 
-    
-    
-    print('i UIN');
-    print(historyFilter);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: 
-        Text('Today: $year-$month-$day: $historyFilter'),
-        
+        title: Text('Today: $year-$month-$day: $historyFilter'),
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,
-            tooltip: 'Choose filter',
-            
-            // Callback that sets the selected popup menu item.
+            tooltip: 'Choose category',
             onSelected: (String item) {
               setState(() {
                 historyProvider.getSelectedFilter(item);
@@ -88,8 +78,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
               buildFullCard(
                 context,
                 title: historyText,
-              
-
               ),
               Card(
                 color: Theme.of(context).cardColor,
@@ -98,10 +86,9 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   image: historyProvider.storedHistoryItem.historyThumbnail,
                 ),
               ),
-              buildFullCard(context,description: historyProvider.storedHistoryItem.historyExtract)
+              buildFullCard(context,
+                  description: historyProvider.storedHistoryItem.historyExtract)
             ],
-              
-            
           ),
         ),
       ),
@@ -110,7 +97,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           setState(() {
             historyProvider.getSelectedFilter(historyFilter);
             historyProvider.fetchHistoryItem();
-           
           });
         },
         child: const Icon(Icons.refresh_outlined),

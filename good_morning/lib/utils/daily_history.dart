@@ -8,7 +8,7 @@ class HistoryItem {
   String historyText;
   String historyThumbnail;
   String historyExtract;
-  int historyDate;
+  String historyDate;
   String historyFilter;
 
   HistoryItem(
@@ -24,7 +24,7 @@ class HistoryItem {
       historyText: json['historyText'] as String,
       historyThumbnail: json['historyThumbnail'] as String,
       historyExtract: json['historyExtract'] as String,
-      historyDate: json['historyDate']as int,
+      historyDate: json['historyDate']as String,
       historyFilter: json['historyFilter'] as String,
     );
   }
@@ -34,37 +34,32 @@ class HistoryProvider extends ChangeNotifier {
 // Date
   final DateTime _now = DateTime.now();
   DateTime get now => _now;
-
+/////
   //Testing
   //DatumTest
-  int get day2 => now.day +1;
-  int get month2 => now.day +1;
-  get date2 => day2+month2;
-//
-
-  get date => now.day + now.month;
+  get date2 => now.month.toString() + now.day.toString() + 1.toString();
+////
+//Datum
+  get date => now.month.toString() + now.day.toString();
 
 // Filter
   String _selectedFilter = 'events';
   String get historyFilter => _selectedFilter;
 
   //Nytt filter
-  get selectedfilter  => _selectedFilter;
   getSelectedFilter(newFilter) {
     _selectedFilter = newFilter;
-    print(_selectedFilter);
-    
     notifyListeners();
     fetchHistoryItem();
   }
 
 
-//Empty history item
+//Empty history items
   var _historyItem = HistoryItem(
     historyText: '',
     historyThumbnail: '',
     historyExtract: '',
-    historyDate: 0,
+    historyDate: '',
     historyFilter: '',
   );
   HistoryItem get historyItem => _historyItem;
@@ -73,14 +68,15 @@ class HistoryProvider extends ChangeNotifier {
     historyText: '',
     historyThumbnail: '',
     historyExtract: '',
-    historyDate: 0,
+    historyDate: '',
     historyFilter: '',
   );
   HistoryItem get storedHistoryItem => _storedHistoryItem;
 
   //get HistoryItem from SharedPreferences
   bootHistory() async {
-  print('i BÖRJAN get stored history data i daily_history i dart');
+    //print('BOOT');
+  
   var storedHistoryData = await getHistoryData();
 
   // ignore: unnecessary_null_comparison
@@ -89,32 +85,23 @@ class HistoryProvider extends ChangeNotifier {
     
     if (storedHistoryItem.historyDate == date) {
       _storedHistoryItem = storedHistoryItem;
-      print('i datumväljandet');
-      print(storedHistoryItem.historyDate);
-      print(date);
-      print(storedHistoryItem.historyFilter);
+     // print('samma datum = load');
     } else {
       await fetchHistoryItem();
     }
+    //print('nytt datum = ny fetch');
   } else {
+    //print('fanns inget i minnet = ny fetch');
     await fetchHistoryItem();
   }
-
-  print('KLAR stored history data i daily_history i dart');
   notifyListeners();
 }
   //Get historyitem from API-function
   fetchHistoryItem() async {
-    print('i BÖRJAN fetch history data i daily_history i dart');
+    //print('FETCH');
     var historyItemApi =
         await fetchHistoryItemWiki(historyFilter, now.month, now.day);
     _historyItem = HistoryItem.fromJson(historyItemApi);
-    
-    print('i Fetch Innan Store');
-    print(_historyItem.historyText);
-    print(historyItem.historyThumbnail);
-    print(historyItem.historyExtract);
-    print(historyItem.historyDate);
     //Store HistoryItem
     storeHistoryData(
         historyText: _historyItem.historyText,
@@ -122,9 +109,10 @@ class HistoryProvider extends ChangeNotifier {
         historyExtract: _historyItem.historyExtract,
         historyDate: historyItem.historyDate,
         historyFilter: historyItem.historyFilter);
-    print('i SLUTET fetch, STORE GJORD, i daily_history i dart');
+    //print('FETCH KLAR');
     notifyListeners();
     bootHistory();
+    return;
   }
 
   // API function
@@ -188,7 +176,7 @@ class HistoryProvider extends ChangeNotifier {
         'historyText': historyText,
         'historyThumbnail': historyThumbnail,
         'historyExtract': historyExtract,
-        'historyDate': month+day,
+        'historyDate': month.toString()+day.toString(),
         'historyFilter': historyFilter,
       };
     } else {
