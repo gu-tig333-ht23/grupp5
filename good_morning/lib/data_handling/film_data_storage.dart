@@ -66,6 +66,8 @@ Future<bool> shouldFetchNewData() async {
   final currentDate = DateTime.now();
   final storedDate = DateTime.parse(fetchDate);
 
-  print('Data avaiblie for $currentDate, storedDate: $storedDate');
-  return currentDate.difference(storedDate).inDays > 0;
+  if (currentDate.difference(storedDate).inDays > 0){
+  return true;
+} else {
+  return false;}
 }
