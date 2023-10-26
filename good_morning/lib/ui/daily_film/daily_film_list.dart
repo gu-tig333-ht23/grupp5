@@ -25,12 +25,8 @@ class DailyFilmList extends StatelessWidget {
               child: Text('Your watchlist is empty.'),
             );
           }
-
           if (index >= 0 && index < favoriteMovies.length) {
             List<String> movieDetails = favoriteMovies[index];
-            // if (movieDetails.isEmpty) {
-            //   return const SizedBox();
-            // }
 
             return Card(
               child: Padding(
@@ -51,7 +47,8 @@ class DailyFilmList extends StatelessWidget {
                       child: Text(movieDetails[1]),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 10),
                       child: Card(
                         color: Theme.of(context).cardColor,
                         child: FadeInImage.memoryNetwork(
@@ -60,8 +57,32 @@ class DailyFilmList extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Consumer<FavoriteMoviesModel>(
+                      builder: (context, favoriteMoviesModel, child) {
+                        List<Map<String, String>> streamInfo =
+                            formatMovieStreamInfo(movieDetails[6]);
+
+                        if (streamInfo.isEmpty) {
+                          return const Center(
+                            child: Text('No streaming information available.'),
+                          );
+                        } else {
+                          String formattedStreamInfo = '';
+                          for (var info in streamInfo) {
+                            formattedStreamInfo +=
+                                'Available on ${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}\n';
+                          }
+                          return ListTile(
+                            title: const Text(
+                              'Streaming information for Swedish providers',
+                            ),
+                            subtitle: Text(formattedStreamInfo),
+                          );
+                        }
+                      },
+                    ),
                     Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       child: buildSmallButton(
                         context,
                         'Remove from watchlist',
@@ -72,43 +93,40 @@ class DailyFilmList extends StatelessWidget {
                         },
                       ),
                     ),
-                    Consumer<FavoriteMoviesModel>(
-                      builder: (context, favoriteMoviesModel, child) {
-                        String movieTitle = movieDetails[0];
-
-                        List<Map<String, String>> streamInfo =
-                            favoriteMoviesModel.getStreamInfo(movieTitle);
-
-                        if (streamInfo.isEmpty) {
-                          return const Center(
-                            child: Text('No streaming information available.'),
-                          );
-                        } else {
-                          return ListTile(
-                            title: const Text(
-                              'Streaming information for Swedish providers',
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: streamInfo.map((info) {
-                                return Text(
-                                  '${info['service']?.capitalize()}: ${info['streamingType']?.capitalize()}',
-                                );
-                              }).toList(),
-                            ),
-                          );
-                        }
-                      },
-                    ),
                   ],
                 ),
               ),
             );
           } else {
-            return const SizedBox();
+            return const SizedBox(
+              child: Text('No movies found in your watchlist, go add some!'),
+            );
           }
         },
       ),
     );
   }
+}
+
+List<Map<String, String>> formatMovieStreamInfo(String input) {
+  List<Map<String, String>> list = [];
+  final regex = RegExp(r'{(.*?)}');
+  final matches = regex.allMatches(input);
+
+  for (final match in matches) {
+    final matchString = match.group(1);
+    final keyValuePairs = matchString?.split(', ');
+    final map = <String, String>{};
+
+    for (final pair in keyValuePairs!) {
+      final parts = pair.split(': ');
+      if (parts.length == 2) {
+        map[parts[0]] = parts[1];
+      }
+    }
+
+    list.add(map);
+  }
+
+  return list;
 }
