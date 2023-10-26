@@ -680,7 +680,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
             Row(
               children: [
                 TextButton(
-                  child: Text('Use my position as default'),
+                  child: const Text('Use my position as default'),
                   onPressed: () {
                     Provider.of<DailyTrafficProvider>(context, listen: false)
                         .setDefaultFromAsUserPosition();
@@ -697,7 +697,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 style: TextStyle(
                     fontSize: 12, color: Theme.of(context).primaryColor)),
             Text('(${defaultFrom.name}, ${defaultFrom.address})',
-                style: TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 11)),
             DestinationDropdown(
               type: 'From:',
               defaultOrCurrent: 'Default',
@@ -709,7 +709,7 @@ Future<void> editDefaultSettingsDialog(BuildContext context) async {
                 style: TextStyle(
                     fontSize: 12, color: Theme.of(context).primaryColor)),
             Text('(${defaultTo.name}, ${defaultTo.address})',
-                style: TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 11)),
             DestinationDropdown(
               type: 'To:',
               defaultOrCurrent: 'Default',
@@ -967,27 +967,6 @@ Future<void> processDeleteDestination(
   );
 }
 
-void locationPermissionDeniedDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Permission Denied'),
-        content: Text(
-            'Can not find your location. The application needs permission to use your location for that.'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
 Future<Map<String, String>> determinePosition() async {
   Map<String, String> positionMap = {
     'latitude': 'N/A',
@@ -999,13 +978,10 @@ Future<Map<String, String>> determinePosition() async {
     if (status != PermissionStatus.granted) {
       // User denies the permission
       print('Location permission denied');
-      //locationPermissionDeniedDialog();
-
-      // pop up showdialog?
       Map<String, String> defaultPos = {
         'latitude': '57.7065580',
         'longitude': '11.9366386',
-      };
+      }; // default position, in order for the map to show anyway
       return defaultPos;
     }
   }
