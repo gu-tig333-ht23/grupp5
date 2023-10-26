@@ -53,49 +53,45 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
+  final TextEditingController weatherLocationController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController weatherLocationController =
-        TextEditingController();
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text('Weather'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Change location'),
-                          content: TextField(
-                            controller: weatherLocationController,
-                            decoration:
-                                InputDecoration(hintText: 'Type your location'),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Change'),
-                              onPressed: () {
-                                var location = weatherLocationController.text;
-                                final coordinates = updateWeatherUrls(location);
-                                if (coordinates != null) {
-                                  // Printa koordinater i konsol för att se att det funkar
-                                  //  print(
-                                  //      'Latitude: ${coordinates['latitude']}, Longitude: ${coordinates['longitude']}');
-                                } else {
-                                  print('Location not found.');
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      });
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text('Weather'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Change location'),
+                    content: TextField(
+                      controller: weatherLocationController,
+                      decoration: InputDecoration(hintText: 'Type your location'),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Change'),
+                        onPressed: () async {
+                          var location = weatherLocationController.text;
+                          await updateWeatherUrls(location); // Wait for the update
+                          Navigator.of(context).pop();
+                          setState(() {}); // Refresh the UI
+                        },
+                      ),
+                    ],
+                  );
                 },
-                icon: Icon(Icons.place)),
-          ]),
+              );
+            },
+            icon: Icon(Icons.place),
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
