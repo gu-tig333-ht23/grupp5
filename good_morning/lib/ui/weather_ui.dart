@@ -91,8 +91,10 @@ class _WeatherPageState extends State<WeatherPage> {
                           var location = weatherLocationController.text;
                           await updateWeatherUrls(
                               location); // Wait for the update
-                          Navigator.of(context).pop();
-                          setState(() {}); // Refresh the UI
+                          MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            const WeatherPage());
+                          // Refresh the UI
                         },
                       ),
                     ],
