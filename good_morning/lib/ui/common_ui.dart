@@ -168,6 +168,7 @@ Widget buildWeatherCard(BuildContext context,
   final currentTemp = currentWeather['temperature_2m'];
   final currentRain = currentWeather['rain'];
   final currentSnow = currentWeather['snowfall'];
+<<<<<<< Updated upstream
 
   return Card(
     color: Theme.of(context).cardColor,
@@ -193,20 +194,50 @@ Widget buildWeatherCard(BuildContext context,
             ],
           ),
         ],
+=======
+  if (currentTemp == null) {
+    return CircularProgressIndicator();
+  } else {
+    return Card(
+      color: Theme.of(context).cardColor,
+      child: ListTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Current Weather',
+              style: titleTextStyle,
+              textAlign: TextAlign.left,
+            ),
+            Row(
+              children: [
+                Icon(Icons.water_drop),
+                Text('$currentRain mm ', style: subtitleTextStyle),
+              ],
+            ),
+            Row(
+              children: [
+                Icon(Icons.ac_unit),
+                Text('$currentSnow cm ', style: subtitleTextStyle),
+              ],
+            ),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$currentTemp°C',
+              style: titleTextStyle,
+              textScaleFactor: 1.5,
+            ),
+          ],
+        ),
+        onTap: () {
+          onTapAction?.call();
+        },
+>>>>>>> Stashed changes
       ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center, 
-        children: [
-          Text(
-            '$currentTemp°C',
-            style: titleTextStyle,
-            textScaleFactor: 1.5,
-          ),
-        ],
-      ),
-      onTap: () {
-        onTapAction?.call();
-      },
-    ),
-  );
+    );
+  }
 }
