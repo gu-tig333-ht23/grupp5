@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
-import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/ui/daily_traffic.ui.dart';
+import 'package:good_morning/ui/daily_traffic/daily_traffic_destinations.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
-
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:typed_data';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:good_morning/data_handling/secrets.dart' as config;
 
 enum TransportMode { bicycling, walking, driving }
 

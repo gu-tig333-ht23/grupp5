@@ -31,12 +31,16 @@ Future<String?> getAddressFromLatLng(String latitude, String longitude) async {
       return data['results'][0]['formatted_address'];
     } else {
       // Handle API error if necessary
-      print('Error: ${data['status']} - ${data['error_message']}');
+      if (kDebugMode) {
+        print('Error: ${data['status']} - ${data['error_message']}');
+      }
       return null;
     }
   } else {
     // Handle HTTP error if necessary
-    print('Error: ${response.statusCode}');
+    if (kDebugMode) {
+      print('Error: ${response.statusCode}');
+    }
     return null;
   }
 }
@@ -87,7 +91,9 @@ Future<Uint8List> getMapFromAPI(
       'markers=color:red|label:A|$fromAddress&markers=color:blue|label:B|$toAddress';
   String request =
       '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&alternatives=true&key=$mapApiKey';
-  print('Sends request to API: $request');
+  if (kDebugMode) {
+    print('Sends request to API: $request');
+  }
 
   // gets the direction data from API, decodes and encodes
   http.Response directionsResponse = await http.get(Uri.parse(

@@ -10,7 +10,7 @@ import 'package:good_morning/ui/daily_history_ui.dart';
 import 'package:good_morning/ui/daily_fact_ui.dart';
 import '../weather_ui.dart';
 import 'package:good_morning/ui/daily_film/daily_film_page.dart';
-import 'package:good_morning/ui/daily_traffic.ui.dart';
+import 'package:good_morning/ui/daily_traffic/daily_traffic.ui.dart';
 import '../../utils/filter_model.dart';
 import 'onboarding.dart';
 import 'package:good_morning/utils/daily_history.dart';
