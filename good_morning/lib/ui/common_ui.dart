@@ -168,35 +168,9 @@ Widget buildWeatherCard(BuildContext context,
   final currentTemp = currentWeather['temperature_2m'];
   final currentRain = currentWeather['rain'];
   final currentSnow = currentWeather['snowfall'];
-<<<<<<< Updated upstream
 
-  return Card(
-    color: Theme.of(context).cardColor,
-    child: ListTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Current Weather',
-            style: titleTextStyle,
-            textAlign: TextAlign.left,
-          ),
-          Row(
-            children: [
-              const Icon(Icons.water_drop),
-              Text('$currentRain mm ', style: subtitleTextStyle),
-            ],
-          ),
-          Row(
-            children: [
-              const Icon(Icons.ac_unit),
-              Text('$currentSnow cm ', style: subtitleTextStyle),
-            ],
-          ),
-        ],
-=======
   if (currentTemp == null) {
-    return CircularProgressIndicator();
+    return  const CircularProgressIndicator();
   } else {
     return Card(
       color: Theme.of(context).cardColor,
@@ -211,13 +185,13 @@ Widget buildWeatherCard(BuildContext context,
             ),
             Row(
               children: [
-                Icon(Icons.water_drop),
+                const Icon(Icons.water_drop),
                 Text('$currentRain mm ', style: subtitleTextStyle),
               ],
             ),
             Row(
               children: [
-                Icon(Icons.ac_unit),
+                const Icon(Icons.ac_unit),
                 Text('$currentSnow cm ', style: subtitleTextStyle),
               ],
             ),
@@ -236,7 +210,6 @@ Widget buildWeatherCard(BuildContext context,
         onTap: () {
           onTapAction?.call();
         },
->>>>>>> Stashed changes
       ),
     );
   }

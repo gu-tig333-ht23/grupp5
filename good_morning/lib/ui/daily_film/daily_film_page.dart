@@ -32,7 +32,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
         context.watch<FavoriteMoviesModel>().favoriteMovies;
 
     bool isInWatchList = favoriteMovies.any((movie) => movie[0] == movieTitle);
-    Color _favoriteButtonColor = isInWatchList ? Colors.red : Colors.grey;
+    Color favoriteButtonColor = isInWatchList ? Colors.red : Colors.grey;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -141,7 +141,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                     bottom: 20.0,
                     right: 20.0,
                     child: FloatingActionButton(
-                      backgroundColor: _favoriteButtonColor,
+                      backgroundColor: favoriteButtonColor,
                       foregroundColor: Colors.white,
                       onPressed: () async {
                         var favoriteMoviesModel =
@@ -159,7 +159,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                                       .length -
                                   1);
                           setState(() {
-                            _favoriteButtonColor = Colors.grey;
+                            favoriteButtonColor = Colors.grey;
                           });
                           snackBarText = 'Movie removed from your watchlist!';
                         } else {
@@ -167,7 +167,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                               .read<FavoriteMoviesModel>()
                               .addFavorite(movie);
                           setState(() {
-                            _favoriteButtonColor = Colors.red;
+                            favoriteButtonColor = Colors.red;
                           });
                           snackBarText = 'Movie added to your watchlist!';
                         }
@@ -183,7 +183,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                                   favoriteMoviesModel.addFavorite(movie);
 
                                   setState(() {
-                                    _favoriteButtonColor = Colors.red;
+                                    favoriteButtonColor = Colors.red;
                                   });
                                 } else {
                                   // Remove movie from watchlist if added
@@ -193,7 +193,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                                           .length -
                                       1);
                                   setState(() {
-                                    _favoriteButtonColor = Colors.grey;
+                                    favoriteButtonColor = Colors.grey;
                                   });
                                 }
                               },
