@@ -1,5 +1,5 @@
 import 'package:good_morning/data_handling/user_preferences.dart';
-import 'package:good_morning/utils/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';

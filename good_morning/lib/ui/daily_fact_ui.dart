@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
