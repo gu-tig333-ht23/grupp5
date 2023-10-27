@@ -182,13 +182,13 @@ Widget buildWeatherCard(BuildContext context,
           ),
           Row(
             children: [
-              Icon(Icons.water_drop),
+              const Icon(Icons.water_drop),
               Text('$currentRain mm ', style: subtitleTextStyle),
             ],
           ),
           Row(
             children: [
-              Icon(Icons.ac_unit),
+              const Icon(Icons.ac_unit),
               Text('$currentSnow cm ', style: subtitleTextStyle),
             ],
           ),

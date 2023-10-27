@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Persistent storage for Daily Fact
@@ -9,7 +10,9 @@ Future<void> storeFactText(String factText) async {
       prefs.setString('factText', factText);
     }
   } catch (error) {
-    print('Error storing factText: $error');
+    if (kDebugMode) {
+      print('Error storing factText: $error');
+    }
   }
 }
 
@@ -34,13 +37,19 @@ Future<DateTime> getStoredDate() async {
   if (dateString != null) {
     try {
       DateTime storedDate = DateTime.parse(dateString);
-      print('Stored date is: $storedDate');
+      if (kDebugMode) {
+        print('Stored date is: $storedDate');
+      }
       return storedDate;
     } catch (error) {
-      print('Error parsing stored date: $error');
+      if (kDebugMode) {
+        print('Error parsing stored date: $error');
+      }
     }
   }
-  print('No stored date yet, returns yesterday`s date');
+  if (kDebugMode) {
+    print('No stored date yet, returns yesterday`s date');
+  }
   return DateTime.now().subtract(
       const Duration(days: 1)); // yesterday`s date, if no date is stored yet
 }

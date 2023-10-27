@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -109,7 +110,9 @@ Future<void> updateWeatherUrls(String location) async {
     weatherAPICurrent = weatherUrl;
     weatherAPIDayForecast = weatherUrl;
   } catch (error) {
-    print('Error: $error');
+    if (kDebugMode) {
+      print('Error: $error');
+    }
   }
 }
 

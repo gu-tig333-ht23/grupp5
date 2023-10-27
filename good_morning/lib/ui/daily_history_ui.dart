@@ -44,7 +44,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
             onSelected: (String item) {
               setState(() {
                 historyProvider.getSelectedFilter(item);
-                print(item);
                 _historyFuture = historyProvider.fetchHistoryItem();
               });
             },
