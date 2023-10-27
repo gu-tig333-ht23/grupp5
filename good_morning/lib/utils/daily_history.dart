@@ -83,6 +83,7 @@ class HistoryProvider extends ChangeNotifier {
       if (historyItem.historyDate == date) {
         _historyItem = historyItem;
         // print('samma datum = load');
+        print(_historyItem.historyThumbnail);
       } else {
         await fetchHistoryItem();
       }
@@ -140,19 +141,6 @@ class HistoryProvider extends ChangeNotifier {
     try {
       final Map<String, dynamic> data = json.decode(response.body);
       final events = data['$historyFilter'] as List;
-      
-      /// onödig?
-      if (events.isEmpty) {
-        print('No items');
-        return HistoryItem(
-          historyText: '',
-          historyThumbnail: '',
-          historyExtract: '',
-          historyDate: '',
-          historyFilter: '',
-        );
-      }
-    //////////////
       var nextRandomNumber = Random().nextInt(events.length);
 
       if (nextRandomNumber >= events.length) {
@@ -161,23 +149,25 @@ class HistoryProvider extends ChangeNotifier {
       var item = events[nextRandomNumber] as Map<String, dynamic>;
       final pages = item['pages'] as List;
       var date = month.toString() + day.toString();
-      // ignore: unused_local_variable
-      String historyThumbnail;
-      final thumbnailData = pages[0]['thumbnail'];
+      
+      String thumbnail = '';
+      if (pages.isNotEmpty) {
+          final thumbnailData = pages[0]['thumbnail'];
           if (thumbnailData != null && thumbnailData['source'] != null) {
-            historyThumbnail = thumbnailData['source'] as String;
+            thumbnail = thumbnailData['source'] as String;
           } else {
-            historyThumbnail = '';
-          }
-
+            thumbnail = '';
+          }       
+        }
+      
       final historyitem = HistoryItem(
         historyText: item['text'] ?? '',
-        historyThumbnail: historyThumbnail,
+        historyThumbnail: thumbnail,
         historyExtract: pages[0]['extract'] ?? '',
         historyDate: date,
         historyFilter: historyFilter,
       );
-
+      
       return historyitem;
     } catch (e) {
       print('Error: $e');
@@ -188,6 +178,7 @@ class HistoryProvider extends ChangeNotifier {
         historyDate: '',
         historyFilter: '',
       );
+       
     }
   } else {
     // Handle the case where response.statusCode is not 200.
@@ -204,8 +195,8 @@ class HistoryProvider extends ChangeNotifier {
 
 
 
-
 /*
+
 
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
@@ -285,6 +276,6 @@ class HistoryProvider extends ChangeNotifier {
       throw Exception('Failed to load data from the API');
     }
   }
-}
-
 */
+
+
