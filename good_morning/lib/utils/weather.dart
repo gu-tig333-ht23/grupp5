@@ -67,7 +67,7 @@ Future<List<Map<String, dynamic>>> fetchHourlyForecast() async {
 
 // Funktion för att extrahera longitud och latitud för inmatad location
 Future<String> geocodeLocation(String location) async {
-  final apiKey = mapApiKey; // Use the API key from secrets.dart
+  const apiKey = mapApiKey; // Use the API key from secrets.dart
   final query = Uri.encodeComponent(location);
   final url =
       'https://maps.googleapis.com/maps/api/geocode/json?address=$query&key=$apiKey';

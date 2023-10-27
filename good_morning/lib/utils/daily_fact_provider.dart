@@ -45,8 +45,8 @@ class DailyFactProvider extends ChangeNotifier {
   }
 
   Future<String> getStoredText() async {
-    String _factText = await getStoredFactData();
-    return _factText;
+    String factText = await getStoredFactData();
+    return factText;
   }
 
   Future<void> storeDate(date) async {
@@ -134,7 +134,7 @@ Future<String> fetchDailyFact() async {
 class DailyFactWidget extends StatelessWidget {
   final Future<String> factText;
 
-  DailyFactWidget({required this.factText});
+  const DailyFactWidget({super.key, required this.factText});
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +142,7 @@ class DailyFactWidget extends StatelessWidget {
         future: factText,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (snapshot.hasData) {
@@ -152,7 +152,7 @@ class DailyFactWidget extends StatelessWidget {
               factText,
             );
           } else {
-            return Text('No data');
+            return const Text('No data');
           }
         });
   }

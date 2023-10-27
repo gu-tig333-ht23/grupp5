@@ -237,7 +237,7 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               setOnboardingCompleted(true);
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage()),
+                MaterialPageRoute(builder: (context) => const HomePage()),
                 (Route<dynamic> route) => false,
               );
             },

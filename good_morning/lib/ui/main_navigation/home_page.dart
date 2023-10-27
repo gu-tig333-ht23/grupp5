@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => WeatherPage(),
+                      builder: (BuildContext context) => const WeatherPage(),
                     ),
                   );
                   if (kDebugMode) {

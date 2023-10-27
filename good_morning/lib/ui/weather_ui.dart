@@ -10,7 +10,7 @@ class WeatherCard extends StatelessWidget {
   final double rain;
   final double snowfall;
 
-  const WeatherCard({
+  const WeatherCard({super.key, 
     required this.time,
     required this.temperature,
     required this.rain,
