@@ -14,7 +14,7 @@ import 'package:good_morning/ui/daily_film/daily_film_page.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic.ui.dart';
 import '../../utils/filter_model.dart';
 import 'onboarding.dart';
-import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/daily_history/daily_history_provider.dart';
 import 'package:good_morning/utils/weather.dart';
 
 class HomePage extends StatefulWidget {
@@ -106,9 +106,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     String text =
-        Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+        Provider.of<HistoryProvider>(context).historyItem.historyText;
     String thumbnail = Provider.of<HistoryProvider>(context)
-        .storedHistoryItem
+        .historyItem
         .historyThumbnail;
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;

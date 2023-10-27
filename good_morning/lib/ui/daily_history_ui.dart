@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/daily_history/daily_history_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -29,12 +29,10 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = historyProvider.storedHistoryItem.historyFilter;
+    String historyFilter = historyProvider.historyItem.historyFilter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     var year = historyProvider.now.year;
-    var historyText = historyProvider.storedHistoryItem.historyText;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -47,7 +45,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
               setState(() {
                 historyProvider.getSelectedFilter(item);
                 print(item);
-                historyProvider.fetchHistoryItem();
+                _historyFuture = historyProvider.fetchHistoryItem();
               });
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -90,19 +88,23 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   children: [
                     buildFullCard(
                       context,
-                      title: historyProvider.storedHistoryItem.historyText,
+                      title: historyProvider.historyItem.historyText,
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
-                      child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image:
-                            historyProvider.storedHistoryItem.historyThumbnail,
-                      ),
+                      child: historyProvider
+                              .historyItem.historyThumbnail.isNotEmpty
+                          ? FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image:
+                                  historyProvider.historyItem.historyThumbnail,
+                            )
+                          : const Icon(Icons.broken_image,
+                              size: 50, color: Colors.grey),
                     ),
                     buildFullCard(context,
                         description:
-                            historyProvider.storedHistoryItem.historyExtract),
+                            historyProvider.historyItem.historyExtract),
                   ],
                 ),
               ),

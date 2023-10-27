@@ -8,7 +8,7 @@ import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:good_morning/utils/weather.dart';
 import '/ui/main_navigation/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/daily_history/daily_history_provider.dart';
 import 'utils/filter_model.dart';
 
 void main() async {
