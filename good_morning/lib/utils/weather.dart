@@ -1,19 +1,18 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:good_morning/data_handling/secrets.dart';
 
 import 'package:provider/provider.dart';
 
-Future<Map<String, dynamic>> fetchCurrentWeather(BuildContext context) async {
+Future<Map<String, dynamic>> fetchCurrentWeather(context) async {
   try {
     final response = await http.get(Uri.parse(weatherAPICurrent));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       Map<String, dynamic> currentWeather = jsonData['current'];
-      
+
       Provider.of<WeatherProvider>(context, listen: false)
           .setWeather(currentWeather);
       return currentWeather;
@@ -115,4 +114,3 @@ Future<void> updateWeatherUrls(String location) async {
     }
   }
 }
-
