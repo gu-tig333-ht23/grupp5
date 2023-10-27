@@ -34,10 +34,7 @@ class HistoryProvider extends ChangeNotifier {
 // Date
   final DateTime _now = DateTime.now();
   DateTime get now => _now;
-/////
-  //Testing
-  //DatumTest
-  get date2 => now.month.toString() + now.day.toString() + 1.toString();
+
 ////
 //Datum
   get date => now.month.toString() + now.day.toString();
@@ -102,7 +99,7 @@ class HistoryProvider extends ChangeNotifier {
     //print('FETCH');
     var historyItemApi =
         await fetchHistoryItemWiki(historyFilter, now.month, now.day);
-    _historyItem = HistoryItem.fromJson(historyItemApi);
+    _historyItem = historyItemApi;
     //Store HistoryItem
     storeHistoryData(
         historyText: _historyItem.historyText,
@@ -115,6 +112,100 @@ class HistoryProvider extends ChangeNotifier {
     bootHistory();
     return;
   }
+
+
+  // API function
+  Future<HistoryItem> fetchHistoryItemWiki(historyFilter, month, day) async {
+    final apiHeaderWiki = {
+      'ContentType': 'application/json',
+      'accept': 'application/json',
+    };
+
+    String wikiUrl;
+    if (kIsWeb) {
+      // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+      wikiUrl =
+          'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+    } else {
+      // for running in emulators, without proxy
+      wikiUrl = 'https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+    }
+//for WEB: https://cors-anywhere.herokuapp.com/
+    final response = await http.get(
+      Uri.parse('$wikiUrl/$historyFilter/$month/$day'),
+      headers: apiHeaderWiki,
+    );
+
+    if (response.statusCode == 200) {
+    try {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final events = data['$historyFilter'] as List;
+      
+      /// onödig?
+      if (events.isEmpty) {
+        print('No items');
+        return HistoryItem(
+          historyText: '',
+          historyThumbnail: '',
+          historyExtract: '',
+          historyDate: '',
+          historyFilter: '',
+        );
+      }
+    //////////////
+      var nextRandomNumber = Random().nextInt(events.length);
+
+      if (nextRandomNumber >= events.length) {
+        nextRandomNumber = 0; // Wrap around to the beginning of the list
+      }
+      var item = events[nextRandomNumber] as Map<String, dynamic>;
+      final pages = item['pages'] as List;
+      var date = month.toString() + day.toString();
+      // ignore: unused_local_variable
+      String historyThumbnail;
+      final thumbnailData = pages[0]['thumbnail'];
+          if (thumbnailData != null && thumbnailData['source'] != null) {
+            historyThumbnail = thumbnailData['source'] as String;
+          } else {
+            historyThumbnail = '';
+          }
+
+      final historyitem = HistoryItem(
+        historyText: item['text'] ?? '',
+        historyThumbnail: historyThumbnail,
+        historyExtract: pages[0]['extract'] ?? '',
+        historyDate: date,
+        historyFilter: historyFilter,
+      );
+
+      return historyitem;
+    } catch (e) {
+      print('Error: $e');
+      return HistoryItem(
+        historyText: '',
+        historyThumbnail: '',
+        historyExtract: '',
+        historyDate: '',
+        historyFilter: '',
+      );
+    }
+  } else {
+    // Handle the case where response.statusCode is not 200.
+    return HistoryItem(
+      historyText: '',
+      historyThumbnail: '',
+      historyExtract: '',
+      historyDate: '',
+      historyFilter: '',
+    );
+  }
+}
+}
+
+
+
+
+/*
 
   // API function
   Future<Map<String, dynamic>> fetchHistoryItemWiki(
@@ -149,7 +240,8 @@ class HistoryProvider extends ChangeNotifier {
           'historyText': '',
           'historyThumbnail': '',
           'historyExtract': '',
-          'historyDate': 0,
+          'historyDate': '',
+          'historyFilter': '',
         };
       }
 
@@ -194,3 +286,5 @@ class HistoryProvider extends ChangeNotifier {
     }
   }
 }
+
+*/
