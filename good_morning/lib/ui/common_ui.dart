@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 Widget buildFullCard(BuildContext context,
     {String? title,
@@ -35,23 +36,52 @@ Widget buildFullCardWithImage(BuildContext context,
     Widget? optionalWidget,
     String? imageUrl,
     void Function()? onTapAction}) {
-  final decoration = imageUrl != null ? decorateImage(imageUrl) : null;
-
   return Card(
     color: Colors.transparent,
-    child: Container(
-      decoration: decoration,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16.0),
-        title: title != null ? Text(title, style: titleImageTextStyle) : null,
-        subtitle: description != null
-            ? Text(description, style: bodyImageTextStyle)
-            : null,
-        trailing: optionalWidget,
-        onTap: () {
-          onTapAction?.call();
-        },
-      ),
+    child: Stack(
+      children: [
+        if (imageUrl != null && Uri.parse(imageUrl).isAbsolute)
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Uri.parse(imageUrl).isAbsolute
+                  ? FadeInImage(
+                      placeholder: MemoryImage(kTransparentImage),
+                      image: NetworkImage(imageUrl),
+                      fit: BoxFit.cover,
+                      fadeInDuration: const Duration(seconds: 1),
+                    )
+                  : Container(color: Colors.grey),
+            ),
+          ),
+        Container(
+          decoration: imageUrl != null
+              ? BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(1.0),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                )
+              : null,
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16.0),
+            title:
+                title != null ? Text(title, style: titleImageTextStyle) : null,
+            subtitle: description != null
+                ? Text(description, style: bodyImageTextStyle)
+                : null,
+            trailing: optionalWidget,
+            onTap: () {
+              onTapAction?.call();
+            },
+          ),
+        ),
+      ],
     ),
   );
 }
@@ -170,7 +200,7 @@ Widget buildWeatherCard(BuildContext context,
   final currentSnow = currentWeather['snowfall'];
 
   if (currentTemp == null) {
-    return  const CircularProgressIndicator();
+    return const CircularProgressIndicator();
   } else {
     return Card(
       color: Theme.of(context).cardColor,
