@@ -10,6 +10,52 @@ import 'package:url_launcher/url_launcher.dart';
 // API call code and widgets here
 const String mapApiKey = config.mapApiKey;
 
+// Google Maps Address Validation API
+
+Future<bool> isAddressValidLocation(String address) async {
+  String validationURL =
+      'https://addressvalidation.googleapis.com/v1:validateAddress';
+
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+  Map<String, dynamic> requestBody = {
+    'address': {
+      'addressLines': [address],
+      'regionCode': 'SE', // Sweden
+    },
+  };
+
+  if (kIsWeb) {
+    validationURL =
+        'https://cors-anywhere.herokuapp.com/$validationURL?key=$mapApiKey';
+  } else {
+    validationURL = '$validationURL?key=$mapApiKey';
+  }
+
+  final response = await http.post(
+    Uri.parse(validationURL),
+    headers: headers,
+    body: jsonEncode(requestBody),
+  );
+
+  if (response.statusCode == 200) {
+    // if successful response, parse the JSON response
+    var responseData = json.decode(response.body);
+    var verdict = responseData['result']['verdict']['validationGranularity'];
+
+    if (verdict == 'PREMISE' ||
+        verdict == 'SUB-PREMISE' ||
+        verdict == 'PREMISE_PROXIMITY') {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    throw Exception('Failed to validate address');
+  }
+}
+
 // Google Maps Geocoding API
 Future<String?> getAddressFromLatLng(String latitude, String longitude) async {
   String geoCodingURL;
@@ -90,7 +136,7 @@ Future<Uint8List> getMapFromAPI(
   String markers =
       'markers=color:red|label:A|$fromAddress&markers=color:blue|label:B|$toAddress';
   String request =
-      '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&alternatives=true&key=$mapApiKey';
+      '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&key=$mapApiKey';
   if (kDebugMode) {
     print('Sends request to API: $request');
   }

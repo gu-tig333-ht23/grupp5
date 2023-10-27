@@ -285,6 +285,14 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 }
 
+bool isValidInput(String address) {
+  return address.isNotEmpty && address.length <= 50;
+}
+
+Future<bool> isValidLocation(String address) async {
+  return await isAddressValidLocation(address);
+}
+
 Future<Map<String, String>> determinePosition() async {
   Map<String, String> positionMap = {
     'latitude': 'N/A',

@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic.ui.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +12,48 @@ class Destination {
   String address;
 
   Destination({this.name, required this.address});
+}
+
+// Alerts the user if input isn`t valid
+void inputNotValidDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+          title: const Text('Invalid input'),
+          content: const Text(
+              'The address input cannot be empty and/or longer than 50 characters. Please try again.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ]);
+    },
+  );
+}
+
+// Alerts the user if address input isn`t a valid address
+void addressNotValidDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+          title: const Text('Invalid address'),
+          content: const Text(
+              'The address input is not a valid address or location. Please try again.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ]);
+    },
+  );
 }
 
 // for showing from destinations in route
@@ -38,19 +83,30 @@ class DestinationItem extends StatelessWidget {
                     buildSmallButton(
                       context,
                       'Save',
-                      () {
+                      () async {
                         String destination = textInputController.text;
-                        if (type == 'From:') {
-                          Provider.of<DailyTrafficProvider>(context,
-                                  listen: false)
-                              .setCurrentFrom(null, destination);
-                          Navigator.pop(context);
+                        if (isValidInput(destination)) {
+                          // valid input
+                          if (await isAddressValidLocation(destination)) {
+                            // and validated address
+                            if (type == 'From:') {
+                              Provider.of<DailyTrafficProvider>(context,
+                                      listen: false)
+                                  .setCurrentFrom(null, destination);
+                              Navigator.pop(context);
+                            } else if (type == 'To:') {
+                              Provider.of<DailyTrafficProvider>(context,
+                                      listen: false)
+                                  .setCurrentTo(null, destination);
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            // alerts user that the address is not a valid location
+                            addressNotValidDialog(context);
+                          }
                         } else {
-                          // the type is "To:"
-                          Provider.of<DailyTrafficProvider>(context,
-                                  listen: false)
-                              .setCurrentTo(null, destination);
-                          Navigator.pop(context);
+                          // not valid input
+                          inputNotValidDialog(context);
                         }
                       },
                     ),
@@ -205,10 +261,10 @@ class DestinationDropdown extends StatelessWidget {
           if (type == 'From:' && defaultOrCurrent == 'Default') {
             await provider.storeFromDestination(
                 newDestination!.name!, newDestination.address);
-            // ignore: use_build_context_synchronously
+
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
-            // ignore: use_build_context_synchronously
+
             showInfoDialog(context);
           } else if (type == 'From:' && defaultOrCurrent == 'Current') {
             provider.setCurrentFrom(
@@ -217,10 +273,10 @@ class DestinationDropdown extends StatelessWidget {
           } else if (type == 'To:' && defaultOrCurrent == 'Default') {
             await provider.storeToDestination(
                 newDestination!.name!, newDestination.address);
-            // ignore: use_build_context_synchronously
+
             await Provider.of<DailyTrafficProvider>(context, listen: false)
                 .fetchDefaultTrafficSettings();
-            // ignore: use_build_context_synchronously
+
             showInfoDialog(context);
           } else {
             // To: and Current
