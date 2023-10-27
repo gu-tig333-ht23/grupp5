@@ -525,7 +525,7 @@ Future<void> addDestinationDialog(BuildContext context) async {
                 String newAddress = addressController.text;
 
                 if (isValidInput(newName) && isValidInput(newAddress)) {
-                  // both strings not empty or over 50 characters
+                  // both strings not empty or over 50 characters, without special characters
                   // the name does not already exist
                   if (!destinationNames.contains(newName.toLowerCase())) {
                     if (await isValidLocation(newAddress)) {

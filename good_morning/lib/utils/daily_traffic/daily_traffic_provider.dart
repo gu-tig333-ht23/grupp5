@@ -285,14 +285,22 @@ class DailyTrafficProvider extends ChangeNotifier {
   }
 }
 
+// checks whether the input is not empty, too long or contains special characters
 bool isValidInput(String address) {
-  return address.isNotEmpty && address.length <= 50;
+  RegExp specialCharRegex = RegExp(
+      r'[!@#\$%^&*(),.?":{}|<>]'); // Define your set of special characters
+
+  return (address.isNotEmpty &&
+      address.length <= 50 &&
+      !specialCharRegex.hasMatch(address));
 }
 
+// checks if the address is a valid location (Google Address Validation API)
 Future<bool> isValidLocation(String address) async {
   return await isAddressValidLocation(address);
 }
 
+// Retrieves the user`s location
 Future<Map<String, String>> determinePosition() async {
   Map<String, String> positionMap = {
     'latitude': 'N/A',
