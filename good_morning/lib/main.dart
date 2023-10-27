@@ -37,7 +37,6 @@ void main() async {
           create: (context) => WeatherProvider(),
         )
       ],
-      // sends the fact for the day as parameter to myApp
       child: const MyApp(),
     ),
   );
