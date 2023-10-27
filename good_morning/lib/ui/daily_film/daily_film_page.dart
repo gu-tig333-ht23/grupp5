@@ -126,7 +126,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 40.0),
                         child: buildSmallButton(
                           context,
                           'Fetch another movie',
