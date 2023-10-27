@@ -22,7 +22,7 @@ void inputNotValidDialog(BuildContext context) {
       return AlertDialog(
           title: const Text('Invalid input'),
           content: const Text(
-              'The address input cannot be empty and/or longer than 50 characters. Please try again.'),
+              'The address input cannot be empty and/or longer than 50 characters. The input cannot contain special characters such as !@#\$%^&*(),.?":{}|<>.  Please try again.'),
           actions: [
             TextButton(
               child: const Text('OK'),
