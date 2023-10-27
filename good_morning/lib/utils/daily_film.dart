@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
@@ -35,7 +35,9 @@ class FilmApi {
     Response response = await dio.get(
       'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US$pageNumber&sort_by=popularity.desc&with_original_language=en',
     );
-    print('Api call sent');
+    if (kDebugMode) {
+      print('Api call sent');
+    }
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
 
@@ -76,7 +78,9 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
         jsonResponse['result']['streamingInfo'];
 
     if (streamingInfo['se'] == null) {
-      print('No streaming services found');
+      if (kDebugMode) {
+        print('No streaming services found');
+      }
     } else {
       List se = streamingInfo['se'];
 
@@ -96,7 +100,9 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
       }
     }
   } catch (error) {
-    print('Error: $error');
+    if (kDebugMode) {
+      print('Error: $error');
+    }
   }
   return result;
 }
@@ -183,10 +189,8 @@ class FavoriteMoviesModel extends ChangeNotifier {
     final List<Map<String, String>> streamInfo = movie.streamInfo;
     final String fetchDate = movie.fetchDate;
 
-    List output = [];
-
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      return output = ['The movie is already in your watchlist', 'Remove'];
+      return ['The movie is already in your watchlist', 'Remove'];
     } else {
       if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
@@ -206,7 +210,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
 
       saveWatchlist();
       notifyListeners();
-      return output = ['Movie added to your watchlist', 'Undo'];
+      return ['Movie added to your watchlist', 'Undo'];
     }
   }
 

@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
@@ -28,14 +28,6 @@ class DailyFilmPageState extends State<DailyFilmPage> {
     Movie movie = context.watch<MovieProvider>().movie;
     _filmFuture = FilmApi(dio).fetchMovie();
 
-    bool isMovieInFavorites(Movie movie) {
-      final movieTitle = movie.title;
-      return context
-          .read<FavoriteMoviesModel>()
-          .favoriteMovies
-          .any((movie) => movie[0] == movieTitle);
-    }
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -59,7 +51,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
           future: _filmFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -187,7 +179,9 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
 
       Provider.of<MovieProvider>(context, listen: false).setMovie(movie);
     } catch (e) {
-      print('Error fetching movie: $e');
+      if (kDebugMode) {
+        print('Error fetching movie: $e');
+      }
     }
   } else {
     final storedData = await getMovieData();
