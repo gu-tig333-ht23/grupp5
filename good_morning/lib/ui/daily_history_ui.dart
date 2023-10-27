@@ -36,7 +36,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('Today: $year-$month-$day: $historyFilter'),
+        title: Text('Today: $month-$day: $historyFilter'),
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,
@@ -82,7 +82,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           } else {
             return SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding:  const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
                 child: Column(
                   children: [
                     buildFullCard(
@@ -103,7 +103,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     ),
                     buildFullCard(context,
                         description:
-                            historyProvider.historyItem.historyExtract),
+                            historyProvider.historyItem.historyExtract,
+                    )
                   ],
                 ),
               ),
