@@ -972,7 +972,8 @@ Future<Map<String, String>> determinePosition() async {
     'longitude': 'N/A',
   };
   // checks if the application has permission to use location
-  if (!(await Permission.location.isGranted)) {
+  // (If running in something that isn`t a web browser, web will get permission at its own before proceeding)
+  if (!kIsWeb && !(await Permission.location.isGranted)) {
     var status = await Permission.location.request();
     if (status != PermissionStatus.granted) {
       // User denies the permission
@@ -1002,9 +1003,15 @@ const String mapApiKey = config.mapApiKey;
 
 // Google Maps Geocoding API
 Future<String?> getAddressFromLatLng(String latitude, String longitude) async {
-  const String geoCodingURL =
-      'https://maps.googleapis.com/maps/api/geocode/json';
-
+  String geoCodingURL;
+  if (kIsWeb) {
+    // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+    geoCodingURL =
+        'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json';
+  } else {
+    // for running in emulators
+    geoCodingURL = 'https://maps.googleapis.com/maps/api/geocode/json';
+  }
   final response = await http.get(
       Uri.parse('$geoCodingURL?latlng=$latitude,$longitude&key=$mapApiKey'));
 
@@ -1069,6 +1076,9 @@ Future<Uint8List> getMapFromAPI(
   }
   String markers =
       'markers=color:red|label:A|$fromAddress&markers=color:blue|label:B|$toAddress';
+  String request =
+      '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&alternatives=true&key=$mapApiKey';
+  print('Sends request to API: $request');
 
   // gets the direction data from API, decodes and encodes
   http.Response directionsResponse = await http.get(Uri.parse(
