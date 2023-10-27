@@ -36,7 +36,7 @@ class DailyFactPage extends StatelessWidget {
                   DailyFactWidget(
                       factText:
                           Provider.of<DailyFactProvider>(context).factText),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   const Text('Want more facts?',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const Text(

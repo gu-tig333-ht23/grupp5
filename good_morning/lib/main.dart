@@ -4,7 +4,7 @@ import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/main_navigation/onboarding.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
-import 'package:good_morning/utils/daily_traffic_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:good_morning/utils/weather.dart';
 import '/ui/main_navigation/home_page.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data == true) {
-              return HomePage();
+              return const HomePage();
             } else {
               return const OnBoardingScreen();
             }
