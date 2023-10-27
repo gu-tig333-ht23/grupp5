@@ -26,7 +26,13 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   @override
   Widget build(BuildContext context) {
     Movie movie = context.watch<MovieProvider>().movie;
+    String movieTitle = movie.title;
     _filmFuture = FilmApi(dio).fetchMovie();
+    List<List<String>> favoriteMovies =
+        context.watch<FavoriteMoviesModel>().favoriteMovies;
+
+    bool isInWatchList = favoriteMovies.any((movie) => movie[0] == movieTitle);
+    Color _favoriteButtonColor = isInWatchList ? Colors.red : Colors.grey;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -135,26 +141,63 @@ class DailyFilmPageState extends State<DailyFilmPage> {
                     bottom: 20.0,
                     right: 20.0,
                     child: FloatingActionButton(
-                      backgroundColor: Colors.red,
+                      backgroundColor: _favoriteButtonColor,
                       foregroundColor: Colors.white,
                       onPressed: () async {
-                        var snackBarText = await context
-                            .read<FavoriteMoviesModel>()
-                            .addFavorite(movie);
+                        var favoriteMoviesModel =
+                            context.read<FavoriteMoviesModel>();
+                        var isMovieInFavorites = favoriteMoviesModel
+                            .favoriteMovies
+                            .any((movie) => movie[0] == movieTitle);
+                        String snackBarText = '';
+
+                        if (isMovieInFavorites) {
+                          context.read<FavoriteMoviesModel>().removeMovie(
+                              context
+                                      .read<FavoriteMoviesModel>()
+                                      .favoriteMovies
+                                      .length -
+                                  1);
+                          setState(() {
+                            _favoriteButtonColor = Colors.grey;
+                          });
+                          snackBarText = 'Movie removed from your watchlist!';
+                        } else {
+                          context
+                              .read<FavoriteMoviesModel>()
+                              .addFavorite(movie);
+                          setState(() {
+                            _favoriteButtonColor = Colors.red;
+                          });
+                          snackBarText = 'Movie added to your watchlist!';
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(snackBarText[0]),
+                            content: Text(snackBarText),
                             action: SnackBarAction(
-                                label: snackBarText[1],
-                                onPressed: () {
-                                  context
-                                      .read<FavoriteMoviesModel>()
-                                      .removeMovie(context
-                                              .read<FavoriteMoviesModel>()
-                                              .favoriteMovies
-                                              .length -
-                                          1);
-                                }),
+                              label: 'Undo',
+                              onPressed: () {
+                                if (isMovieInFavorites) {
+                                  // Add movie back to the watchlist if removed
+                                  favoriteMoviesModel.addFavorite(movie);
+
+                                  setState(() {
+                                    _favoriteButtonColor = Colors.red;
+                                  });
+                                } else {
+                                  // Remove movie from watchlist if added
+                                  favoriteMoviesModel.removeMovie(context
+                                          .read<FavoriteMoviesModel>()
+                                          .favoriteMovies
+                                          .length -
+                                      1);
+                                  setState(() {
+                                    _favoriteButtonColor = Colors.grey;
+                                  });
+                                }
+                              },
+                            ),
                           ),
                         );
                       },
