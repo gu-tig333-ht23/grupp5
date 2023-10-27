@@ -29,11 +29,11 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = historyProvider.storedHistoryItem.historyFilter;
+    String historyFilter = historyProvider.historyItem.historyFilter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     var year = historyProvider.now.year;
-    var historyText = historyProvider.storedHistoryItem.historyText;
+  
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +47,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
               setState(() {
                 historyProvider.getSelectedFilter(item);
                 print(item);
-                historyProvider.fetchHistoryItem();
+                _historyFuture = historyProvider.fetchHistoryItem();
               });
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -79,7 +79,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
         future: _historyFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
@@ -90,19 +90,19 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   children: [
                     buildFullCard(
                       context,
-                      title: historyProvider.storedHistoryItem.historyText,
+                      title: historyProvider.historyItem.historyText,
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
                       child: FadeInImage.memoryNetwork(
                         placeholder: kTransparentImage,
                         image:
-                            historyProvider.storedHistoryItem.historyThumbnail,
+                            historyProvider.historyItem.historyThumbnail,
                       ),
                     ),
                     buildFullCard(context,
                         description:
-                            historyProvider.storedHistoryItem.historyExtract),
+                            historyProvider.historyItem.historyExtract),
                   ],
                 ),
               ),

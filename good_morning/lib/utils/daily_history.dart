@@ -17,15 +17,14 @@ class HistoryItem {
       required this.historyThumbnail,
       required this.historyExtract,
       required this.historyDate,
-      required this.historyFilter}
-      );
+      required this.historyFilter});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
       historyText: json['historyText'] as String,
       historyThumbnail: json['historyThumbnail'] as String,
       historyExtract: json['historyExtract'] as String,
-      historyDate: json['historyDate']as String,
+      historyDate: json['historyDate'] as String,
       historyFilter: json['historyFilter'] as String,
     );
   }
@@ -54,7 +53,6 @@ class HistoryProvider extends ChangeNotifier {
     fetchHistoryItem();
   }
 
-
 //Empty history items
   var _historyItem = HistoryItem(
     historyText: '',
@@ -64,7 +62,7 @@ class HistoryProvider extends ChangeNotifier {
     historyFilter: '',
   );
   HistoryItem get historyItem => _historyItem;
-
+/*
   var _storedHistoryItem = HistoryItem(
     historyText: '',
     historyThumbnail: '',
@@ -73,30 +71,32 @@ class HistoryProvider extends ChangeNotifier {
     historyFilter: '',
   );
   HistoryItem get storedHistoryItem => _storedHistoryItem;
+*/
 
   //get HistoryItem from SharedPreferences
   bootHistory() async {
     //print('BOOT');
-  
-  var storedHistoryData = await getHistoryData();
 
-  // ignore: unnecessary_null_comparison
-  if (storedHistoryData != null) {
-    final storedHistoryItem = HistoryItem.fromJson(storedHistoryData);
-    
-    if (storedHistoryItem.historyDate == date) {
-      _storedHistoryItem = storedHistoryItem;
-     // print('samma datum = load');
+    var storedHistoryData = await getHistoryData();
+
+    // ignore: unnecessary_null_comparison
+    if (storedHistoryData != null) {
+      final historyItem = HistoryItem.fromJson(storedHistoryData);
+
+      if (historyItem.historyDate == date) {
+        _historyItem = historyItem;
+        // print('samma datum = load');
+      } else {
+        await fetchHistoryItem();
+      }
+      //print('nytt datum = ny fetch');
     } else {
+      //print('fanns inget i minnet = ny fetch');
       await fetchHistoryItem();
     }
-    //print('nytt datum = ny fetch');
-  } else {
-    //print('fanns inget i minnet = ny fetch');
-    await fetchHistoryItem();
+    notifyListeners();
   }
-  notifyListeners();
-}
+
   //Get historyitem from API-function
   fetchHistoryItem() async {
     //print('FETCH');
@@ -126,20 +126,17 @@ class HistoryProvider extends ChangeNotifier {
 
     String wikiUrl;
     if (kIsWeb) {
-    // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
-    wikiUrl =
-        'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday';
-
-  } else {
-    // for running in emulators, without proxy
-    wikiUrl = 'https://en.wikipedia.org/api/rest_v1/feed/onthisday';
-    
-  }
+      // for running in web browsers, sends request through proxy server https://cors-anywhere.herokuapp.com (click there for access first!)
+      wikiUrl =
+          'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+    } else {
+      // for running in emulators, without proxy
+      wikiUrl = 'https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+    }
 
 //for WEB: https://cors-anywhere.herokuapp.com/
     final response = await http.get(
-      Uri.parse(
-          '$wikiUrl/$historyFilter/$month/$day'),
+      Uri.parse('$wikiUrl/$historyFilter/$month/$day'),
       headers: apiHeaderWiki,
     );
 
@@ -161,7 +158,7 @@ class HistoryProvider extends ChangeNotifier {
       String historyText;
       String historyThumbnail;
       String historyExtract;
-      
+
       do {
         if (nextRandomNumber >= events.length) {
           nextRandomNumber = 0; // Wrap around to the beginning of the list
@@ -189,7 +186,7 @@ class HistoryProvider extends ChangeNotifier {
         'historyText': historyText,
         'historyThumbnail': historyThumbnail,
         'historyExtract': historyExtract,
-        'historyDate': month.toString()+day.toString(),
+        'historyDate': month.toString() + day.toString(),
         'historyFilter': historyFilter,
       };
     } else {

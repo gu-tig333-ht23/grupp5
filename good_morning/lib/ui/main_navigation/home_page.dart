@@ -106,9 +106,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     String text =
-        Provider.of<HistoryProvider>(context).storedHistoryItem.historyText;
+        Provider.of<HistoryProvider>(context).historyItem.historyText;
     String thumbnail = Provider.of<HistoryProvider>(context)
-        .storedHistoryItem
+        .historyItem
         .historyThumbnail;
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
