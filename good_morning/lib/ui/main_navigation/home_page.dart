@@ -1,6 +1,7 @@
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
 import 'package:good_morning/utils/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
@@ -115,7 +116,6 @@ class _HomePageState extends State<HomePage> {
     final weatherProvider = Provider.of<WeatherProvider>(context);
     Map<String, dynamic> currentWeather = weatherProvider.currentWeather;
 
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -148,17 +148,16 @@ class _HomePageState extends State<HomePage> {
           builder: (context, visibilityModel, child) => ListView(
             children: [
               if (visibilityModel.showWeather)
-                buildWeatherCard(context, currentWeather: currentWeather, onTapAction: () {
+                buildWeatherCard(context, currentWeather: currentWeather,
+                    onTapAction: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => WeatherPage(
-                      ),
+                      builder: (BuildContext context) => WeatherPage(),
                     ),
                   );
                   print('Navigating to Weather Screen');
                 }),
-
               if (visibilityModel.showTraffic)
                 buildFullCard(
                   context,
@@ -270,7 +269,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-
-
