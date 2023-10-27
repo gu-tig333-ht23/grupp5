@@ -17,11 +17,16 @@ class DailyHistoryPage extends StatefulWidget {
 }
 
 class _DailyHistoryPageState extends State<DailyHistoryPage> {
+  Future<void>? _historyFuture;
+
   @override
   void initState() {
     super.initState();
+    _historyFuture =
+        Provider.of<HistoryProvider>(context, listen: false).bootHistory();
   }
 
+  @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
     String historyFilter = historyProvider.storedHistoryItem.historyFilter;
@@ -70,33 +75,46 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              buildFullCard(
-                context,
-                title: historyText,
-              ),
-              Card(
-                color: Theme.of(context).cardColor,
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: historyProvider.storedHistoryItem.historyThumbnail,
+      body: FutureBuilder<void>(
+        future: _historyFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    buildFullCard(
+                      context,
+                      title: historyProvider.storedHistoryItem.historyText,
+                    ),
+                    Card(
+                      color: Theme.of(context).cardColor,
+                      child: FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image:
+                            historyProvider.storedHistoryItem.historyThumbnail,
+                      ),
+                    ),
+                    buildFullCard(context,
+                        description:
+                            historyProvider.storedHistoryItem.historyExtract),
+                  ],
                 ),
               ),
-              buildFullCard(context,
-                  description: historyProvider.storedHistoryItem.historyExtract)
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
             historyProvider.getSelectedFilter(historyFilter);
-            historyProvider.fetchHistoryItem();
+            _historyFuture = historyProvider.fetchHistoryItem();
           });
         },
         child: const Icon(Icons.refresh_outlined),
