@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic_destinations.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic_mode_buttons.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
-import 'package:good_morning/utils/daily_traffic_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyTrafficPage extends StatelessWidget {

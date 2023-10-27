@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/traffic_data.storage.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic_destinations.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -86,7 +86,9 @@ class DailyTrafficProvider extends ChangeNotifier {
   Future<void> fetchDefaultTrafficSettings() async {
     // default transportation mode
     String defaultModeName = await getStoredDefaultMode();
-    print('Stored default mode: $defaultModeName');
+    if (kDebugMode) {
+      print('Stored default mode: $defaultModeName');
+    }
     switch (defaultModeName) {
       case 'Driving':
         _defaultMode = TransportMode.driving;
@@ -111,8 +113,6 @@ class DailyTrafficProvider extends ChangeNotifier {
     Map<String, String> defaultTo = await getStoredDefaultTo();
     String defaultToName = defaultTo['defaultToName'] ?? '';
     String defaultToAddress = defaultTo['defaultToAddress'] ?? '';
-    // print(
-    //   'Retrieved default to-destination from storage: $defaultToName, $defaultToAddress');
     _defaultTo = Destination(name: defaultToName, address: defaultToAddress);
     setCurrentTo(defaultToName, defaultToAddress);
 
@@ -124,8 +124,6 @@ class DailyTrafficProvider extends ChangeNotifier {
       await setMyPosition(); // uses geoLocator to set defaultFrom with user`s position
       _defaultFrom = Destination(name: 'My', address: 'Position');
     } else {
-      //print(
-      //   'Retrieved default from-destination from storage: $defaultFromName, $defaultFromAddress');
       _defaultFrom =
           Destination(name: defaultFromName, address: defaultFromAddress);
       setCurrentFrom(defaultFromName, defaultFromAddress);
@@ -137,7 +135,6 @@ class DailyTrafficProvider extends ChangeNotifier {
   // gets the string list with saved destinations from storage
   Future<void> fetchSavedDestinations() async {
     List<String> savedDestinations = await getStoredDestinations();
-    //print('Retrieved stored destinations: $savedDestinations');
     await storedDestinationsToItemList(savedDestinations);
 
     notifyListeners();
@@ -299,7 +296,9 @@ Future<Map<String, String>> determinePosition() async {
     var status = await Permission.location.request();
     if (status != PermissionStatus.granted) {
       // User denies the permission
-      print('Location permission denied');
+      if (kDebugMode) {
+        print('Location permission denied');
+      }
       Map<String, String> defaultPos = {
         'latitude': '57.7065580',
         'longitude': '11.9366386',
@@ -315,7 +314,9 @@ Future<Map<String, String>> determinePosition() async {
     positionMap['latitude'] = position.latitude.toString();
     positionMap['longitude'] = position.longitude.toString();
   } catch (error) {
-    print('Error getting location: $error');
+    if (kDebugMode) {
+      print('Error getting location: $error');
+    }
   }
   return positionMap;
 }

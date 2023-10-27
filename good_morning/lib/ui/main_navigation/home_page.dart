@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
-import 'package:good_morning/utils/daily_traffic/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
-import 'package:good_morning/utils/daily_traffic_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 import '../common_ui.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +157,9 @@ class _HomePageState extends State<HomePage> {
                       builder: (BuildContext context) => WeatherPage(),
                     ),
                   );
-                  print('Navigating to Weather Screen');
+                  if (kDebugMode) {
+                    print('Navigating to Weather Screen');
+                  }
                 }),
               if (visibilityModel.showTraffic)
                 buildFullCard(
@@ -190,7 +193,9 @@ class _HomePageState extends State<HomePage> {
                             DailyTrafficPage(theme: Theme.of(context)),
                       ),
                     );
-                    print('Navigating to Traffic Information Screen');
+                    if (kDebugMode) {
+                      print('Navigating to Traffic Information Screen');
+                    }
                   },
                 ),
               if (visibilityModel.showHistory)
@@ -206,7 +211,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   );
-                  print('Navigating to Today in History Screen');
+                  if (kDebugMode) {
+                    print('Navigating to Today in History Screen');
+                  }
                 }),
               if (visibilityModel.showFact)
                 buildFullCard(
@@ -235,7 +242,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-                    print('Navigating to Fact of the Day Screen');
+                    if (kDebugMode) {
+                      print('Navigating to Fact of the Day Screen');
+                    }
                   },
                 ),
               if (visibilityModel.showFilm)

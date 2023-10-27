@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_traffic/daily_fact_provider.dart';
+import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:provider/provider.dart';
 
 class DailyFactPage extends StatelessWidget {
@@ -36,7 +36,7 @@ class DailyFactPage extends StatelessWidget {
                   DailyFactWidget(
                       factText:
                           Provider.of<DailyFactProvider>(context).factText),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   const Text('Want more facts?',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const Text(

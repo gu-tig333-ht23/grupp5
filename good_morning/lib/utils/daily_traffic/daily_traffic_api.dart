@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 import 'package:flutter/material.dart';
-import 'package:good_morning/utils/daily_traffic_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';

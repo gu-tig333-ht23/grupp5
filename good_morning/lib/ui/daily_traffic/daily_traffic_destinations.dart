@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/daily_traffic/daily_traffic.ui.dart';
-import 'package:good_morning/utils/daily_traffic_provider.dart';
+import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
 
 class Destination {
