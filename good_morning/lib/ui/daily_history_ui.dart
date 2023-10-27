@@ -33,7 +33,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     var year = historyProvider.now.year;
-  
 
     return Scaffold(
       appBar: AppBar(
@@ -94,11 +93,15 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
-                      child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image:
-                            historyProvider.historyItem.historyThumbnail,
-                      ),
+                      child: historyProvider
+                              .historyItem.historyThumbnail.isNotEmpty
+                          ? FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image:
+                                  historyProvider.historyItem.historyThumbnail,
+                            )
+                          : const Icon(Icons.broken_image,
+                              size: 50, color: Colors.grey),
                     ),
                     buildFullCard(context,
                         description:
