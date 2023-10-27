@@ -226,7 +226,7 @@ class MapInfoWidget extends StatelessWidget {
                 : currentTo.address;
 
             String routeInfoText =
-                'Right now it is around $duration from $from to $to if ${transportMode.name.toString()}. The distance is $distance.';
+                '$duration from $from to $to if ${transportMode.name.toString()}. Distance is $distance.';
 
             return Text(
               routeInfoText,

@@ -105,11 +105,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String text =
-        Provider.of<HistoryProvider>(context).historyItem.historyText;
-    String thumbnail = Provider.of<HistoryProvider>(context)
-        .historyItem
-        .historyThumbnail;
+    String text = Provider.of<HistoryProvider>(context).historyItem.historyText;
+    String thumbnail =
+        Provider.of<HistoryProvider>(context).historyItem.historyThumbnail;
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
@@ -144,7 +142,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: Consumer<FilterModel>(
           builder: (context, visibilityModel, child) => ListView(
             children: [
