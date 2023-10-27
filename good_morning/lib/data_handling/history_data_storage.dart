@@ -9,7 +9,7 @@ Future<void> storeHistoryData({
     required String historyDate,
     required String historyFilter,
     }) async {
-      //print('STORE');
+
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('historyText', historyText);
   prefs.setString('historyThumbnail', historyThumbnail);
@@ -19,7 +19,7 @@ Future<void> storeHistoryData({
 }
 
 Future<Map<String, dynamic>> getHistoryData() async {
-  //print('GETSTORED');
+ 
   final prefs = await SharedPreferences.getInstance();
   final text = prefs.getString('historyText');
   final thumbnail = prefs.getString('historyThumbnail');

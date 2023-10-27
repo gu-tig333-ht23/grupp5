@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/utils/daily_history.dart';
+import 'package:good_morning/utils/daily_history/daily_history_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -33,7 +33,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     var year = historyProvider.now.year;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
