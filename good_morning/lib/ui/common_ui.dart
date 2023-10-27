@@ -172,51 +172,37 @@ Widget buildWeatherCard(BuildContext context,
   return Card(
     color: Theme.of(context).cardColor,
     child: ListTile(
-      title: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                const Text(
-                  'Current Local Weather',
-                  style: titleTextStyle,
-                  textAlign: TextAlign.left,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.water_drop),
-                    Text(
-                      '$currentRain mm ',
-                      style: subtitleTextStyle,
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.ac_unit),
-                    Text('$currentSnow cm ', style: subtitleTextStyle),
-                  ],
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Text(
-                  '$currentTemp°C',
-                  style: titleTextStyle,
-                  textScaleFactor: 2,
-                ),
-              ],
-            )
-          ],
-        ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Current Weather',
+            style: titleTextStyle,
+            textAlign: TextAlign.left,
+          ),
+          Row(
+            children: [
+              Icon(Icons.water_drop),
+              Text('$currentRain mm ', style: subtitleTextStyle),
+            ],
+          ),
+          Row(
+            children: [
+              Icon(Icons.ac_unit),
+              Text('$currentSnow cm ', style: subtitleTextStyle),
+            ],
+          ),
+        ],
+      ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center, 
+        children: [
+          Text(
+            '$currentTemp°C',
+            style: titleTextStyle,
+            textScaleFactor: 1.5,
+          ),
+        ],
       ),
       onTap: () {
         onTapAction?.call();
