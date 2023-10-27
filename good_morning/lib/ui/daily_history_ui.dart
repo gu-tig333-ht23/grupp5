@@ -32,7 +32,6 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     String historyFilter = historyProvider.historyItem.historyFilter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
-    var year = historyProvider.now.year;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
