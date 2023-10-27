@@ -29,7 +29,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = historyProvider.historyItem.historyFilter;
+    String historyFilter = historyProvider.historySettings.filter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     return Scaffold(
@@ -86,23 +86,23 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                   children: [
                     buildFullCard(
                       context,
-                      title: historyProvider.historyItem.historyText,
+                      title: historyProvider.historyItem.text,
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
                       child: historyProvider
-                              .historyItem.historyThumbnail.isNotEmpty
+                              .historyItem.thumbnail.isNotEmpty
                           ? FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
                               image:
-                                  historyProvider.historyItem.historyThumbnail,
+                                  historyProvider.historyItem.thumbnail,
                             )
                           : const Icon(Icons.broken_image,
                               size: 50, color: Colors.grey),
                     ),
                     buildFullCard(context,
                         description:
-                            historyProvider.historyItem.historyExtract,
+                            historyProvider.historyItem.extract,
                     )
                   ],
                 ),

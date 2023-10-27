@@ -23,22 +23,28 @@ class HistoryProvider extends ChangeNotifier {
 
 //Empty history items
   var _historyItem = HistoryItem(
-    historyText: '',
-    historyThumbnail: '',
-    historyExtract: '',
-    historyDate: '',
-    historyFilter: '',
+    text: '',
+    thumbnail: '',
+    extract: '',
   );
   HistoryItem get historyItem => _historyItem;
+
+  var _historySettings = HistorySettings(
+    filter: '',
+    date:'',
+  );
+  
+  HistorySettings get historySettings => _historySettings;
 
   //get HistoryItem from SharedPreferences
   bootHistory() async {
     var storedHistoryData = await getHistoryData();
-
+    var storedHistorySettings = await getHistorySettings();
     // ignore: unnecessary_null_comparison
-    if (storedHistoryData != null) {
+    if (storedHistoryData != null && storedHistorySettings !=null) {
       final historyItem = HistoryItem.fromJson(storedHistoryData);
-      if (historyItem.historyDate == date) {
+      final historySettings = HistorySettings.fromJson(storedHistorySettings);
+      if (historySettings.date == date) {
         _historyItem = historyItem;
       } else {
         await fetchHistoryItem();
@@ -55,11 +61,11 @@ class HistoryProvider extends ChangeNotifier {
         await fetchHistoryItemWiki(historyFilter, now.month, now.day);
     _historyItem = historyItemApi;
     storeHistoryData(
-        historyText: _historyItem.historyText,
-        historyThumbnail: _historyItem.historyThumbnail,
-        historyExtract: _historyItem.historyExtract,
-        historyDate: historyItem.historyDate,
-        historyFilter: historyItem.historyFilter);
+        text: _historyItem.text,
+        thumbnail: _historyItem.thumbnail,
+        extract: _historyItem.extract,
+        );
+    storeHistorySettings(filter: historyFilter, date: date);
     notifyListeners();
     bootHistory();
     return;

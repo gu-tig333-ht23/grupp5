@@ -1,24 +1,37 @@
 class HistoryItem {
-  String historyText;
-  String historyThumbnail;
-  String historyExtract;
-  String historyDate;
-  String historyFilter;
-
+  String text;
+  String thumbnail;
+  String extract;
+ 
   HistoryItem(
-      {required this.historyText,
-      required this.historyThumbnail,
-      required this.historyExtract,
-      required this.historyDate,
-      required this.historyFilter});
+      {required this.text,
+      required this.thumbnail,
+      required this.extract,
+      });
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
-      historyText: json['historyText'] as String,
-      historyThumbnail: json['historyThumbnail'] as String,
-      historyExtract: json['historyExtract'] as String,
-      historyDate: json['historyDate'] as String,
-      historyFilter: json['historyFilter'] as String,
+      text: json['text'] as String,
+      thumbnail: json['thumbnail'] as String,
+      extract: json['extract'] as String,
+     
+    );
+  }
+}
+
+class HistorySettings {
+  String filter;
+  String date;
+
+HistorySettings({
+required this.filter,
+required this.date,
+});
+
+factory HistorySettings.fromJson(Map<String, dynamic> json) {
+    return HistorySettings(
+      filter: json['filter'] as String,
+      date: json['date'] as String,
     );
   }
 }
