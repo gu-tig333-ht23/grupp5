@@ -29,6 +29,7 @@ class HistoryProvider extends ChangeNotifier {
   );
   HistoryItem get historyItem => _historyItem;
 
+  // ignore: prefer_final_fields
   var _historySettings = HistorySettings(
     filter: '',
     date:'',
