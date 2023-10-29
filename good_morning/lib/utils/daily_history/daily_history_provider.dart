@@ -3,25 +3,20 @@ import 'package:good_morning/data_handling/history_data_storage.dart';
 import 'package:good_morning/utils/daily_history/daily_history_model.dart';
 import 'package:good_morning/utils/daily_history/daily_history_api.dart';
 class HistoryProvider extends ChangeNotifier {
-// Date
-  final DateTime _now = DateTime.now();
-  DateTime get now => _now;
 
-//Datum
+  final DateTime now = DateTime.now();
+
   get date => now.month.toString() + now.day.toString();
 
-// Filter
   String _selectedFilter = 'events';
   String get historyFilter => _selectedFilter;
 
-  //Nytt filter
   getSelectedFilter(newFilter) {
     _selectedFilter = newFilter;
     notifyListeners();
     fetchHistoryItem();
   }
 
-//Empty history items
   var _historyItem = HistoryItem(
     text: '',
     thumbnail: '',
@@ -29,15 +24,12 @@ class HistoryProvider extends ChangeNotifier {
   );
   HistoryItem get historyItem => _historyItem;
 
-  // ignore: prefer_final_fields
   var _historySettings = HistorySettings(
     filter: '',
     date:'',
   );
-  
   HistorySettings get historySettings => _historySettings;
 
-  //get HistoryItem from SharedPreferences
   bootHistory() async {
     var storedHistoryData = await getHistoryData();
     var storedHistorySettings = await getHistorySettings();
@@ -47,6 +39,7 @@ class HistoryProvider extends ChangeNotifier {
       final historySettings = HistorySettings.fromJson(storedHistorySettings);
       if (historySettings.date == date) {
         _historyItem = historyItem;
+        _historySettings = historySettings;
       } else {
         await fetchHistoryItem();
       }
@@ -56,7 +49,6 @@ class HistoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Get historyitem from API-function
   fetchHistoryItem() async {
     var historyItemApi =
         await fetchHistoryItemWiki(historyFilter, now.month, now.day);

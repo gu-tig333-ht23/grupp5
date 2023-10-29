@@ -1,7 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-//Lagring för daily history
-
 Future<void> storeHistoryData({
     required String text,
     required String thumbnail,
