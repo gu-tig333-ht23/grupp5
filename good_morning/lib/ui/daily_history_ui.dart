@@ -36,7 +36,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('$year-$month-$day: $historyFilter'),
+        title: Text('$historyFilter: $year-$month-$day'),
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,
