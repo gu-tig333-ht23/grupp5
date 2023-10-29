@@ -32,10 +32,11 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
     String historyFilter = context.watch<HistoryProvider>().historySettings.filter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
+    var year = context.watch<HistoryProvider>().historyItem.year;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('Today: $month-$day: $historyFilter'),
+        title: Text('$year-$month-$day: $historyFilter'),
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,

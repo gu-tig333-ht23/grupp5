@@ -21,6 +21,7 @@ class HistoryProvider extends ChangeNotifier {
     text: '',
     thumbnail: '',
     extract: '',
+    year: '',
   );
   HistoryItem get historyItem => _historyItem;
 
@@ -57,6 +58,7 @@ class HistoryProvider extends ChangeNotifier {
         text: _historyItem.text,
         thumbnail: _historyItem.thumbnail,
         extract: _historyItem.extract,
+        year: _historyItem.year,
         );
     storeHistorySettings(filter: historyFilter, date: date);
     notifyListeners();

@@ -89,6 +89,7 @@ import 'dart:math';
           text:'',
           thumbnail: '',
           extract: '',
+          year: '',
         );
       }
 
@@ -97,6 +98,7 @@ import 'dart:math';
       String text;
       String thumbnail;
       String extract;
+      String year;
 
       do {
         if (nextRandomNumber >= events.length) {
@@ -104,6 +106,7 @@ import 'dart:math';
         }
         item = events[nextRandomNumber] as Map<String, dynamic>;
         text = item['text'] as String;
+        year = item['year'].toString();
         final pages = item['pages'] as List;
         if (pages.isNotEmpty) {
           final thumbnailData = pages[0]['thumbnail'];
@@ -125,6 +128,7 @@ import 'dart:math';
         text: text,
         thumbnail: thumbnail,
         extract: extract,
+        year: year,
       );
     } else {
       throw Exception('Failed to load data from the API');

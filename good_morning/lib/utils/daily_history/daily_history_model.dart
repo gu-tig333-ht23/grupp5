@@ -4,11 +4,13 @@ class HistoryItem {
   String text;
   String thumbnail;
   String extract;
+  String year;
  
   HistoryItem(
       {required this.text,
       required this.thumbnail,
       required this.extract,
+      required this.year
       });
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
@@ -19,15 +21,16 @@ class HistoryItem {
   final text = json['text'] as String;
   final thumbnail = json['thumbnail'] as String;
   final extract = json['extract'] as String;
+  final year = json['year'] as String;
 
   if (kDebugMode) {
-    print('Text: $text, Thumbnail: $thumbnail, Extract: $extract');
+    print('Text: $text, Thumbnail: $thumbnail, Extract: $extract, Year: $year');
   }
     return HistoryItem(
       text: json['text'] as String,
       thumbnail: json['thumbnail'] as String,
       extract: json['extract'] as String,
-     
+      year: json['year'] as String,
     );
   }
 }
