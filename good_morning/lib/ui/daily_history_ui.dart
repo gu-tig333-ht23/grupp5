@@ -29,7 +29,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = historyProvider.historySettings.filter;
+    String historyFilter = context.watch<HistoryProvider>().historyFilter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     return Scaffold(

@@ -82,7 +82,9 @@ import 'dart:math';
       final Map<String, dynamic> data = json.decode(response.body);
       final events = data['$historyFilter'] as List;
       if (events.isEmpty) {
-        print('No items');
+        if (kDebugMode) {
+          print('No items');
+        }
         return HistoryItem(
           text:'',
           thumbnail: '',
