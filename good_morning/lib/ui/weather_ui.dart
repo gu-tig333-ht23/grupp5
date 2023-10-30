@@ -70,21 +70,17 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     weatherLocationController = TextEditingController();
-    loadLocation(); // Load saved location when the widget is initialized
+    loadLocation();
   }
 
-  // Load location from shared preferences
   Future<void> loadLocation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      location = prefs.getString('location') ??
-          'Göteborg'; // Use 'Göteborg' as default if no location is saved
+      location = prefs.getString('location') ?? 'Göteborg';
     });
-    await updateWeatherUrls(
-        location); // Update weather data based on the loaded location
+    await updateWeatherUrls(location);
   }
 
-  // Save location to shared preferences
   Future<void> saveLocation(String newLocation) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('location', newLocation);
@@ -114,14 +110,9 @@ class _WeatherPageState extends State<WeatherPage> {
                         child: const Text('Change'),
                         onPressed: () async {
                           String newLocation = weatherLocationController.text;
-                          await saveLocation(
-                              newLocation); // Save the new location
+                          await saveLocation(newLocation);
                           setState(() {
-<<<<<<< Updated upstream
-                            location = weatherLocationController.text;                            
-=======
                             location = newLocation;
->>>>>>> Stashed changes
                           });
                           await updateWeatherUrls(location);
                           Navigator.of(context).pop();

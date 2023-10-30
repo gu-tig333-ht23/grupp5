@@ -97,17 +97,6 @@ Future<String> geocodeLocation(String location) async {
   }
 }
 
-class LocationProvider with ChangeNotifier {
-  Map<String, dynamic> _locationName = {};
-
-  Map<String, dynamic> get locationName => _locationName;
-
-  void setLocation(Map<String, dynamic> location) {
-    _locationName = location;
-    notifyListeners();
-  }
-}
-
 var lat = '57.7072';
 var lng = '11.966';
 
