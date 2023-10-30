@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/weather.dart';
