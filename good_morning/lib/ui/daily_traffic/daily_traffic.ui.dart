@@ -19,7 +19,8 @@ class DailyTrafficPage extends StatelessWidget {
     var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset:
+          false, // to prevent overflow when keyboard is showing
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Traffic Information'),
