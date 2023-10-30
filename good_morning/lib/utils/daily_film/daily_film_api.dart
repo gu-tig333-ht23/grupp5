@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
@@ -33,7 +34,9 @@ class FilmApi {
     Response response = await dio.get(
       'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US$pageNumber&sort_by=popularity.desc&with_original_language=en',
     );
-    print('Api call sent');
+    if (kDebugMode) {
+      print('Api call sent');
+    }
 
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
@@ -75,7 +78,9 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
         jsonResponse['result']['streamingInfo'];
 
     if (streamingInfo['se'] == null) {
-      print('No streaming services found');
+      if (kDebugMode) {
+        print('No streaming services found');
+      }
     } else {
       List se = streamingInfo['se'];
 
@@ -95,7 +100,9 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
       }
     }
   } catch (error) {
-    print('Error: $error');
+    if (kDebugMode) {
+      print('No items');
+    }
   }
   return result;
 }

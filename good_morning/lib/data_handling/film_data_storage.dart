@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:good_morning/utils/daily_film/daily_film_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +39,9 @@ Future<Map<String, dynamic>> getMovieData() async {
       return <String, String>{};
     }).toList();
   } catch (e) {
-    print('Error parsing streamInfo: $e');
+    if (kDebugMode) {
+      print('Error parsing streamInfo: $e');
+    }
   }
 
   return {
@@ -58,7 +61,9 @@ Future<bool> shouldFetchNewData() async {
   final fetchDate = prefs.getString('fetchDate');
 
   if (fetchDate == null) {
-    print('No fetch date stored, returning true');
+    if (kDebugMode) {
+      print('No items');
+    }
     return true;
   }
 
