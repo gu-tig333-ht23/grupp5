@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/weather.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Weather card
 class WeatherCard extends StatelessWidget {
@@ -63,12 +64,30 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   DateTime now = DateTime.now();
   late TextEditingController weatherLocationController;
-  late String location = ''; // Add this line to store the location text
+  late String location = 'Göteborg';
 
   @override
   void initState() {
     super.initState();
     weatherLocationController = TextEditingController();
+    loadLocation(); // Load saved location when the widget is initialized
+  }
+
+  // Load location from shared preferences
+  Future<void> loadLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      location = prefs.getString('location') ??
+          'Göteborg'; // Use 'Göteborg' as default if no location is saved
+    });
+    await updateWeatherUrls(
+        location); // Update weather data based on the loaded location
+  }
+
+  // Save location to shared preferences
+  Future<void> saveLocation(String newLocation) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('location', newLocation);
   }
 
   @override
@@ -94,13 +113,17 @@ class _WeatherPageState extends State<WeatherPage> {
                       TextButton(
                         child: const Text('Change'),
                         onPressed: () async {
-                          location = weatherLocationController.text;
+                          String newLocation = weatherLocationController.text;
+                          await saveLocation(
+                              newLocation); // Save the new location
                           setState(() {
+<<<<<<< Updated upstream
                             location = weatherLocationController.text;                            
+=======
+                            location = newLocation;
+>>>>>>> Stashed changes
                           });
                           await updateWeatherUrls(location);
-
-                          // ignore: use_build_context_synchronously
                           Navigator.of(context).pop();
                           setState(() {});
                         },
