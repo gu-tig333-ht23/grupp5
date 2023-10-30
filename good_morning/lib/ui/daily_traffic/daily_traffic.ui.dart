@@ -19,6 +19,7 @@ class DailyTrafficPage extends StatelessWidget {
     var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Traffic Information'),
