@@ -55,7 +55,7 @@ Future<HistoryItem> fetchHistoryItemWiki(historyFilter, month, day) async {
       text = item['text'] as String;
       year = item['year'].toString();
       if (item['year'] == null) {
-        year = 'N/A';
+        year = 'Yearly ';
       }
       final pages = item['pages'] as List;
       if (pages.isNotEmpty) {
