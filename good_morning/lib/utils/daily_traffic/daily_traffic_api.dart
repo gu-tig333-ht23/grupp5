@@ -133,11 +133,6 @@ Future<Uint8List> getMapFromAPI(
   }
   String markers =
       'markers=color:red|label:A|$fromAddress&markers=color:blue|label:B|$toAddress';
-  String request =
-      '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&key=$mapApiKey';
-  if (kDebugMode) {
-    print('Sends request to API: $request');
-  }
 
   // gets the direction data from API, decodes and encodes
   http.Response directionsResponse = await http.get(Uri.parse(
