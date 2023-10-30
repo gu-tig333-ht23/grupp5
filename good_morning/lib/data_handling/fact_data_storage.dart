@@ -37,9 +37,7 @@ Future<DateTime> getStoredDate() async {
   if (dateString != null) {
     try {
       DateTime storedDate = DateTime.parse(dateString);
-      if (kDebugMode) {
-        print('Stored date is: $storedDate');
-      }
+
       return storedDate;
     } catch (error) {
       if (kDebugMode) {
@@ -47,9 +45,7 @@ Future<DateTime> getStoredDate() async {
       }
     }
   }
-  if (kDebugMode) {
-    print('No stored date yet, returns yesterday`s date');
-  }
+
   return DateTime.now().subtract(
       const Duration(days: 1)); // yesterday`s date, if no date is stored yet
 }

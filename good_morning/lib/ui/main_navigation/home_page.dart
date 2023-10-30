@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
 import 'package:good_morning/utils/daily_film/daily_film_model.dart' as film;
@@ -161,9 +160,6 @@ class _HomePageState extends State<HomePage> {
                       builder: (BuildContext context) => const WeatherPage(),
                     ),
                   );
-                  if (kDebugMode) {
-                    print('Navigating to Weather Screen');
-                  }
                 }),
               if (filterModel.showTraffic)
                 buildFullCard(
@@ -197,9 +193,6 @@ class _HomePageState extends State<HomePage> {
                             DailyTrafficPage(theme: Theme.of(context)),
                       ),
                     );
-                    if (kDebugMode) {
-                      print('Navigating to Traffic Information Screen');
-                    }
                   },
                 ),
               if (filterModel.showHistory)
@@ -215,9 +208,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   );
-                  if (kDebugMode) {
-                    print('Navigating to Today in History Screen');
-                  }
                 }),
               if (filterModel.showFact)
                 buildFullCard(
@@ -246,9 +236,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-                    if (kDebugMode) {
-                      print('Navigating to Fact of the Day Screen');
-                    }
                   },
                 ),
               if (filterModel.showFilm)

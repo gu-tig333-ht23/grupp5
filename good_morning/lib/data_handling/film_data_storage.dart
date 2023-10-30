@@ -61,9 +61,6 @@ Future<bool> shouldFetchNewData() async {
   final fetchDate = prefs.getString('fetchDate');
 
   if (fetchDate == null) {
-    if (kDebugMode) {
-      print('No fetch date stored, returning true');
-    }
     return true;
   }
 
