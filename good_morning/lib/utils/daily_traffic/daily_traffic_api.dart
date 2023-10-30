@@ -44,9 +44,7 @@ Future<bool> isAddressValidLocation(String address) async {
     var responseData = json.decode(response.body);
     var verdict = responseData['result']['verdict']['validationGranularity'];
 
-    if (verdict == 'PREMISE' ||
-        verdict == 'SUB-PREMISE' ||
-        verdict == 'PREMISE_PROXIMITY') {
+    if (verdict == 'PREMISE' || verdict == 'SUB-PREMISE') {
       return true;
     } else {
       return false;
@@ -147,24 +145,28 @@ Future<Uint8List> getMapFromAPI(
   if (directionsResponse.statusCode == 200) {
     // if OK
     Map<String, dynamic> data = json.decode(directionsResponse.body);
-    String polylineCoordinates =
-        data['routes'][0]['overview_polyline']['points'];
+    if (data['routes'].isNotEmpty) {
+      String polylineCoordinates =
+          data['routes'][0]['overview_polyline']['points'];
 
-    // builds the path for the route line
-    String path = '&path=color:0x0000ff|weight:5|enc:$polylineCoordinates';
+      // builds the path for the route line
+      String path = '&path=color:0x0000ff|weight:5|enc:$polylineCoordinates';
 
-    // builds the static map url with polyline and markers
-    String mapUrl =
-        '$embedStaticUrl?size=600x300&$markers$path&key=$mapApiKey&mode=$mode';
+      // builds the static map url with polyline and markers
+      String mapUrl =
+          '$embedStaticUrl?size=600x300&$markers$path&key=$mapApiKey&mode=$mode';
 
-    // gets the static map with route line and markers from API
-    http.Response mapResponse = await http.get(Uri.parse(mapUrl));
+      // gets the static map with route line and markers from API
+      http.Response mapResponse = await http.get(Uri.parse(mapUrl));
 
-    if (mapResponse.statusCode == 200) {
-      // OK Response
-      return mapResponse.bodyBytes;
+      if (mapResponse.statusCode == 200) {
+        // OK Response
+        return mapResponse.bodyBytes;
+      } else {
+        throw Exception('Failed to load map');
+      }
     } else {
-      throw Exception('Failed to load map');
+      throw Exception('Route jsonresponse is empty');
     }
   } else {
     throw Exception('Failed to fetch directions polyline');
@@ -260,23 +262,27 @@ class MapInfoWidget extends StatelessWidget {
             return Text('Error: $snapshot.error}');
           } else if (snapshot.hasData) {
             var routeInfo = snapshot.data!;
-            var duration =
-                routeInfo['routes'][0]['legs'][0]['duration']['text'];
-            var distance =
-                routeInfo['routes'][0]['legs'][0]['distance']['text'];
-            String from = currentFrom.name != null
-                ? currentFrom.name!.toLowerCase()
-                : currentFrom.address;
-            String to = currentTo.name != null
-                ? currentTo.name!.toLowerCase()
-                : currentTo.address;
+            if (routeInfo['routes'].isNotEmpty) {
+              var duration =
+                  routeInfo['routes'][0]['legs'][0]['duration']['text'];
+              var distance =
+                  routeInfo['routes'][0]['legs'][0]['distance']['text'];
+              String from = currentFrom.name != null
+                  ? currentFrom.name!.toLowerCase()
+                  : currentFrom.address;
+              String to = currentTo.name != null
+                  ? currentTo.name!.toLowerCase()
+                  : currentTo.address;
 
-            String routeInfoText =
-                '$duration from $from to $to if ${transportMode.name.toString()}. Distance is $distance.';
+              String routeInfoText =
+                  '$duration from $from to $to if ${transportMode.name.toString()}. Distance is $distance.';
 
-            return Text(
-              routeInfoText,
-            );
+              return Text(
+                routeInfoText,
+              );
+            } else {
+              return const Text('No json routes data available');
+            }
           } else {
             return const Text('No data');
           }
