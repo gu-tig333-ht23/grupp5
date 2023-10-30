@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class HistoryItem {
   String text;
   String thumbnail;
@@ -13,16 +11,6 @@ class HistoryItem {
       required this.year});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
-
-    final text = json['text'] as String;
-    final thumbnail = json['thumbnail'] as String;
-    final extract = json['extract'] as String;
-    final year = json['year'] as String;
-
-    if (kDebugMode) {
-      print(
-          'Text: $text, Thumbnail: $thumbnail, Extract: $extract, Year: $year');
-    }
     return HistoryItem(
       text: json['text'] as String,
       thumbnail: json['thumbnail'] as String,

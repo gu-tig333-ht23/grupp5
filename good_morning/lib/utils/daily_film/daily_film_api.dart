@@ -34,6 +34,7 @@ class FilmApi {
       'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US$pageNumber&sort_by=popularity.desc&with_original_language=en',
     );
     print('Api call sent');
+
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
 

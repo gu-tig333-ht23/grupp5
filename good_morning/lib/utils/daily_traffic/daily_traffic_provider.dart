@@ -80,9 +80,7 @@ class DailyTrafficProvider extends ChangeNotifier {
   Future<void> fetchDefaultTrafficSettings() async {
     // default transportation mode
     String defaultModeName = await getStoredDefaultMode();
-    if (kDebugMode) {
-      print('Stored default mode: $defaultModeName');
-    }
+
     switch (defaultModeName) {
       case 'Driving':
         _defaultMode = TransportMode.driving;

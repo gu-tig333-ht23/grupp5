@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -69,31 +67,21 @@ class DailyFactProvider extends ChangeNotifier {
   Future<void> fetchAndUpdateFact() async {
     DateTime storedDate = await getDateFromStorage();
     _lastFetchedDate = storedDate;
-    if (kDebugMode) {
-      print('Date for last fetching: $storedDate');
-    }
+
     DateTime currentDate = DateTime.now();
 
     if (isDifferentDay(storedDate, currentDate)) {
       // last text fetched more than one day ago
       try {
         String factData = await fetchDailyFact(); // fetches new fact
-        if (kDebugMode) {
-          print('New text fetched: $factData');
-        }
+
         int startIndex = factData.indexOf('\n\n');
         String factText = factData.substring(startIndex + 2).trim();
         _factText = Future.value(factText);
         storeFactText(factText);
-        if (kDebugMode) {
-          print('Facttext stored: $factText');
-        }
 
         storeFetchedDate(currentDate);
         notifyListeners();
-        if (kDebugMode) {
-          print('Storing date for fetching: $currentDate');
-        }
       } catch (error) {
         throw Exception('Failed to fetch and update fact text: $error');
       }
@@ -101,9 +89,6 @@ class DailyFactProvider extends ChangeNotifier {
       // fetch the stored fact text
       String factText = await getStoredFactData();
       _factText = Future.value(factText);
-      if (kDebugMode) {
-        print('Retrieved factText from storage: $factText');
-      }
     }
     notifyListeners();
   }
