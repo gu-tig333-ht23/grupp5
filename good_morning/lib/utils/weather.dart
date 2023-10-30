@@ -97,6 +97,12 @@ Future<String> geocodeLocation(String location) async {
   }
 }
 
+var lat = '57.7072';
+var lng = '11.966';
+
+String weatherUrl =
+    'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current=temperature_2m,rain,snowfall&hourly=temperature_2m,rain,snowfall&timezone=Europe%2FBerlin&forecast_days=1';
+
 String weatherAPICurrent =
     'https://api.open-meteo.com/v1/forecast?latitude=57.7072&longitude=11.9668&current=temperature_2m,rain,snowfall&hourly=temperature_2m,rain,snowfall&timezone=Europe%2FBerlin&forecast_days=1';
 

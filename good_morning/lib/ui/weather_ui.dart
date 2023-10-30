@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/utils/weather.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Weather card
 class WeatherCard extends StatelessWidget {
@@ -63,12 +64,26 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   DateTime now = DateTime.now();
   late TextEditingController weatherLocationController;
-  late String location = ''; // Add this line to store the location text
+  late String location = 'Göteborg';
 
   @override
   void initState() {
     super.initState();
     weatherLocationController = TextEditingController();
+    loadLocation();
+  }
+
+  Future<void> loadLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      location = prefs.getString('location') ?? 'Göteborg';
+    });
+    await updateWeatherUrls(location);
+  }
+
+  Future<void> saveLocation(String newLocation) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('location', newLocation);
   }
 
   @override
@@ -94,13 +109,12 @@ class _WeatherPageState extends State<WeatherPage> {
                       TextButton(
                         child: const Text('Change'),
                         onPressed: () async {
-                          location = weatherLocationController.text;
+                          String newLocation = weatherLocationController.text;
+                          await saveLocation(newLocation);
                           setState(() {
-                            location = weatherLocationController.text;                            
+                            location = newLocation;
                           });
                           await updateWeatherUrls(location);
-
-                          // ignore: use_build_context_synchronously
                           Navigator.of(context).pop();
                           setState(() {});
                         },
