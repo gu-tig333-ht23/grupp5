@@ -35,11 +35,13 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (pageIndex) {
+                  // Unfocus keyboard when swiping away from name input screen
                   if (_currentPage == 1 && pageIndex != 1) {
                     FocusScope.of(context).unfocus();
                   }
                   setState(() {
                     _currentPage = pageIndex;
+                    // Don't allow scrolling past name input page without entering a name
                     if (pageIndex == 1) {
                       _canSwipe = _nameController.text.trim().isNotEmpty;
                     } else {
@@ -85,22 +87,12 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                _pageController.nextPage(
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-              ),
-              child: const Text("Start"),
-            ),
+            buildBigButton(context, "Start", () {
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+              );
+            })
           ],
         ),
       ),
@@ -175,8 +167,7 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Select Cards to Show",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text("Select Cards to Show", style: titleTextStyle),
           const SizedBox(height: 20.0),
           Consumer<FilterModel>(
             builder: (context, filterModel, child) => CheckboxListTile(
