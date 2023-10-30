@@ -96,8 +96,7 @@ class _WeatherPageState extends State<WeatherPage> {
                         onPressed: () async {
                           location = weatherLocationController.text;
                           setState(() {
-                            location = weatherLocationController.text;
-                            print(location);
+                            location = weatherLocationController.text;                            
                           });
                           await updateWeatherUrls(location);
 
