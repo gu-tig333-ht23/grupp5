@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
-import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_film/daily_film_model.dart' as film;
+import 'package:good_morning/utils/daily_film/daily_film_api.dart';
+import 'package:good_morning/utils/daily_film/daily_film_provider.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_api.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    context.read<FavoriteMoviesModel>().loadWatchlist();
+    //context.read<FavoriteMoviesModel>().loadWatchlist();
     context.read<HistoryProvider>().bootHistory();
     fetchCurrentWeather(context);
   }
@@ -111,7 +113,7 @@ class _HomePageState extends State<HomePage> {
     var currentFrom = context.watch<DailyTrafficProvider>().currentFrom;
     var currentTo = context.watch<DailyTrafficProvider>().currentTo;
     var transportMode = context.watch<DailyTrafficProvider>().mode;
-    Movie movie = context.watch<MovieProvider>().movie;
+    film.Movie movie = context.watch<MovieProvider>().movie;
     final weatherProvider = Provider.of<WeatherProvider>(context);
     Map<String, dynamic> currentWeather = weatherProvider.currentWeather;
 

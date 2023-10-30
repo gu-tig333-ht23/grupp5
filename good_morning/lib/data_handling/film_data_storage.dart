@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_film/daily_film_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //Lagring för daily film
-
 Future<void> storeMovieData(Movie movie) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('movieTitle', movie.title);
@@ -71,8 +70,9 @@ Future<bool> shouldFetchNewData() async {
   final currentDate = DateTime.now();
   final storedDate = DateTime.parse(fetchDate);
 
-  if (currentDate.difference(storedDate).inDays > 0){
-  return true;
-} else {
-  return false;}
+  if (currentDate.difference(storedDate).inDays > 0) {
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -3,7 +3,7 @@ import 'package:good_morning/data_handling/user_preferences.dart';
 import 'package:good_morning/ui/common_ui.dart';
 import 'package:good_morning/ui/main_navigation/onboarding.dart';
 import 'package:good_morning/utils/daily_fact_provider.dart';
-import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_film/daily_film_provider.dart';
 import 'package:good_morning/utils/daily_traffic/daily_traffic_provider.dart';
 import 'package:good_morning/utils/weather.dart';
 import '/ui/main_navigation/home_page.dart';

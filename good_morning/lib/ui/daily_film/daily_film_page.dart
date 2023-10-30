@@ -1,12 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/ui/daily_film/daily_film_list.dart';
+import 'package:good_morning/ui/daily_film/daily_film_watchlist.dart';
+import 'package:good_morning/utils/daily_film/daily_film_api.dart';
+import 'package:good_morning/utils/daily_film/daily_film_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:good_morning/utils/daily_film.dart';
+import 'package:good_morning/utils/daily_film/daily_film_model.dart' as film;
 import 'package:transparent_image/transparent_image.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -25,9 +26,9 @@ class DailyFilmPageState extends State<DailyFilmPage> {
 
   @override
   Widget build(BuildContext context) {
-    Movie movie = context.watch<MovieProvider>().movie;
+    film.Movie movie = context.watch<MovieProvider>().movie;
     String movieTitle = movie.title;
-    _filmFuture = FilmApi(dio).fetchMovie();
+    _filmFuture = getMovie(context, FilmApi(dio));
     List<List<String>> favoriteMovies =
         context.watch<FavoriteMoviesModel>().favoriteMovies;
 
@@ -218,7 +219,7 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
 
   if (shouldFetch) {
     try {
-      final Movie movie = await filmApi.fetchMovie();
+      final film.Movie movie = await filmApi.fetchMovie();
 
       Provider.of<MovieProvider>(context, listen: false).setMovie(movie);
     } catch (e) {
@@ -233,7 +234,7 @@ Future<void> getMovie(BuildContext context, FilmApi filmApi,
           (storedData['streamInfo'] as List<dynamic>)
               .cast<Map<String, String>>();
 
-      final Movie movie = Movie(
+      final film.Movie movie = film.Movie(
         title: storedData['movieTitle']!,
         description: storedData['movieDescription']!,
         releaseYear: storedData['movieDate']!,
