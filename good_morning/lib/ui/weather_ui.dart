@@ -62,9 +62,14 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   DateTime now = DateTime.now();
+  late TextEditingController weatherLocationController;
+  late String location = ''; // Add this line to store the location text
 
-  final TextEditingController weatherLocationController =
-      TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    weatherLocationController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +94,13 @@ class _WeatherPageState extends State<WeatherPage> {
                       TextButton(
                         child: const Text('Change'),
                         onPressed: () async {
-                          var location = weatherLocationController.text;
+                          location = weatherLocationController.text;
+                          setState(() {
+                            location = weatherLocationController.text;
+                            print(location);
+                          });
                           await updateWeatherUrls(location);
+
                           // ignore: use_build_context_synchronously
                           Navigator.of(context).pop();
                           setState(() {});
@@ -129,8 +139,8 @@ class _WeatherPageState extends State<WeatherPage> {
                       child: Column(
                         children: [
                           const SizedBox(height: 8),
-                          const Text(
-                            'Current local weather',
+                          Text(
+                            'Weather in $location',
                             style: subtitleTextStyle,
                           ),
                           Text(
