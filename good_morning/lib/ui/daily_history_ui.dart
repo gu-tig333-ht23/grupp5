@@ -29,7 +29,8 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = context.watch<HistoryProvider>().historySettings.filter;
+    String historyFilter =
+        context.watch<HistoryProvider>().historySettings.filter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
     var year = context.watch<HistoryProvider>().historyItem.year;
@@ -82,7 +83,7 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           } else {
             return SingleChildScrollView(
               child: Padding(
-                padding:  const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
+                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
                 child: Column(
                   children: [
                     buildFullCard(
@@ -91,19 +92,17 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
-                      child: historyProvider
-                              .historyItem.thumbnail.isNotEmpty
+                      child: historyProvider.historyItem.thumbnail.isNotEmpty
                           ? FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
-                              image:
-                                  historyProvider.historyItem.thumbnail,
+                              image: historyProvider.historyItem.thumbnail,
                             )
                           : const Icon(Icons.broken_image,
                               size: 50, color: Colors.grey),
                     ),
-                    buildFullCard(context,
-                        description:
-                            historyProvider.historyItem.extract,
+                    buildFullCard(
+                      context,
+                      description: historyProvider.historyItem.extract,
                     )
                   ],
                 ),
