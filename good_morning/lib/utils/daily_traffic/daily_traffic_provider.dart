@@ -36,12 +36,6 @@ class DailyTrafficProvider extends ChangeNotifier {
 
   TransportMode get mode => _selectedMode;
 
-  // Variables for user`s position
-  String _myLatitude = '';
-  String _myLongitude = '';
-  String get myLatitude => _myLatitude;
-  String get myLongitude => _myLongitude;
-
   // For the transportation mode buttons
   bool _carIsSelected = true; // default transportation mode
   bool get carIsSelected => _carIsSelected;
@@ -179,8 +173,6 @@ class DailyTrafficProvider extends ChangeNotifier {
     String latitude = positionMap['latitude']!;
     String longitude = positionMap['longitude']!;
 
-    _myLatitude = latitude;
-    _myLongitude = longitude;
     // transforms into readable address
     String? address = await getAddressFromLatLng(latitude, longitude);
     if (address != null) {
@@ -288,7 +280,7 @@ class DailyTrafficProvider extends ChangeNotifier {
 // checks whether the input is not empty, too long or contains special characters
 bool isValidInput(String address) {
   RegExp specialCharRegex = RegExp(
-      r'[!@#\$%^&*(),.?":{}|<>]'); // Define your set of special characters
+      r'[!@#\$%^&*().?":{}|<>]'); // Define your set of special characters
 
   return (address.isNotEmpty &&
       address.length <= 50 &&

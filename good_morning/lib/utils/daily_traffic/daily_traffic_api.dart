@@ -167,7 +167,7 @@ Future<Uint8List> getMapFromAPI(
       throw Exception('Failed to load map');
     }
   } else {
-    throw Exception('Failed to fetch directions');
+    throw Exception('Failed to fetch directions polyline');
   }
 }
 

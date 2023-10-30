@@ -412,14 +412,13 @@ Future<void> showSavedDestinations(BuildContext context) async {
             // ignore: sized_box_for_whitespace
             content: Container(
               width: double.maxFinite,
-              height: 300,
+              height: 200,
               child: ListView.builder(
                 itemCount: savedDestinations.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                     children: <Widget>[
                       SavedDestinationItem(savedDestinations[index]),
-                      if (index < savedDestinations.length - 1) const Divider(),
                     ],
                   );
                 },
