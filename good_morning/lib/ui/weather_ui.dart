@@ -91,6 +91,7 @@ class _WeatherPageState extends State<WeatherPage> {
                         onPressed: () async {
                           var location = weatherLocationController.text;
                           await updateWeatherUrls(location);
+                          // ignore: use_build_context_synchronously
                           Navigator.of(context).pop();
                           setState(() {});
                         },
