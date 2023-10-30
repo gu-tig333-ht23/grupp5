@@ -277,8 +277,8 @@ class DailyTrafficProvider extends ChangeNotifier {
 
 // checks whether the input is not empty, too long or contains special characters
 bool isValidInput(String address) {
-  RegExp specialCharRegex =
-      RegExp(r'[!@#\$%^&*()?"{}|<>]'); // Define your set of special characters
+  RegExp specialCharRegex = RegExp(
+      r'[!@#\$%^&*()?"{}|<>]'); // Set of special characters to check for/forbid
 
   return (address.isNotEmpty &&
       address.length <= 50 &&
