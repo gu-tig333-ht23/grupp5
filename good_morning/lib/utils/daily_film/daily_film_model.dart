@@ -1,8 +1,8 @@
-import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:good_morning/data_handling/secrets.dart' as config;
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 final Dio dio = Dio();
 String bearerKey = config.movieBearerKey;
