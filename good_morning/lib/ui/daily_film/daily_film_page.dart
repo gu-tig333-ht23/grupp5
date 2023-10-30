@@ -28,7 +28,7 @@ class DailyFilmPageState extends State<DailyFilmPage> {
   Widget build(BuildContext context) {
     film.Movie movie = context.watch<MovieProvider>().movie;
     String movieTitle = movie.title;
-    _filmFuture = getMovie(context, FilmApi(dio));
+    _filmFuture = FilmApi(dio).fetchMovie();
     List<List<String>> favoriteMovies =
         context.watch<FavoriteMoviesModel>().favoriteMovies;
 
