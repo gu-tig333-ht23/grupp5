@@ -19,6 +19,8 @@ class DailyTrafficPage extends StatelessWidget {
     var transportMode = context.watch<DailyTrafficProvider>().mode;
 
     return Scaffold(
+      resizeToAvoidBottomInset:
+          false, // to prevent overflow when keyboard is showing
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Traffic Information'),
@@ -412,14 +414,13 @@ Future<void> showSavedDestinations(BuildContext context) async {
             // ignore: sized_box_for_whitespace
             content: Container(
               width: double.maxFinite,
-              height: 300,
+              height: 200,
               child: ListView.builder(
                 itemCount: savedDestinations.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                     children: <Widget>[
                       SavedDestinationItem(savedDestinations[index]),
-                      if (index < savedDestinations.length - 1) const Divider(),
                     ],
                   );
                 },
@@ -450,6 +451,33 @@ Future<void> showSavedDestinations(BuildContext context) async {
       );
     },
   );
+}
+
+void nameAlreadyExistsDialog(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Oops!'),
+          content: const SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('There is already a saved destination with this name!'),
+                Text('Try another name for this address.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      });
 }
 
 Future<void> addDestinationDialog(BuildContext context) async {
@@ -492,47 +520,34 @@ Future<void> addDestinationDialog(BuildContext context) async {
             },
           ),
           TextButton(
-            child: const Text('Save'),
-            onPressed: () async {
-              String newName = nameController.text;
-              String newAddress = addressController.text;
+              child: const Text('Save'),
+              onPressed: () async {
+                String newName = nameController.text;
+                String newAddress = addressController.text;
 
-              if (!destinationNames.contains(newName.toLowerCase())) {
-                // the name does not already exist
-                Provider.of<DailyTrafficProvider>(context, listen: false)
-                    .addNewDestination(newName, newAddress);
-                Navigator.of(context).pop();
-              } else {
-                // the name already exists in saved destinations
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Oops!'),
-                      content: const SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'There is already a saved destination with this name!'),
-                            Text('Try another name for this address.'),
-                          ],
-                        ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
-            },
-          ),
+                if (isValidInput(newName) && isValidInput(newAddress)) {
+                  // both strings not empty or over 50 characters, without special characters
+                  // the name does not already exist
+                  if (!destinationNames.contains(newName.toLowerCase())) {
+                    if (await isValidLocation(newAddress)) {
+                      // valid location
+                      // adds the new destination
+                      Provider.of<DailyTrafficProvider>(context, listen: false)
+                          .addNewDestination(newName, newAddress);
+                      Navigator.of(context).pop();
+                    } else {
+                      // alerts the user that the given address is not a valid location
+                      addressNotValidDialog(context);
+                    }
+                  } else {
+                    // the name already exists in saved destinations
+                    nameAlreadyExistsDialog(context); // alerts the user
+                  }
+                } else {
+                  // the inputs are not valid or they are empty strings
+                  inputNotValidDialog(context);
+                }
+              }),
         ],
       );
     },

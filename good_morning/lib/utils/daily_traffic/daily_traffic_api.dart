@@ -10,6 +10,50 @@ import 'package:url_launcher/url_launcher.dart';
 // API call code and widgets here
 const String mapApiKey = config.mapApiKey;
 
+// Google Maps Address Validation API
+
+Future<bool> isAddressValidLocation(String address) async {
+  String validationURL =
+      'https://addressvalidation.googleapis.com/v1:validateAddress';
+
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+  Map<String, dynamic> requestBody = {
+    'address': {
+      'addressLines': [address],
+      'regionCode': 'SE', // Sweden
+    },
+  };
+
+  if (kIsWeb) {
+    validationURL =
+        'https://cors-anywhere.herokuapp.com/$validationURL?key=$mapApiKey';
+  } else {
+    validationURL = '$validationURL?key=$mapApiKey';
+  }
+
+  final response = await http.post(
+    Uri.parse(validationURL),
+    headers: headers,
+    body: jsonEncode(requestBody),
+  );
+
+  if (response.statusCode == 200) {
+    // if successful response, parse the JSON response
+    var responseData = json.decode(response.body);
+    var verdict = responseData['result']['verdict']['validationGranularity'];
+
+    if (verdict == 'PREMISE' || verdict == 'SUB-PREMISE') {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    throw Exception('Failed to validate address');
+  }
+}
+
 // Google Maps Geocoding API
 Future<String?> getAddressFromLatLng(String latitude, String longitude) async {
   String geoCodingURL;
@@ -89,11 +133,6 @@ Future<Uint8List> getMapFromAPI(
   }
   String markers =
       'markers=color:red|label:A|$fromAddress&markers=color:blue|label:B|$toAddress';
-  String request =
-      '$directionsUrl?mode=$mode&destination=$toAddress&origin=$fromAddress&alternatives=true&key=$mapApiKey';
-  if (kDebugMode) {
-    print('Sends request to API: $request');
-  }
 
   // gets the direction data from API, decodes and encodes
   http.Response directionsResponse = await http.get(Uri.parse(
@@ -101,27 +140,31 @@ Future<Uint8List> getMapFromAPI(
   if (directionsResponse.statusCode == 200) {
     // if OK
     Map<String, dynamic> data = json.decode(directionsResponse.body);
-    String polylineCoordinates =
-        data['routes'][0]['overview_polyline']['points'];
+    if (data['routes'].isNotEmpty) {
+      String polylineCoordinates =
+          data['routes'][0]['overview_polyline']['points'];
 
-    // builds the path for the route line
-    String path = '&path=color:0x0000ff|weight:5|enc:$polylineCoordinates';
+      // builds the path for the route line
+      String path = '&path=color:0x0000ff|weight:5|enc:$polylineCoordinates';
 
-    // builds the static map url with polyline and markers
-    String mapUrl =
-        '$embedStaticUrl?size=600x300&$markers$path&key=$mapApiKey&mode=$mode';
+      // builds the static map url with polyline and markers
+      String mapUrl =
+          '$embedStaticUrl?size=600x300&$markers$path&key=$mapApiKey&mode=$mode';
 
-    // gets the static map with route line and markers from API
-    http.Response mapResponse = await http.get(Uri.parse(mapUrl));
+      // gets the static map with route line and markers from API
+      http.Response mapResponse = await http.get(Uri.parse(mapUrl));
 
-    if (mapResponse.statusCode == 200) {
-      // OK Response
-      return mapResponse.bodyBytes;
+      if (mapResponse.statusCode == 200) {
+        // OK Response
+        return mapResponse.bodyBytes;
+      } else {
+        throw Exception('Failed to load map');
+      }
     } else {
-      throw Exception('Failed to load map');
+      throw Exception('Route jsonresponse is empty');
     }
   } else {
-    throw Exception('Failed to fetch directions');
+    throw Exception('Failed to fetch directions polyline');
   }
 }
 
@@ -214,23 +257,27 @@ class MapInfoWidget extends StatelessWidget {
             return Text('Error: $snapshot.error}');
           } else if (snapshot.hasData) {
             var routeInfo = snapshot.data!;
-            var duration =
-                routeInfo['routes'][0]['legs'][0]['duration']['text'];
-            var distance =
-                routeInfo['routes'][0]['legs'][0]['distance']['text'];
-            String from = currentFrom.name != null
-                ? currentFrom.name!.toLowerCase()
-                : currentFrom.address;
-            String to = currentTo.name != null
-                ? currentTo.name!.toLowerCase()
-                : currentTo.address;
+            if (routeInfo['routes'].isNotEmpty) {
+              var duration =
+                  routeInfo['routes'][0]['legs'][0]['duration']['text'];
+              var distance =
+                  routeInfo['routes'][0]['legs'][0]['distance']['text'];
+              String from = currentFrom.name != null
+                  ? currentFrom.name!.toLowerCase()
+                  : currentFrom.address;
+              String to = currentTo.name != null
+                  ? currentTo.name!.toLowerCase()
+                  : currentTo.address;
 
-            String routeInfoText =
-                '$duration from $from to $to if ${transportMode.name.toString()}. Distance is $distance.';
+              String routeInfoText =
+                  '$duration from $from to $to if ${transportMode.name.toString()}. Distance is $distance.';
 
-            return Text(
-              routeInfoText,
-            );
+              return Text(
+                routeInfoText,
+              );
+            } else {
+              return const Text('No json routes data available');
+            }
           } else {
             return const Text('No data');
           }
