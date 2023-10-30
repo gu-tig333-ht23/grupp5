@@ -44,47 +44,47 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Consumer<FilterModel>(
-                builder: (context, visibilityModel, child) => CheckboxListTile(
+                builder: (context, filterModel, child) => CheckboxListTile(
                   title: const Text('Weather'),
-                  value: visibilityModel.showWeather,
+                  value: filterModel.showWeather,
                   onChanged: (bool? value) {
-                    visibilityModel.toggleWeather();
+                    filterModel.toggleWeather();
                   },
                 ),
               ),
               Consumer<FilterModel>(
-                builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show History'),
-                  value: visibilityModel.showHistory,
-                  onChanged: (bool? value) {
-                    visibilityModel.toggleHistory();
-                  },
-                ),
-              ),
-              Consumer<FilterModel>(
-                builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Fact'),
-                  value: visibilityModel.showFact,
-                  onChanged: (bool? value) {
-                    visibilityModel.toggleFact();
-                  },
-                ),
-              ),
-              Consumer<FilterModel>(
-                builder: (context, visibilityModel, child) => CheckboxListTile(
-                  title: const Text('Show Film'),
-                  value: visibilityModel.showFilm,
-                  onChanged: (bool? value) {
-                    visibilityModel.toggleFilm();
-                  },
-                ),
-              ),
-              Consumer<FilterModel>(
-                builder: (context, visibilityModel, child) => CheckboxListTile(
+                builder: (context, filterModel, child) => CheckboxListTile(
                   title: const Text('Show Traffic'),
-                  value: visibilityModel.showTraffic,
+                  value: filterModel.showTraffic,
                   onChanged: (bool? value) {
-                    visibilityModel.toggleTraffic();
+                    filterModel.toggleTraffic();
+                  },
+                ),
+              ),
+              Consumer<FilterModel>(
+                builder: (context, filterModel, child) => CheckboxListTile(
+                  title: const Text('Show History'),
+                  value: filterModel.showHistory,
+                  onChanged: (bool? value) {
+                    filterModel.toggleHistory();
+                  },
+                ),
+              ),
+              Consumer<FilterModel>(
+                builder: (context, filterModel, child) => CheckboxListTile(
+                  title: const Text('Show Fact'),
+                  value: filterModel.showFact,
+                  onChanged: (bool? value) {
+                    filterModel.toggleFact();
+                  },
+                ),
+              ),
+              Consumer<FilterModel>(
+                builder: (context, filterModel, child) => CheckboxListTile(
+                  title: const Text('Show Film'),
+                  value: filterModel.showFilm,
+                  onChanged: (bool? value) {
+                    filterModel.toggleFilm();
                   },
                 ),
               ),
@@ -124,10 +124,10 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
-                return const Text("Good Morning", style: titleTextStyle);
+                return const Text("Good Morning", style: subtitleTextStyle);
               } else {
                 return Text("Good Morning, ${snapshot.data}",
-                    style: titleTextStyle);
+                    style: subtitleTextStyle);
               }
             } else {
               return const CircularProgressIndicator();
@@ -142,11 +142,15 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.only(
+          top: 8.0,
+          left: 10.0,
+          right: 10.0,
+        ),
         child: Consumer<FilterModel>(
-          builder: (context, visibilityModel, child) => ListView(
+          builder: (context, filterModel, child) => ListView(
             children: [
-              if (visibilityModel.showWeather)
+              if (filterModel.showWeather)
                 buildWeatherCard(context, currentWeather: currentWeather,
                     onTapAction: () {
                   Navigator.push(
@@ -159,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                     print('Navigating to Weather Screen');
                   }
                 }),
-              if (visibilityModel.showTraffic)
+              if (filterModel.showTraffic)
                 buildFullCard(
                   context,
                   title: 'Traffic',
@@ -196,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                 ),
-              if (visibilityModel.showHistory)
+              if (filterModel.showHistory)
                 buildFullCardWithImage(context,
                     title: 'Today in History',
                     description: text,
@@ -213,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                     print('Navigating to Today in History Screen');
                   }
                 }),
-              if (visibilityModel.showFact)
+              if (filterModel.showFact)
                 buildFullCard(
                   context,
                   title: 'Fact of the Day',
@@ -245,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                 ),
-              if (visibilityModel.showFilm)
+              if (filterModel.showFilm)
                 buildFullCardWithImage(
                   context,
                   title: 'Film of the Day',
@@ -269,6 +273,7 @@ class _HomePageState extends State<HomePage> {
                       builder: (context) => const OnBoardingScreen()),
                 );
               }),
+              const SizedBox(height: 100.0),
             ],
           ),
         ),
