@@ -10,7 +10,8 @@ class WeatherCard extends StatelessWidget {
   final double rain;
   final double snowfall;
 
-  const WeatherCard({super.key, 
+  const WeatherCard({
+    super.key,
     required this.time,
     required this.temperature,
     required this.rain,
@@ -89,12 +90,9 @@ class _WeatherPageState extends State<WeatherPage> {
                         child: const Text('Change'),
                         onPressed: () async {
                           var location = weatherLocationController.text;
-                          await updateWeatherUrls(
-                              location); // Wait for the update
-                          MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const WeatherPage());
-                          // Refresh the UI
+                          await updateWeatherUrls(location);
+                          Navigator.of(context).pop();
+                          setState(() {});
                         },
                       ),
                     ],
