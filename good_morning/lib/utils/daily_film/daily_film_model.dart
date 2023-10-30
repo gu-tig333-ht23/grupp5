@@ -1,19 +1,3 @@
-
-import 'package:dio/dio.dart';
-
-import 'package:good_morning/data_handling/secrets.dart' as config;
-
-
-final Dio dio = Dio();
-String bearerKey = config.movieBearerKey;
-String streamKey = config.rapidAPIKey;
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-}
-
 class Movie {
   final String title;
   final String description;

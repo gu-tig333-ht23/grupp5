@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:good_morning/ui/common_ui.dart';
-import 'package:good_morning/utils/daily_film/daily_film_model.dart';
 import 'package:good_morning/utils/daily_film/daily_film_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:good_morning/utils/daily_film/daily_film_api.dart';
 
 class DailyFilmList extends StatelessWidget {
   final ThemeData theme;

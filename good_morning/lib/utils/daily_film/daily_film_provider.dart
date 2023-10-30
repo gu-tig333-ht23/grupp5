@@ -63,8 +63,10 @@ class FavoriteMoviesModel extends ChangeNotifier {
     final List<Map<String, String>> streamInfo = movie.streamInfo;
     final String fetchDate = movie.fetchDate;
 
+    List output = [];
+
     if (_favoriteMovies.any((movie) => movie[0] == movieTitle)) {
-      return ['The movie is already in your watchlist', 'Remove'];
+      return output = ['The movie is already in your watchlist', 'Remove'];
     } else {
       if (streamInfo.isNotEmpty) {
         _streamInfoMap[movieTitle] = streamInfo;
@@ -84,7 +86,7 @@ class FavoriteMoviesModel extends ChangeNotifier {
 
       saveWatchlist();
       notifyListeners();
-      return ['Movie added to your watchlist', 'Undo'];
+      return output = ['Movie added to your watchlist', 'Undo'];
     }
   }
 

@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getMovie(context, FilmApi(dio));
-    //context.read<FavoriteMoviesModel>().loadWatchlist();
+    context.read<FavoriteMoviesModel>().loadWatchlist();
     context.read<HistoryProvider>().bootHistory();
     fetchCurrentWeather(context);
   }

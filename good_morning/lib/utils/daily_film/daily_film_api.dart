@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:good_morning/data_handling/film_data_storage.dart';
 import 'dart:math';
 import 'package:good_morning/data_handling/secrets.dart' as config;
 import 'package:good_morning/utils/daily_film/daily_film_model.dart';
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+}
 
 final Dio dio = Dio();
 String bearerKey = config.movieBearerKey;
@@ -21,16 +26,14 @@ class FilmApi {
   String pageNumber = '&page=${Random().nextInt(9) + 1}';
 
   Future<Movie> fetchMovie() async {
-    dio.options.headers['Authorization'] = 'Bearer $bearerKey';
+    dio.options.headers['Authorization'] = 'Bearer ${config.movieBearerKey}';
     dio.options.headers['Accept'] = 'application/json';
     final date = DateTime.now();
 
     Response response = await dio.get(
       'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US$pageNumber&sort_by=popularity.desc&with_original_language=en',
     );
-    if (kDebugMode) {
-      print('Api call sent');
-    }
+    print('Api call sent');
     int randomIndex = Random().nextInt(response.data['results'].length);
     Map<String, dynamic> randomMovie = response.data['results'][randomIndex];
 
@@ -71,9 +74,7 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
         jsonResponse['result']['streamingInfo'];
 
     if (streamingInfo['se'] == null) {
-      if (kDebugMode) {
-        print('No streaming services found');
-      }
+      print('No streaming services found');
     } else {
       List se = streamingInfo['se'];
 
@@ -93,9 +94,7 @@ Future<List<Map<String, String>>> fetchStreamInfo(String movieId) async {
       }
     }
   } catch (error) {
-    if (kDebugMode) {
-      print('Error: $error');
-    }
+    print('Error: $error');
   }
   return result;
 }
