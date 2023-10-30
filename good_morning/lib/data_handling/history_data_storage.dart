@@ -1,37 +1,49 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-//Lagring för daily history
-
 Future<void> storeHistoryData({
-    required String historyText,
-    required String historyThumbnail,
-    required String historyExtract,
-    required String historyDate,
-    required String historyFilter,
-    }) async {
-
+  required String text,
+  required String thumbnail,
+  required String extract,
+  required String year,
+}) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('historyText', historyText);
-  prefs.setString('historyThumbnail', historyThumbnail);
-  prefs.setString('historyExtract', historyExtract);
-  prefs.setString('historyDate', historyDate);
-  prefs.setString('historyFilter', historyFilter);
+  prefs.setString('text', text);
+  prefs.setString('thumbnail', thumbnail);
+  prefs.setString('extract', extract);
+  prefs.setString('year', year);
 }
 
 Future<Map<String, dynamic>> getHistoryData() async {
- 
   final prefs = await SharedPreferences.getInstance();
-  final text = prefs.getString('historyText');
-  final thumbnail = prefs.getString('historyThumbnail');
-  final extract = prefs.getString('historyExtract');
-  final date = prefs.getString('historyDate');
-  final filter = prefs.getString('historyFilter');
+  final text = prefs.getString('text');
+  final thumbnail = prefs.getString('thumbnail');
+  final extract = prefs.getString('extract');
+  final year = prefs.getString('year');
 
   return {
-    'historyText': text ?? '',
-    'historyThumbnail': thumbnail ?? '',
-    'historyExtract': extract ?? '',
-    'historyDate': date ?? '',
-    'historyFilter': filter ?? '',
+    'text': text ?? '',
+    'thumbnail': thumbnail ?? '',
+    'extract': extract ?? '',
+    'year': year ?? 'N/A',
+  };
+}
+
+Future<void> storeHistorySettings({
+  required String filter,
+  required String date,
+}) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('filter', filter);
+  prefs.setString('date', date);
+}
+
+Future<Map<String, dynamic>> getHistorySettings() async {
+  final prefs = await SharedPreferences.getInstance();
+  final filter = prefs.getString('filter');
+  final date = prefs.getString('date');
+
+  return {
+    'filter': filter ?? '',
+    'date': date ?? '',
   };
 }

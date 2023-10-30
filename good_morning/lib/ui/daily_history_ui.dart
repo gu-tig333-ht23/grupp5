@@ -29,13 +29,15 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
   @override
   Widget build(BuildContext context) {
     var historyProvider = Provider.of<HistoryProvider>(context);
-    String historyFilter = historyProvider.historyItem.historyFilter;
+    String historyFilter =
+        context.watch<HistoryProvider>().historySettings.filter;
     var day = historyProvider.now.day;
     var month = historyProvider.now.month;
+    var year = context.watch<HistoryProvider>().historyItem.year;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('Today: $month-$day: $historyFilter'),
+        title: Text('$historyFilter: $year-$month-$day'),
         actions: [
           PopupMenuButton<String>(
             initialValue: historyFilter,
@@ -81,28 +83,26 @@ class _DailyHistoryPageState extends State<DailyHistoryPage> {
           } else {
             return SingleChildScrollView(
               child: Padding(
-                padding:  const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
+                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
                 child: Column(
                   children: [
                     buildFullCard(
                       context,
-                      title: historyProvider.historyItem.historyText,
+                      title: historyProvider.historyItem.text,
                     ),
                     Card(
                       color: Theme.of(context).cardColor,
-                      child: historyProvider
-                              .historyItem.historyThumbnail.isNotEmpty
+                      child: historyProvider.historyItem.thumbnail.isNotEmpty
                           ? FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
-                              image:
-                                  historyProvider.historyItem.historyThumbnail,
+                              image: historyProvider.historyItem.thumbnail,
                             )
                           : const Icon(Icons.broken_image,
                               size: 50, color: Colors.grey),
                     ),
-                    buildFullCard(context,
-                        description:
-                            historyProvider.historyItem.historyExtract,
+                    buildFullCard(
+                      context,
+                      description: historyProvider.historyItem.extract,
                     )
                   ],
                 ),

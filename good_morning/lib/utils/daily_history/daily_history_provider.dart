@@ -3,43 +3,44 @@ import 'package:good_morning/data_handling/history_data_storage.dart';
 import 'package:good_morning/utils/daily_history/daily_history_model.dart';
 import 'package:good_morning/utils/daily_history/daily_history_api.dart';
 class HistoryProvider extends ChangeNotifier {
-// Date
-  final DateTime _now = DateTime.now();
-  DateTime get now => _now;
 
-//Datum
+  final DateTime now = DateTime.now();
+
   get date => now.month.toString() + now.day.toString();
 
-// Filter
   String _selectedFilter = 'events';
   String get historyFilter => _selectedFilter;
 
-  //Nytt filter
   getSelectedFilter(newFilter) {
     _selectedFilter = newFilter;
     notifyListeners();
     fetchHistoryItem();
   }
 
-//Empty history items
   var _historyItem = HistoryItem(
-    historyText: '',
-    historyThumbnail: '',
-    historyExtract: '',
-    historyDate: '',
-    historyFilter: '',
+    text: '',
+    thumbnail: '',
+    extract: '',
+    year: '',
   );
   HistoryItem get historyItem => _historyItem;
 
-  //get HistoryItem from SharedPreferences
+  var _historySettings = HistorySettings(
+    filter: '',
+    date:'',
+  );
+  HistorySettings get historySettings => _historySettings;
+
   bootHistory() async {
     var storedHistoryData = await getHistoryData();
-
+    var storedHistorySettings = await getHistorySettings();
     // ignore: unnecessary_null_comparison
-    if (storedHistoryData != null) {
+    if (storedHistoryData != null && storedHistorySettings !=null) {
       final historyItem = HistoryItem.fromJson(storedHistoryData);
-      if (historyItem.historyDate == date) {
+      final historySettings = HistorySettings.fromJson(storedHistorySettings);
+      if (historySettings.date == date) {
         _historyItem = historyItem;
+        _historySettings = historySettings;
       } else {
         await fetchHistoryItem();
       }
@@ -49,17 +50,17 @@ class HistoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Get historyitem from API-function
   fetchHistoryItem() async {
     var historyItemApi =
         await fetchHistoryItemWiki(historyFilter, now.month, now.day);
     _historyItem = historyItemApi;
     storeHistoryData(
-        historyText: _historyItem.historyText,
-        historyThumbnail: _historyItem.historyThumbnail,
-        historyExtract: _historyItem.historyExtract,
-        historyDate: historyItem.historyDate,
-        historyFilter: historyItem.historyFilter);
+        text: _historyItem.text,
+        thumbnail: _historyItem.thumbnail,
+        extract: _historyItem.extract,
+        year: _historyItem.year,
+        );
+    storeHistorySettings(filter: historyFilter, date: date);
     notifyListeners();
     bootHistory();
     return;
