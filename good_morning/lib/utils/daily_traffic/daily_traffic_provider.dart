@@ -308,7 +308,7 @@ Future<Map<String, String>> determinePosition() async {
       Map<String, String> defaultPos = {
         'latitude': '57.7065580',
         'longitude': '11.9366386',
-      }; // default position, in order for the map to show anyway
+      }; // default position at Lindholmen, in order for the map to show anyway
       return defaultPos;
     }
   }
